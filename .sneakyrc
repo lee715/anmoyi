@@ -1,0 +1,44 @@
+{
+  "app": {
+    "destinations": [
+      "root@139.196.8.138:/services/anmoyi"
+    ],
+    "nochdir": true,
+    "before": "coffee -o lib -c src",
+    "only": [
+      "config**",
+      "lib**",
+      "public**",
+      "package.json",
+      "scripts**",
+      "node_modules**"
+    ]
+  },
+  "restart": {
+    "destinations": [
+      "root@139.196.8.138:/services/anmoyi"
+    ],
+    "nochdir": true,
+    "before": "coffee -o lib -c src",
+    "only": [
+      "config**",
+      "lib**",
+      "public**",
+      "package.json"
+    ]
+  },
+  "update": {
+    "destinations": [
+      "root@139.196.8.138:/services/anmoyi"
+    ],
+    "nochdir": true,
+    "before": "coffee -o lib -c src",
+    "only": [
+      "config**",
+      "lib**",
+      "public**",
+      "package.json",
+      "node_modules**"
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 _ = require('lodash')
 db = require('limbo').use('anmoyi')
-u = require('./services/util')
+u = require('../services/util')
 
 pluck = (keys) ->
   (arr) ->

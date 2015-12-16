@@ -22,12 +22,6 @@ formatUser = (user) ->
 
 class API
 
-  # generateQrcode: (req, callback) ->
-  #   url = wxapi.generateQrUrl()
-  #   console.log 'url',url
-  #   callback(null, url)
-  # @::generateQrcode.route = ['get', '/qrcode']
-
   unifiedorder: (req, callback) ->
     {openid} = req.query
     console.log 'unifiedorder',openid
@@ -97,24 +91,5 @@ class API
       else
         callback(new Error('unknownAction'))
   @::orderDevice.route = ['get', '/command']
-
-
-
-  # """
-  # 访问消息
-  # """
-  # visitTplMessage: (req, callback) ->
-  #   if req.query.next
-  #     req.session.next = req.query.next
-
-  #   options = {}
-  #   options.state = req.query.state if req.query.state
-  #   if req.query.share
-  #     options.scope = 'snsapi_userinfo'
-  #     options.state = 'mp_share'
-  #   req.redirect = weixinAPI.getViewUrl(options)
-  #   callback()
-
-  # @::visitTplMessage.route = ['get', '/tpl/message']
 
 module.exports = new API

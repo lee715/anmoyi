@@ -1,6 +1,6 @@
 _ = require('lodash')
 db = require('limbo').use('anmoyi')
-u = require('./services/util')
+u = require('../services/util')
 
 pluck = (keys) ->
   (arr) ->
@@ -48,7 +48,6 @@ class API
       remission: "Number"
       name: "String"
       _userId: "ObjectId"
-
 
   delDevice: (req, callback) ->
     { _id } = req.body

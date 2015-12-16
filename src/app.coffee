@@ -42,6 +42,9 @@ app.get '/api/test', (req, res, next) ->
   res.send('ok')
 
 require('./router')(app, require('./api'), [], '/api')
+apis = require('./apis')
+Object.keys(apis).forEach (key) ->
+  require('./router')(app, apis[key], [], '/api')
 require('./router')(app, require('./wxapi'), [])
 require('./services/socket')
 require('./weixin/mpApi').setupMpTicket (err) ->
