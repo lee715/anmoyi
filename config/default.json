@@ -1,0 +1,87 @@
+{
+  "PORT": 80,
+  "name": "anmoyi",
+  "host": "http://sys.vnova.biz",
+  "ip": "139.196.8.138",
+  "REDIS_CONFIG": {
+    "port": 6379,
+    "server": "127.0.0.1"
+  },
+  "AUTH_CONFIG": {
+    "key": "c0888600-1a1b-11e5-a375-23b11c4244d1",
+    "secret": "3cfe7357-ceb9-4cd6-ae8c-3414ab9cfebe"
+  },
+  "service": {
+    "twilio": {
+      "accountSid": "AC7bf38562223af51e09595f8062cbb35e",
+      "authToken": "b6fc945b64e38ea44174b57c6d1615f1",
+      "from": "+14803605776"
+    },
+    "monternet": {
+      "user": "J02987",
+      "pass": "598982",
+      "host": "http://61.145.229.29:9006/MWGate/wmgw.asmx",
+      "sendApi": "/MongateSendSubmit"
+    }
+  },
+  "h5": {
+    "pay": "view/test/h5pay"
+  },
+  "sessionConfig": {
+    "secret": "qingsongyike",
+    "key": "QSYK_SESSIONID"
+  },
+  "wxConfig": {
+    "mch_id": "1275001301",
+    "appid": "gh_bbc3f4b10efd",
+    "key": "2c464448b6ab452f97ad000d02b64ddf",
+    "total_fee": 5,
+    "body": "按摩椅"
+  },
+  "SOECKET_PORT": "7000",
+  "DB_URL": "mongodb://127.0.0.1:27017/anmoyi",
+  "MONGO_AUTH_DB": "admin",
+  "WX_OPEN_PLATFORM": {
+    "appid": "wx961497b899f4b71d",
+    "secret": "b40a7e11f570d5f66ac68560b6293575",
+    "response_type": "code",
+    "scope": "snsapi_login",
+    "state": "weixin_login",
+    "wechat_redirect": "wechat_redirect",
+    "grant_type": "authorization_code",
+    "redirectURI": "/access_token",
+    "successURL": "http://project.ci",
+    "authURL": "https://open.weixin.qq.com/connect/qrconnect",
+    "tokenURL": "https://api.weixin.qq.com/sns/oauth2/access_token",
+    "userInfoURL": "https://api.weixin.qq.com/sns/userinfo"
+  },
+  "MP_WEIXIN": {
+    "appid": "wx961497b899f4b71d",
+    "secret": "b40a7e11f570d5f66ac68560b6293575",
+    "token": "anmoyi",
+    "grant_type": "client_credential",
+    "tokenKey": "MP::WEIXIN::ACCESS_TOKEN",
+    "ticketKey": "MP::WEIXIN::TICKET",
+    "state": "mp_weixin",
+    "expire": 7100,
+    "interval": 7000000,
+    "successURL": "http://yinan.project.cn",
+    "codeURL": "http://sys.vnova.biz/api/code",
+    "redirectURI": "/access_token#wechat_redirect",
+    "tokenURL": "https://api.weixin.qq.com/cgi-bin/token",
+    "ticketURL": "https://api.weixin.qq.com/cgi-bin/ticket/getticket",
+    "userInfoURL": "https://api.weixin.qq.com/cgi-bin/user/info",
+    "msgURL": "https://api.weixin.qq.com/cgi-bin/message/custom/send",
+    "qrcodeURL": "https://api.weixin.qq.com/cgi-bin/qrcode/create",
+    "authURL": "https://open.weixin.qq.com/connect/oauth2/authorize",
+    "JSSDK_URL": "http://yinan.project.cn/",
+    "templateURL": "https://api.weixin.qq.com/cgi-bin/message/template/send",
+    "templateIDs": {
+      "pay": "MMYzEWoDJ1rJjtClkmh1NI7QK0o1bag5N8cQCfZjjy4"
+    }
+  },
+  "LONG_TICKET": {
+    "ticket": "gQHz7zoAAAAAAAAAASxodHRwOi8vd2VpeGluLnFxLmNvbS9xL3ZEcGFRZjNsWEljbDNiTnNqaGI4AAIEg1tTVgMEAAAAAA==",
+    "url": "http://weixin.qq.com/q/vDpaQf3lXIcl3bNsjhb8"
+  }
+}

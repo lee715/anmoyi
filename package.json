@@ -1,0 +1,33 @@
+{
+  "name": "smsguy",
+  "version": "0.1.0",
+  "private": true,
+  "main": "app.coffee",
+  "scripts": {
+    "app": "coffee -o public/js -c public/coffee && coffee -o lib -c src && coffee src/app.coffee"
+  },
+  "dependencies": {
+    "async": "^1.5.0",
+    "bluebird": "^2.10.1",
+    "body-parser": "^1.0.2",
+    "config": "^1.7.0",
+    "cookie-parser": "^1.4.0",
+    "cookie-session": "^1.2.0",
+    "cron": "^1.0.9",
+    "crypto": "0.0.3",
+    "express": "^4.1.1",
+    "express-xml-bodyparser": "^0.2.2",
+    "json2xml": "^0.1.2",
+    "limbo": "^0.3.3",
+    "lodash": "^3.10.1",
+    "mejs": "^0.6.1",
+    "moment": "^2.10.6",
+    "mongoose": "^4.2.2",
+    "qs": "^0.6.6",
+    "redis": "^0.8.6",
+    "request": "^2.65.0",
+    "uuid": "^2.0.1",
+    "weixin-pay": "^1.1.6",
+    "xml2js": "^0.4.9"
+  }
+}

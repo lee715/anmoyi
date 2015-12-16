@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, width=device-width, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <style type="text/css">
+  body{
+    color: #666;
+    margin:0;
+    padding: 0;
+    font-size: 18px;
+  }
+  header{
+    background: #69aa35;
+    padding: 15px;
+    text-align: center;
+    color: white;
+  }
+  label {
+    font-weight: bold;
+  }
+  span {
+    margin-left: 10px;
+  }
+  #info {
+    width: 200px;
+    margin: auto;
+  }
+  #pay {
+    display: block;
+    width: 200px;
+    text-align: center;
+    color: white;
+    border-radius: 12px;
+    padding: 10px;
+    font-size: 24px;
+    margin: auto;
+    background: #69aa35;
+    text-decoration: none;
+    margin-top: 15px;
+  }
+  #info > div {
+    margin-top: 10px
+  }
+  </style>
+</head>
+<body>
+  <div id="main">
+    <% if(it.status === 'work'){ %>
+    <div id="notice">系统检测到该设备正在运行中，请确认后购买，本次购买将视为续费!</div>
+    <% } if(it.status === 'idle'){ %>
+    <header>按摩椅服务在线支付</header>
+    <div id="info">
+      <div>
+        <label>商品:</label><span><%=it.name%></span>
+      </div>
+      <div>
+        <label>场地:</label><span><%=it.place%></span>
+      </div>
+      <div>
+        <label>金额:</label><span><%=it.cost%></span>
+      </div>
+      <div>
+        <label>时间:</label><span><%=it.time%></span>
+      </div>
+    </div>
+    <a href="javascript:;" id="pay">确认支付</a>
+    <% }else { %>
+    <div id="error">设别异常,请使用其他设备或联系客服.</div>
+    <% } %>
+  </div>
+<script type="text/javascript" src="/bower/jquery/dist/jquery.js"></script>
+<script type="text/javascript">
+  var openid = "<%=it.openid%>"
+  var order = "<%=it.order%>"
+  var uid = "<%=it.uid%>"
+  var timer
+  function pay(){
+    WeixinJSBridge.invoke(
+      'getBrandWCPayRequest', <%-JSON.stringify(it.payargs)%>,
+      function(res){
+        send(typeof res)
+        if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+          timer = setInterval(checkOrderStatus, 2000)
+          $('#main').html('支付成功，订单正在处理中，请稍候...')
+        }
+      }
+    );
+  }
+
+  function onBridgeReady(){
+    $('#pay').click(function(){
+      pay()
+      return false
+    })
+  }
+
+  function send(data){
+    $.ajax({
+      url: "/api/test",
+      method: 'get',
+      data: data
+    })
+  }
+
+  function checkOrderStatus(){
+    send('checkOrderStatus')
+    $.ajax({
+      url: "/wx/order/status",
+      method: 'get',
+      data: {
+        order: order,
+        expect: "SUCCESS"
+      }
+    }).done(function(res, status){
+      send({res:res,status: status})
+      if(res === 'SUCCESS'){
+        $('#main').html('订单处理成功，设备将自动启动')
+        clearInterval(timer)
+        start()
+      }
+    })
+  }
+
+  function start(){
+    $.ajax({
+      url: "/api/command",
+      method: 'get',
+      data: {
+        _orderId: order,
+        uid: uid,
+        action: "start",
+        openid: openid
+      }
+    }).done(function(res, status){
+      if(res === 'ok'){
+        $('#main').html('设备启动成功，请关闭该页面，进入公众号进一步操作')
+      }
+    })
+  }
+
+  if (typeof WeixinJSBridge == "undefined"){
+     if( document.addEventListener ){
+         document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+     }else if (document.attachEvent){
+         document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+         document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+     }
+  }else{
+     onBridgeReady();
+  }
+</script>
+</body>
+</html>

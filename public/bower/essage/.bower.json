@@ -1,0 +1,14 @@
+{
+  "name": "essage",
+  "homepage": "https://github.com/sofish/essage",
+  "_release": "41eecf04e4",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "41eecf04e43d7f52f0af2714e29417d2b1dd5d56"
+  },
+  "_source": "git://github.com/sofish/essage.git",
+  "_target": "*",
+  "_originalSource": "essage",
+  "_direct": true
+}
