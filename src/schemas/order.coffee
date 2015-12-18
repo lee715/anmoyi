@@ -14,6 +14,7 @@ module.exports = (Schema) ->
     openId: String
     # 设备uid
     uid: String
+    _userId: Schema.Types.ObjectId
     deviceStatus: String
     serviceStatus:
       type: String
@@ -24,5 +25,3 @@ module.exports = (Schema) ->
     updated:
       type: Date
       default: Date.now
-  ,
-    read: 'secondaryPreferred'

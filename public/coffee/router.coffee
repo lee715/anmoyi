@@ -28,6 +28,7 @@ define [
     routes:
       'login': 'login'
       'devices': -> goto('devices')
+      'orders': -> goto('orders')
       'users': -> goto('users')
       'devicesCreate': -> goto('devicesCreate')
       'devicesEdit': 'deviceEdit'

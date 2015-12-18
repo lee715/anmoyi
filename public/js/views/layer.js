@@ -3,7 +3,7 @@
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  define(['jquery', 'backbone', 'data', 'text!templates/layer.ejs', 'views/devices', 'views/users', 'views/createDevice', 'views/createUser', 'views/login'], function($, B, Data, layerTemp, devicesView, usersView, createDeviceView, createUserView, loginView) {
+  define(['jquery', 'backbone', 'data', 'text!templates/layer.ejs', 'views/devices', 'views/users', 'views/createDevice', 'views/createUser', 'views/login', 'views/orders'], function($, B, Data, layerTemp, devicesView, usersView, createDeviceView, createUserView, loginView, ordersView) {
     var Layer;
     return Layer = (function(superClass) {
       extend(Layer, superClass);
@@ -52,6 +52,10 @@
         switch (this._route) {
           case 'devices':
             return this._views.devices = new devicesView({
+              el: this.$main[0]
+            });
+          case 'orders':
+            return this._views.orders = new ordersView({
               el: this.$main[0]
             });
           case 'users':

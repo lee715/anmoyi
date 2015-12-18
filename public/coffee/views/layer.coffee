@@ -8,7 +8,8 @@ define [
   'views/createDevice'
   'views/createUser'
   'views/login'
-], ($, B, Data, layerTemp, devicesView, usersView, createDeviceView, createUserView, loginView) ->
+  'views/orders'
+], ($, B, Data, layerTemp, devicesView, usersView, createDeviceView, createUserView, loginView, ordersView) ->
 
   class Layer extends B.View
 
@@ -48,6 +49,9 @@ define [
           #   @$main.html @_views.devices.el
           # else
           @_views.devices = new devicesView
+            el: @$main[0]
+        when 'orders'
+          @_views.orders = new ordersView
             el: @$main[0]
         when 'users'
           # if @_views.devices

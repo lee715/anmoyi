@@ -32,6 +32,9 @@
         'devices': function() {
           return goto('devices');
         },
+        'orders': function() {
+          return goto('orders');
+        },
         'users': function() {
           return goto('users');
         },

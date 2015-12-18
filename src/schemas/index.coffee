@@ -5,3 +5,5 @@ module.exports = (Schema) ->
   Income: require('./income')(Schema)
   Order: require('./order')(Schema)
   Status: require('./status')(Schema)
+  Alien: require('./alien')(Schema)
+  Place: require('./place')(Schema)

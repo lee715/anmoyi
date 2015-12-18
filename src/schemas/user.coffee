@@ -1,6 +1,6 @@
 
 module.exports = (Schema) ->
-  new Schema
+  User = new Schema
     name:
       type: String
       default: 'default'
@@ -25,5 +25,7 @@ module.exports = (Schema) ->
     created:
       type: Date
       default: Date.now
-  ,
-    read: 'secondaryPreferred'
+
+  User.methods.hasOrder = ->
+    @type in ['root', 'agent']
+  User

@@ -45,7 +45,6 @@ module.exports = (Schema) ->
       type: Date
       default: Date.now
   ,
-    read: 'secondaryPreferred'
     toObject:
       virtuals: true
       getters: true
@@ -66,6 +65,7 @@ module.exports = (Schema) ->
       # time: @time
       time: 3
       uid: @uid
+      _userId: @_userId
     return info
   deviceSchema
 

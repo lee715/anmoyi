@@ -1,4 +1,5 @@
 weixinAPI = require('./api')
+MP_API = require('./mpApi')
 # qrcode = require('./qrcode')
 redis = require('../services/redis')
 db = require('limbo').use('anmoyi')
@@ -43,6 +44,28 @@ module.exports = (message) ->
   eventkey = message.eventkey
   fromusername = message.fromusername
   console.log type, event, eventkey
+  weixinAPI.getUserInfo fromusername, (err, user) ->
+    db.alien.findOneAsync
+      openId: fromusername
+    .then (alien) ->
+      unless alien
+        db.alien.createAsync
+          openId: fromusername
+          name: user.nickname
+          city: user.city
+          province: user.province
+          country: user.country
+      else
+        alien.openId = fromusername
+        alien.name = user.nickname
+        alien.city = user.city
+        alien.province = user.province
+        alien.country = user.country
+        alien.saveAsync()
+    .then (alien) ->
+      console.log 'alien', alien
+    .catch (e) ->
+      console.log 'alien', e
   if type is 'event'
     if event is 'subscribe'
       subscribe(message)

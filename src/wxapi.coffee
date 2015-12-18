@@ -46,6 +46,8 @@ class API
           openId: openid
           deviceStatus: info.status
           uid: info.uid
+          _userId: info._userId
+          mode: "WX"
         .then (order) ->
           console.log "payTestView:getBrandWCPayRequestParamsAsync", openid, "#{order._id}", info.cost
           WX_API.getBrandWCPayRequestParamsAsync openid, "#{order._id}", info.cost

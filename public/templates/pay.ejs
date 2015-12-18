@@ -50,7 +50,7 @@
   <div id="main">
     <% if(it.status === 'work'){ %>
     <div id="notice">系统检测到该设备正在运行中，请确认后购买，本次购买将视为续费!</div>
-    <% } if(it.status === 'idle'){ %>
+    <% } if(it.status === 'idle' || it.status === 'work'){ %>
     <header>按摩椅服务在线支付</header>
     <div id="info">
       <div>

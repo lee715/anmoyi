@@ -19,5 +19,3 @@ module.exports = (Schema) ->
     updated:
       type: Date
       default: Date.now
-  ,
-    read: 'secondaryPreferred'

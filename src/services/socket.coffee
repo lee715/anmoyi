@@ -51,6 +51,7 @@ moment = require('moment')
   #     console.log e
 
 updateDevice = (uid, status, income, wxTime) ->
+  console.log 'updateDevice', uid, status, income, wxTime
   db.device.findOneAsync uid: uid
   .then (device) ->
     if device
@@ -93,8 +94,17 @@ class TbService
       order.status = 'SUCCESS'
     else
       order.status = 'ERROR'
-    db.order.create order, ->
-    SERVICES.remove(@uid)
+    db.device.findOneAsync
+      uid: @uid
+    .then (device) ->
+      order._userId = device._userId
+      order.deviceStatus = device.status
+      db.order.createAsync order
+    .then ->
+      SERVICES.remove(@uid)
+    .catch (e) ->
+      order.status = "DB_ERROR"
+      db.order.create order, ->
 
 SERVICES =
   remove: (uid) ->

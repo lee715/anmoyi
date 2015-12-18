@@ -109,7 +109,7 @@ module.exports = WX_API =
       , (err, res, body) ->
         console.log err, body
 
-  getUnionID: (openid, callback) ->
+  getUserInfo: (openid, callback) ->
     self = @
 
     async.waterfall [
@@ -126,7 +126,7 @@ module.exports = WX_API =
           json: true
         , (err, resp, body) ->
           return next('wxAPIError') if err or body?.errcode
-          return next null, body.unionid
+          return next null, body
     ], callback
 
   _getAccessToken: (callback) ->

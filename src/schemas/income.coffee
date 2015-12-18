@@ -12,5 +12,3 @@ module.exports = (Schema) ->
     created:
       type: Date
       default: Date.now
-  ,
-    read: 'secondaryPreferred'
