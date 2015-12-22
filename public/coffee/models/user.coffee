@@ -12,7 +12,11 @@ define [
       phone: ''
       email: ''
       company: ''
-      role: 0
+      mailAddress: ''
+      qq: ''
+      bankName: ''
+      bankAccount: ''
+      role: 'salesman'
       edit: '<a href="javascript:;">Edit</a>'
 
     initialize: ->

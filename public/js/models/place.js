@@ -15,6 +15,9 @@
       Model.prototype.defaults = {
         name: '',
         location: '',
+        province: '',
+        city: '',
+        district: '',
         phone: '',
         email: '',
         company: '',
@@ -22,7 +25,9 @@
         qq: '',
         bankName: '',
         bankAccount: '',
-        role: 'salesman',
+        _salesmanId: '',
+        _agentId: '',
+        contacts: [{}, {}],
         edit: '<a href="javascript:;">Edit</a>'
       };
 
@@ -30,6 +35,7 @@
 
       Model.prototype.parse = function(data) {
         data._id = "" + data._id;
+        data.address = data.province + "-" + data.city + "-" + data.district;
         return data;
       };
 
@@ -37,7 +43,7 @@
 
       Model.prototype.update = function(params) {
         return $.ajax({
-          url: "/users/" + this.id,
+          url: "/places/" + this.id,
           method: 'put',
           data: params
         }).done(function(res, state) {

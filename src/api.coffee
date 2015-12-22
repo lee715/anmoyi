@@ -7,6 +7,7 @@ MP_API = require('./weixin/mpApi')
 async = require('async')
 wxReply = require('./weixin/message')
 sockSrv = require('./services/socket')
+redis = require('./services/redis')
 
 pluck = (keys) ->
   (arr) ->
@@ -71,25 +72,38 @@ class API
     console.log 'orderDevice in', uid, _orderId, action, openid
     unless uid and openid and _orderId
       return callback(new Error('paramErr'))
-    db.order.findOneAsync
-      _id: _orderId
-      openId: openid
-      uid: uid
-    .then (order) ->
-      console.log 'orderDevice:order', order
-      unless order
-        return callback(new Error('orderNotFound'))
-      if action is "start"
-        sockSrv.start(uid, order.time, (err, rt) ->
-          console.log 'orderDevice:start', err, rt
-        )
-      else if action in ['1F', '20', '1E', '21', '22', '24']
-        sockSrv.set(uid, action, (err, rt) ->
-          console.log 'orderDevice:set', err, rt
-          callback(null, "ok")
-        )
-      else
-        callback(new Error('unknownAction'))
+    redis.getAsync "ORDER.COMMAND.LOCK.#{_orderId}"
+    .then (lock) ->
+      console.log 'lock', lock
+      throw new Error('order is handling') if lock
+      redis.setexAsync "ORDER.COMMAND.LOCK.#{_orderId}", 60*10, 1
+    .then ->
+      db.order.findOneAsync
+        _id: _orderId
+        openId: openid
+        uid: uid
+      .then (order) ->
+        console.log 'orderDevice:order', order
+        unless order
+          throw new Error('orderNotFound')
+        if order.status is 'SUCCESS'
+          if action is "start"
+            sockSrv.startAsync(uid, order.time)
+            .then ->
+              callback(null, 'ok')
+          else if action in ['1F', '20', '1E', '21', '22', '24']
+            sockSrv.setAsync(uid, action)
+            .then ->
+              callback(null, 'ok')
+          else
+            throw new Error('unknownAction')
+        else
+          throw new Error('unvalidOrder')
+    .then ->
+      redis.del "ORDER.COMMAND.LOCK.#{_orderId}"
+    .catch (e) ->
+      console.log e
+      callback(e)
   @::orderDevice.route = ['get', '/command']
 
 module.exports = new API

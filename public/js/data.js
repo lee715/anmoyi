@@ -17,11 +17,14 @@
         }
       },
       home: function() {
+        var role, url;
         if (this.dontHandle()) {
           return;
         }
         if (this.user) {
-          return this.app.navigate('/devices', {
+          role = this.user.role;
+          url = role === 'place' ? '/reconciliation' : '/devices';
+          return this.app.navigate(url, {
             trigger: true
           });
         } else {

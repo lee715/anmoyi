@@ -3,25 +3,9 @@
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  define(['backbone', 'underscore', 'text!templates/createUser.ejs', 'text!templates/alert.ejs', 'utils', 'data', 'ejs'], function(B, _, temp, alert, utils, Data) {
-    var View, defaultVals, urlMap;
-    urlMap = {
-      create: '/api/users/create',
-      edit: '/api/users/edit'
-    };
-    defaultVals = {
-      name: '',
-      company: '',
-      email: '',
-      phone: '',
-      location: '',
-      role: 'salesman',
-      mailAddress: '',
-      qq: '',
-      bankName: '',
-      bankAccount: '',
-      roles: ['agent', 'salesman', 'admin']
-    };
+  define(['backbone', 'underscore', 'models/place', 'text!templates/createPlace.ejs', 'text!templates/alert.ejs', 'utils', 'data', 'dist', 'ejs'], function(B, _, Model, temp, alert, utils, Data) {
+    var View, defaultVals;
+    defaultVals = Model.prototype.defaults;
     return View = (function(superClass) {
       extend(View, superClass);
 
@@ -41,8 +25,7 @@
       };
 
       View.prototype.events = {
-        'submit form': 'onSubmit',
-        'change select[name="role"]': 'refreshAddition'
+        'submit form': 'onSubmit'
       };
 
       View.prototype.render = function() {
@@ -55,7 +38,7 @@
         data = _.extend({}, defaultVals, data);
         data.type = this.type;
         self.$el.html(ejs.render(temp, data));
-        this.$addition = this.$el.find('#createUserAddition');
+        self.$el.find('#distpicker').distpicker();
         return this;
       };
 
@@ -87,8 +70,17 @@
         e.preventDefault();
         self = this;
         data = utils.formData($(e.target));
+        data.contacts = [
+          {
+            name: data.contacts_name,
+            phone: data.contacts_phone
+          }, {
+            name: data.contacts_name_bk,
+            phone: data.contacts_phone_bk
+          }
+        ];
         $.ajax({
-          url: urlMap[this.type],
+          url: '/api/places',
           data: data,
           json: true,
           method: this.type === 'edit' ? 'put' : 'post'
@@ -104,21 +96,8 @@
         return false;
       };
 
-      View.prototype.refreshAddition = function(e) {
-        var val;
-        val = $(e.target).val();
-        if (val === 'agent') {
-          return this.$addition.removeClass('hide');
-        } else {
-          if (this.type === 'create') {
-            this.$addition.find('input').val('');
-          }
-          return this.$addition.addClass('hide');
-        }
-      };
-
       View.prototype.showPass = function(pass) {
-        return this.$el.find("form").prepend("<p>密码是：" + pass + "</p>");
+        return this.$el.find("form").prepend("<p class='text-align:center;color:red;'>密码是：" + pass + "</p>");
       };
 
       return View;

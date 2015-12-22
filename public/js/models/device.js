@@ -13,14 +13,14 @@
       }
 
       Model.prototype.defaults = {
-        place: '',
-        location: '',
-        price: '10/8',
+        price: 10,
+        time: 8,
         discount: 100,
         remission: 0,
         uid: '',
         locs: null,
         _userId: null,
+        _placeId: null,
         edit: '<a href="javascript:;">Edit</a>'
       };
 

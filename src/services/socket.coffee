@@ -5,50 +5,7 @@ db = require('limbo').use('anmoyi')
 _ = require('lodash')
 incomeSrv = require('./income')
 moment = require('moment')
-
-# uidReg = /^From\:](d+)/
-# codeReg = /\#\w+\#/
-# deviceReg = /\d{1,2}\)[\d|NC]+/g
-
-# handle = ->
-#   if DATAS.length < 3
-#     return
-#   [uidStr, codeStr, deviceStr] = DATAS.splice(0, 3)
-  # console.log "handling #{uidStr} \n #{codeStr} \n #{deviceStr}"
-  # deviceStr = (new Buffer(deviceStr)).toString('utf8')
-  # uid = (new Buffer(uidStr)).toString('utf8').split(':')[1]
-  # uid = uid.slice(0, 12)
-  # return unless uid
-  # code = "#{codeStr}".replace(/\#/g, '')
-  # counter = 0
-  # "#{deviceStr}".match(deviceReg).forEach (match) ->
-  #   [c, n] = "#{match}".split(')')
-  #   counter++
-  #   data =
-  #     uid: uid + counter
-  #     updated: new Date()
-  #     _userId: "562c6be2f0faec8d28928e54"
-  #   if n is 'NC'
-  #     data.status = 'stop'
-  #   else
-  #     data.status = 'ok'
-  #     data.income = +n
-  #   opts =
-  #     upsert: true
-  #     new: true
-  #   db.device.findOneAsync
-  #     uid: data.uid
-  #   .then (device) ->
-  #     if device
-  #       _.extend device, data
-  #       device.saveAsync()
-  #     else
-  #       db.device.createAsync data
-  #   .then (device) ->
-  #     console.log "handled #{data.uid}"
-  #     incomeSrv(device.uid, device.income)
-  #   .catch (e) ->
-  #     console.log e
+Promise = require('bluebird')
 
 updateDevice = (uid, status, income, wxTime) ->
   console.log 'updateDevice', uid, status, income, wxTime
@@ -221,10 +178,12 @@ net.createServer( (sock) ->
   console.log('Server listening on:'+ PORT)
 )
 
-module.exports =
+apis = module.exports =
   start: ->
     console.log 'socket:start', arguments
     SOCKS.resStart.apply(SOCKS, arguments)
   set: ->
     console.log 'socket:set', arguments
     SOCKS.resSet.apply(SOCKS, arguments)
+
+Promise.promisifyAll(apis)

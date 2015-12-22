@@ -13,7 +13,9 @@ define [], ->
     home: ->
       return if @dontHandle()
       if @user
-        @app.navigate('/devices',
+        role = @user.role
+        url = if role is 'place' then '/reconciliation' else '/devices'
+        @app.navigate(url,
           trigger: true
         )
       else

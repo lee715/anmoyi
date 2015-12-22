@@ -1,5 +1,5 @@
 {
-  "PORT": 80,
+  "PORT": 8000,
   "name": "anmoyi",
   "host": "http://sys.vnova.biz",
   "ip": "139.196.8.138",

@@ -61,7 +61,7 @@ class API
       _id: _userId
     .then (user) ->
       role = user.role
-      if role is 9
+      if role is 'root'
         cons = {}
       else
         cons = _userId: _userId

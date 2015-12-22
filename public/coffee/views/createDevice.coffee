@@ -32,8 +32,10 @@ define [
             self.users = users
             data or= {}
             data.users = users
-            self.$el.html ejs.render(temp, _.extend({}, defaultVals, data))
-            self.$el.find('#distpicker').distpicker()
+            self.fetchPlaces (places) ->
+              data.places = places
+              self.$el.html ejs.render(temp, _.extend({}, defaultVals, data))
+              self.$el.find('#distpicker').distpicker()
         when 'edit'
           data = @model.toJSON()
           if Data.isRoot()
@@ -41,8 +43,10 @@ define [
               data.users = users.map (user) ->
                 user._id = "#{user._id}"
                 user
-              self.$el.html ejs.render(temp, _.extend({}, defaultVals, data))
-              self.$el.find('#distpicker').distpicker()
+              self.fetchPlaces (places) ->
+                data.places = places
+                self.$el.html ejs.render(temp, _.extend({}, defaultVals, data))
+                self.$el.find('#distpicker').distpicker()
           else
             data.users = null
             self.$el.html ejs.render(temp, _.extend({}, defaultVals, data))
@@ -75,8 +79,19 @@ define [
       #   Data.home()
 
     fetchUsers: (cb) ->
+      data = {}
       $.ajax
-        url: '/api/users'
+        url: '/api/agents'
+        method: 'get'
+        json: true
+      .done (res, state) ->
+        if state is 'success'
+          cb(res)
+
+    fetchPlaces: (cb) ->
+      data = {}
+      $.ajax
+        url: '/api/places'
         method: 'get'
         json: true
       .done (res, state) ->

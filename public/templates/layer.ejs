@@ -18,6 +18,14 @@
           </ul>
         </li>
         <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">场地管理 <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="javascript:;" class="route" data-url="/placesCreate">创建场地</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="javascript:;" class="route" data-url="/places">场地列表</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">设备管理 <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a href="javascript:;" class="route" data-url="/devicesCreate">创建设备</a></li>
@@ -26,6 +34,19 @@
           </ul>
         </li>
         <li><a class="route" href="javascript:;" data-url="/orders">订单管理</a></li>
+        <% }else if(isAgent){ %>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">账户管理 <span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a href="javascript:;" class="route" data-url="/usersEdit">个人信息</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="/api/logout">退出登陆</a></li>
+          </ul>
+        </li>
+        <li><a href="javascript:;" class="route" data-url="/places">场地列表</a></li>
+        <li><a class="route" href="javascript:;" data-url="/devices">设备管理</a></li>
+        <li><a class="route" href="javascript:;" data-url="/orders">订单管理</a></li>
+        <li><a class="route" href="javascript:;" data-url="/reconciliation">对账</a></li>
         <% }else{ %>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">账户管理 <span class="caret"></span></a>
@@ -35,7 +56,7 @@
             <li><a href="/api/logout">退出登陆</a></li>
           </ul>
         </li>
-        <li><a class="route" href="javascript:;" data-url="/devices">设备管理</a></li>
+        <li><a class="route" href="javascript:;" data-url="/reconciliation">对账</a></li>
         <% } %>
       </ul>
       <% } %>
@@ -43,6 +64,6 @@
 </nav>
 </div>
 <div class="row">
-  <div id="mainSection" style="width:90%;margin:auto;">
+  <div id="mainSection" style="width:80%;margin:auto;">
   </div>
 </div>

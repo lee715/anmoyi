@@ -37,8 +37,11 @@
               self.users = users;
               data || (data = {});
               data.users = users;
-              self.$el.html(ejs.render(temp, _.extend({}, defaultVals, data)));
-              return self.$el.find('#distpicker').distpicker();
+              return self.fetchPlaces(function(places) {
+                data.places = places;
+                self.$el.html(ejs.render(temp, _.extend({}, defaultVals, data)));
+                return self.$el.find('#distpicker').distpicker();
+              });
             });
             break;
           case 'edit':
@@ -49,8 +52,11 @@
                   user._id = "" + user._id;
                   return user;
                 });
-                self.$el.html(ejs.render(temp, _.extend({}, defaultVals, data)));
-                return self.$el.find('#distpicker').distpicker();
+                return self.fetchPlaces(function(places) {
+                  data.places = places;
+                  self.$el.html(ejs.render(temp, _.extend({}, defaultVals, data)));
+                  return self.$el.find('#distpicker').distpicker();
+                });
               });
             } else {
               data.users = null;
@@ -94,8 +100,24 @@
       };
 
       Seletor.prototype.fetchUsers = function(cb) {
+        var data;
+        data = {};
         return $.ajax({
-          url: '/api/users',
+          url: '/api/agents',
+          method: 'get',
+          json: true
+        }).done(function(res, state) {
+          if (state === 'success') {
+            return cb(res);
+          }
+        });
+      };
+
+      Seletor.prototype.fetchPlaces = function(cb) {
+        var data;
+        data = {};
+        return $.ajax({
+          url: '/api/places',
           method: 'get',
           json: true
         }).done(function(res, state) {

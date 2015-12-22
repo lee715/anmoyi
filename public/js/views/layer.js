@@ -3,7 +3,7 @@
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  define(['jquery', 'backbone', 'data', 'text!templates/layer.ejs', 'views/devices', 'views/users', 'views/createDevice', 'views/createUser', 'views/login', 'views/orders'], function($, B, Data, layerTemp, devicesView, usersView, createDeviceView, createUserView, loginView, ordersView) {
+  define(['jquery', 'backbone', 'data', 'text!templates/layer.ejs', 'views/devices', 'views/users', 'views/createDevice', 'views/createUser', 'views/createPlace', 'views/login', 'views/orders'], function($, B, Data, layerTemp, devicesView, usersView, createDeviceView, createUserView, createPlaceView, loginView, ordersView) {
     var Layer;
     return Layer = (function(superClass) {
       extend(Layer, superClass);
@@ -32,10 +32,11 @@
       };
 
       Layer.prototype.render = function() {
-        var ref;
+        var ref, ref1;
         this.$el.html(ejs.render(layerTemp, {
           isLogin: !!Data.user,
-          isRoot: ((ref = Data.user) != null ? ref.role : void 0) === 9
+          isRoot: ((ref = Data.user) != null ? ref.role : void 0) === 'root',
+          isAgent: ((ref1 = Data.user) != null ? ref1.role : void 0) === 'agent'
         }));
         this.$main = this.$el.find('#mainSection');
         this.renderSubView();
@@ -68,6 +69,10 @@
             });
           case 'usersCreate':
             return this._views.createUser = new createUserView({
+              el: this.$main[0]
+            });
+          case 'placesCreate':
+            return this._views.createPlace = new createPlaceView({
               el: this.$main[0]
             });
           case 'login':

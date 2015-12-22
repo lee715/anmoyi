@@ -7,9 +7,10 @@ define [
   'views/users'
   'views/createDevice'
   'views/createUser'
+  'views/createPlace'
   'views/login'
   'views/orders'
-], ($, B, Data, layerTemp, devicesView, usersView, createDeviceView, createUserView, loginView, ordersView) ->
+], ($, B, Data, layerTemp, devicesView, usersView, createDeviceView, createUserView, createPlaceView, loginView, ordersView) ->
 
   class Layer extends B.View
 
@@ -31,7 +32,8 @@ define [
     render: ->
       @$el.html ejs.render(layerTemp,
         isLogin: !!Data.user
-        isRoot: Data.user?.role is 9
+        isRoot: Data.user?.role is 'root'
+        isAgent: Data.user?.role is 'agent'
       )
       @$main = @$el.find('#mainSection')
       @renderSubView()
@@ -70,6 +72,12 @@ define [
           #   @$main.html @_views.createUser.el
           # else
           @_views.createUser = new createUserView
+            el: @$main[0]
+        when 'placesCreate'
+          # if @_views.createUser
+          #   @$main.html @_views.createUser.el
+          # else
+          @_views.createPlace = new createPlaceView
             el: @$main[0]
         when 'login'
           # if @_views.login

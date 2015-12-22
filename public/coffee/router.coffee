@@ -32,6 +32,7 @@ define [
       'users': -> goto('users')
       'devicesCreate': -> goto('devicesCreate')
       'devicesEdit': 'deviceEdit'
+      'placesCreate': -> goto('placesCreate')
       'usersEdit': 'userEdit'
       # 'devices/:action/:_id': 'deviceEdit'
       'usersCreate': -> goto('usersCreate')

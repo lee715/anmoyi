@@ -42,6 +42,9 @@
           return goto('devicesCreate');
         },
         'devicesEdit': 'deviceEdit',
+        'placesCreate': function() {
+          return goto('placesCreate');
+        },
         'usersEdit': 'userEdit',
         'usersCreate': function() {
           return goto('usersCreate');

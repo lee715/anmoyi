@@ -1,3 +1,4 @@
+_ = require('lodash')
 
 module.exports = (Schema) ->
   User = new Schema
@@ -17,15 +18,20 @@ module.exports = (Schema) ->
     password:
       type: String
       default: '888888'
-    role:
-      type: Number
-      default: 0
     # agent admin root salesman
-    type: String
+    role: String
     created:
       type: Date
       default: Date.now
 
   User.methods.hasOrder = ->
     @type in ['root', 'agent']
+
+  User.methods.format = ->
+    if @role is 'agent'
+      data = _.pick @, ['name', 'company', 'phone', 'location', 'email', 'mailAddress', 'qq', 'bankName', 'bankAccount', 'role']
+    else
+      data = _.pick @, ['name', 'phone', 'email', 'role']
+    return data
+
   User

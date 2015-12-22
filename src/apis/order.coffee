@@ -10,7 +10,7 @@ class API
       _id: _userId
     .then (user) ->
       if user.hasOrder()
-        if user.role > 5
+        if user.role is 'root'
           cons = {}
         else
           cons = _userId: user._id

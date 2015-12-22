@@ -1,21 +1,38 @@
 
 module.exports = (Schema) ->
-  new Schema
+  Place = new Schema
     name: String
     province: String
     city: String
-    county: String
-    address: String
+    district: String
+    company: String
+    email: String
+    mailAddress: String
+    qq: String
+    bankName: String
+    bankAccount: String
     # 客服人员id
-    _agentId: Schema.Types.ObjectId
+    _salesmanId: Schema.Types.ObjectId
     # 代理商id
-    _userId: Schema.Types.ObjectId
+    _agentId: Schema.Types.ObjectId
     contacts:
       type: Schema.Types.Mixed
       default: []
+    password:
+      type: String
+      default: ->
+        parseInt(Math.random()*1000000-1)
+    role:
+      type: String
+      default: "place"
     created:
       type: Date
       default: Date.now
     updated:
       type: Date
       default: Date.now
+  Place.methods.format = ->
+    data = @toJSON()
+    delete data.password
+    return data
+  Place

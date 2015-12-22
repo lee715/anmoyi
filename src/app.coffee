@@ -24,6 +24,7 @@ app.use express.query()
 app.use require('express-xml-bodyparser')()
 app.use require('cookie-parser')()
 app.use session(config.sessionConfig)
+app.use require('./services/user').init
 
 app.use '/wx/notify', WX_API.useWXCallback (msg, req, res, next) ->
   console.log '/wx/notify',msg

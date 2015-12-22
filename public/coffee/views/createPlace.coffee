@@ -1,29 +1,16 @@
 define [
   'backbone'
   'underscore'
-  'text!templates/createUser.ejs'
+  'models/place'
+  'text!templates/createPlace.ejs'
   'text!templates/alert.ejs'
   'utils'
   'data'
+  'dist'
   'ejs'
-], (B, _, temp, alert, utils, Data) ->
+], (B, _, Model, temp, alert, utils, Data) ->
 
-  urlMap =
-    create: '/api/users/create'
-    edit: '/api/users/edit'
-
-  defaultVals =
-    name: ''
-    company: ''
-    email: ''
-    phone: ''
-    location: ''
-    role: 'salesman'
-    mailAddress: ''
-    qq: ''
-    bankName: ''
-    bankAccount: ''
-    roles: ['agent', 'salesman', 'admin']
+  defaultVals = Model::defaults
 
   class View extends B.View
 
@@ -36,7 +23,6 @@ define [
 
     events:
       'submit form': 'onSubmit'
-      'change select[name="role"]': 'refreshAddition'
 
     render: ->
       self = @
@@ -46,7 +32,7 @@ define [
       data = _.extend({}, defaultVals, data)
       data.type = @type
       self.$el.html ejs.render(temp, data)
-      @$addition = @$el.find('#createUserAddition')
+      self.$el.find('#distpicker').distpicker()
       @
 
     showAlert: (state, err) ->
@@ -70,8 +56,15 @@ define [
       e.preventDefault()
       self = @
       data = utils.formData($(e.target))
+      data.contacts = [
+        name: data.contacts_name
+        phone: data.contacts_phone
+      ,
+        name: data.contacts_name_bk
+        phone: data.contacts_phone_bk
+      ]
       $.ajax
-        url: urlMap[@type]
+        url: '/api/places'
         data: data
         json: true
         method: if @type is 'edit' then 'put' else 'post'
@@ -83,15 +76,6 @@ define [
             self.showPass(res.password)
       return false
 
-    refreshAddition: (e) ->
-      val = $(e.target).val()
-      if val is 'agent'
-        @$addition.removeClass('hide')
-      else
-        if @type is 'create'
-          @$addition.find('input').val('')
-        @$addition.addClass('hide')
-
     showPass: (pass) ->
-      @$el.find("form").prepend("<p>密码是："+pass+"</p>")
+      @$el.find("form").prepend("<p class='text-align:center;color:red;'>密码是："+pass+"</p>")
 

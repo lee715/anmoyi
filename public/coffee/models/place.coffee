@@ -7,34 +7,39 @@ define [
   class Model extends B.Model
 
     defaults:
-      price: 10
-      time: 8
-      discount: 100
-      remission: 0
-      uid: ''
-      locs: null
-      _userId: null
-      _placeId: null
+      name: ''
+      location: ''
+      province: ''
+      city: ''
+      district: ''
+      phone: ''
+      email: ''
+      company: ''
+      mailAddress: ''
+      qq: ''
+      bankName: ''
+      bankAccount: ''
+      _salesmanId: ''
+      _agentId: ''
+      contacts: [{}, {}]
       edit: '<a href="javascript:;">Edit</a>'
 
     initialize: ->
 
     parse: (data) ->
       data._id = "#{data._id}"
-      data._userId = "#{data._userId}"
-      data.locs = data.location?.split('-') or null
+      data.address = "#{data.province}-#{data.city}-#{data.district}"
       data
 
     idAttribute: '_id'
 
     update: (params) ->
       $.ajax(
-        url: "/devices/#{@id}"
+        url: "/places/#{@id}"
         method: 'put'
         data: params
       ).done((res, state) ->
         if state is 'success'
-          res.uid = "res.uid"
           @set(res)
       )
 
