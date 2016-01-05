@@ -25,12 +25,25 @@ module.exports = (Schema) ->
     role:
       type: String
       default: "place"
+    # 折扣
+    discount:
+      type: Number
+      default: 100
+    # 减免
+    remission:
+      type: Number
+      default: 0
     created:
       type: Date
       default: Date.now
     updated:
       type: Date
       default: Date.now
+
+  Place.virtual 'location'
+    .get ->
+      return "#{@province}-#{@city}-#{@district}"
+
   Place.methods.format = ->
     data = @toJSON()
     delete data.password

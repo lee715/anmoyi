@@ -3,7 +3,7 @@
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  define(['backbone', 'underscore', 'jquery', 'data', 'models/user'], function(B, _, $, Data, model) {
+  define(['backbone', 'underscore', 'jquery', 'data', 'models/place'], function(B, _, $, Data, model) {
     var Colection;
     return Colection = (function(superClass) {
       extend(Colection, superClass);
@@ -14,11 +14,27 @@
 
       Colection.prototype.model = model;
 
-      Colection.prototype.url = '/api/users';
+      Colection.prototype.url = '/api/places/statistic';
 
       Colection.prototype.initialize = function() {
         return this.on('add', function(model, collection) {
           return Data.models[model.id] = model;
+        });
+      };
+
+      Colection.prototype.querySection = function(opts) {
+        var data, self;
+        self = this;
+        data = opts;
+        data.type = 'place';
+        return $.ajax({
+          url: "/api/section",
+          data: data,
+          json: true
+        }).done(function(res, state) {
+          return Object.keys(res).forEach(function(key) {
+            return self.get(key).set('section', res[key]);
+          });
         });
       };
 

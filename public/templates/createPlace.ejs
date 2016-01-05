@@ -48,25 +48,25 @@
   <div class="form-group">
     <label for="contacts_name" class="col-sm-2 control-label">联系人</label>
     <div class="col-sm-10">
-      <input type="text" class="form-control" name="contacts_name" placeholder="联系人" value=<%= contacts[0].name|| '' %>>
+      <input type="text" class="form-control" name="contacts_name" placeholder="联系人" value=<%= contacts[0] && contacts[0].name|| '' %>>
     </div>
   </div>
   <div class="form-group">
     <label for="contacts_phone" class="col-sm-2 control-label">电话</label>
     <div class="col-sm-10">
-      <input type="text" class="form-control" name="contacts_phone" placeholder="电话" value=<%= contacts[0].phone|| '' %>>
+      <input type="text" class="form-control" name="contacts_phone" placeholder="电话" value=<%= contacts[0] && contacts[0].phone|| '' %>>
     </div>
   </div>
   <div class="form-group">
     <label for="contacts_name" class="col-sm-2 control-label">备用联系人</label>
     <div class="col-sm-10">
-      <input type="text" class="form-control" name="contacts_name_bk" placeholder="联系人" value=<%= contacts[1].name|| '' %>>
+      <input type="text" class="form-control" name="contacts_name_bk" placeholder="联系人" value=<%= contacts[1] && contacts[1].name|| '' %>>
     </div>
   </div>
   <div class="form-group">
     <label for="contacts_phone" class="col-sm-2 control-label">备用电话</label>
     <div class="col-sm-10">
-      <input type="text" class="form-control" name="contacts_phone_bk" placeholder="电话" value=<%= contacts[1].phone|| '' %>>
+      <input type="text" class="form-control" name="contacts_phone_bk" placeholder="电话" value=<%= contacts[1] && contacts[1].phone|| '' %>>
     </div>
   </div>
   <div class="form-group">
@@ -79,6 +79,18 @@
     <label for="bankAccount" class="col-sm-2 control-label">卡号</label>
     <div class="col-sm-10">
       <input type="text" class="form-control" name="bankAccount" placeholder="卡号" value=<%= bankAccount|| '' %>>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="place" class="col-sm-2 control-label">折扣</label>
+    <div class="col-sm-10">
+      <input type="text" name="discount" class="form-control" placeholder="0-100, 0代表免费，90代表9折" value=<%= discount|| 100%>>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="place" class="col-sm-2 control-label">优惠</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" name="remission" placeholder="正数代表优惠，负数代表加价,如 1代表便宜1元" value=<%= remission||0 %>>
     </div>
   </div>
   <div class="form-group">

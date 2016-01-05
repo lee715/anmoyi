@@ -48,16 +48,17 @@
 </head>
 <body>
   <div id="main">
+    <% if(it.status === 'idle' || it.status === 'work'){ %>
+    <header>按摩椅服务在线支付</header>
     <% if(it.status === 'work'){ %>
     <div id="notice">系统检测到该设备正在运行中，请确认后购买，本次购买将视为续费!</div>
-    <% } if(it.status === 'idle' || it.status === 'work'){ %>
-    <header>按摩椅服务在线支付</header>
+    <% } %>
     <div id="info">
       <div>
-        <label>商品:</label><span><%=it.name%></span>
+        <label>场地:</label><span><%=it.placeName%></span>
       </div>
       <div>
-        <label>场地:</label><span><%=it.place%></span>
+        <label>商品:</label><span><%=it.name%></span>
       </div>
       <div>
         <label>金额:</label><span><%=it.cost%></span>

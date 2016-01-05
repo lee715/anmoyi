@@ -5,12 +5,14 @@ define [
   'text!templates/layer.ejs'
   'views/devices'
   'views/users'
+  'views/places'
   'views/createDevice'
   'views/createUser'
   'views/createPlace'
+  'views/reconciliation'
   'views/login'
   'views/orders'
-], ($, B, Data, layerTemp, devicesView, usersView, createDeviceView, createUserView, createPlaceView, loginView, ordersView) ->
+], ($, B, Data, layerTemp, devicesView, usersView, placesView, createDeviceView, createUserView, createPlaceView, reconciliationView, loginView, ordersView) ->
 
   class Layer extends B.View
 
@@ -52,6 +54,12 @@ define [
           # else
           @_views.devices = new devicesView
             el: @$main[0]
+        when 'places'
+          # if @_views.devices
+          #   @$main.html @_views.devices.el
+          # else
+          @_views.places = new placesView
+            el: @$main[0]
         when 'orders'
           @_views.orders = new ordersView
             el: @$main[0]
@@ -60,6 +68,12 @@ define [
           #   @$main.html @_views.devices.el
           # else
           @_views.users = new usersView
+            el: @$main[0]
+        when 'reconciliation'
+          # if @_views.createDevice
+          #   @$main.html @_views.createDevice.el
+          # else
+          @_views.reconciliation = new reconciliationView
             el: @$main[0]
         when 'devicesCreate'
           # if @_views.createDevice

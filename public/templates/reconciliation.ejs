@@ -1,0 +1,60 @@
+<table class="table table-bordered reconciliation-table">
+  <thead>
+    <tr>
+      <th class="w200">月份</th>
+      <th>总金额</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% for(var i=0,l=totals.length;i<l;i++){ %>
+      <tr>
+        <th><%=months[i]%></th>
+        <td><%=totals[i]%></td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>
+<table class="table reconciliation-table agent-table">
+  <tr>
+    <th class="w200">供应商:</th>
+    <td><%=agent.name%></td>
+  </tr>
+  <tr>
+    <th>联系人:</th>
+    <td><%=agent.contacts[0].name%></td>
+  </tr>
+  <tr>
+    <th>电话:</th>
+    <td><%=agent.contacts[0].phone%></td>
+  </tr>
+  <tr>
+    <th>电话:</th>
+    <td><%=agent.contacts[1].phone%></td>
+  </tr>
+</table>
+<table class="table reconciliation-table place-table">
+  <tr>
+    <th class="w200">场地方:</th>
+    <td><%=place.name%></td>
+  </tr>
+  <tr>
+    <th>邮寄地址:</th>
+    <td><%=place.mailAddress%></td>
+  </tr>
+  <tr>
+    <th>联系人:</th>
+    <td><%=place.contacts[0].name%></td>
+  </tr>
+  <tr>
+    <th>电话:</th>
+    <td><%=place.contacts[0].phone%></td>
+  </tr>
+  <tr>
+    <th>开户行:</th>
+    <td><%=place.bankName%></td>
+  </tr>
+  <tr>
+    <th>账号:</th>
+    <td><%=place.bankAccount%></td>
+  </tr>
+</table>

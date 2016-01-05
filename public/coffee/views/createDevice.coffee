@@ -17,8 +17,12 @@ define [
     initialize: (opts) ->
       opts or= {}
       @type = opts.type or 'create'
-      id = opts.params?.id
-      @model = Data.models[id] if id
+      uid = Data.query.uid
+      if uid
+        @type = 'edit'
+        @model = Data.models[uid]
+        unless @model
+          return Data.home()
       @render()
 
     events:
@@ -33,7 +37,9 @@ define [
             data or= {}
             data.users = users
             self.fetchPlaces (places) ->
+              self.places = places
               data.places = places
+              console.log data
               self.$el.html ejs.render(temp, _.extend({}, defaultVals, data))
               self.$el.find('#distpicker').distpicker()
         when 'edit'
@@ -44,6 +50,7 @@ define [
                 user._id = "#{user._id}"
                 user
               self.fetchPlaces (places) ->
+                self.places = places
                 data.places = places
                 self.$el.html ejs.render(temp, _.extend({}, defaultVals, data))
                 self.$el.find('#distpicker').distpicker()
@@ -54,9 +61,11 @@ define [
       @
 
     refresh: (data) ->
-      return unless @users
-      data or= @model.toJSON()
+      return unless @users and @places
+      data = {}
+      data = @model.toJSON() if @model
       data.users = @users
+      data.places = @places
       @$el.html ejs.render(temp, _.extend({}, defaultVals, data))
 
     showAlert: (state, err) ->
@@ -75,8 +84,10 @@ define [
         message: msg
         status: state
       , 2000
-      # if @type is 'edit' and state is 'success'
-      #   Data.home()
+      if @type is 'edit' and state is 'success'
+        setTimeout ->
+          Data.home()
+        , 2000
 
     fetchUsers: (cb) ->
       data = {}
@@ -102,21 +113,19 @@ define [
       e.preventDefault()
       self = @
       data = utils.formData($(e.target))
-      if data.province and data.city and data.district
-        data.location = "#{data.province}-#{data.city}-#{data.district}"
-        delete data.province
-        delete data.city
-        delete data.district
-      data._id = @model.id if @model
+      data._id = @model.get('_id') if @model
       $.ajax
-        url: "/api/devices/#{@type || 'create'}"
+        url: "/api/devices"
         data: data
         json: true
         method: if @type is 'edit' then 'put' else 'post'
       .done (res, state) ->
+        console.log res, state
         if state is 'success'
           self.model.set(data) if self.model
           self.refresh()
           self.showAlert(state)
+      .error ->
+        self.showAlert('error')
       return false
 

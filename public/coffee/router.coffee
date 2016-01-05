@@ -9,6 +9,7 @@ define [
 ], (Data, B, $, qr, layerView, loginView, utils) ->
 
   goto = (route, params) ->
+    Data.handleQuery()
     Data.checkLogin(route, ->
       if Data.layer
         Data.layer.switchTo(route, params)
@@ -29,11 +30,14 @@ define [
       'login': 'login'
       'devices': -> goto('devices')
       'orders': -> goto('orders')
+      'places': -> goto('places')
       'users': -> goto('users')
+      'reconciliation': -> goto('reconciliation')
       'devicesCreate': -> goto('devicesCreate')
-      'devicesEdit': 'deviceEdit'
+      'devicesEdit': -> goto('devicesCreate')
       'placesCreate': -> goto('placesCreate')
-      'usersEdit': 'userEdit'
+      'placesEdit': -> goto('placesCreate')
+      'usersEdit': -> goto('usersEdit')
       # 'devices/:action/:_id': 'deviceEdit'
       'usersCreate': -> goto('usersCreate')
       'urlqrcode': 'qrcode'
@@ -47,14 +51,6 @@ define [
     login: (params) ->
       goto('login')
 
-    deviceEdit: ->
-      data = utils.query2obj location.search
-      goto('devicesEdit', data)
-
-    userEdit: ->
-      data = utils.query2obj location.search
-      goto('usersEdit', data)
-
     qrcode: ->
       $.ajax(
         url: '/api/qrcode'
@@ -67,13 +63,6 @@ define [
           width: 256
           height: 256
           text: res
-        # qrcode = new QRCode 'qrcode',
-        #   text: res
-        #   width: 256
-        #   height: 256
-        #   correctLevel: QRCode.CorrectLevel.H
-        # console.log qrcode
-        # new QRCode($qr[0], res)
 
     wx_auth: ->
       $.ajax(

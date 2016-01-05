@@ -1,6 +1,7 @@
 db = require('limbo').use('anmoyi')
 module.exports =
   init: (req, res, next) ->
+    console.log JSON.stringify(req.session)
     _userId = req.session._userId
     _placeId = req.session._placeId
     req._data = {}

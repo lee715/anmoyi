@@ -16,6 +16,7 @@ updateDevice = (uid, status, income, wxTime) ->
       device.status = status
       device.income = income
       device.wxTime = wxTime
+      device.statusUpdated = Date.now()
       device.save()
 
 class TbService
@@ -55,6 +56,7 @@ class TbService
       uid: @uid
     .then (device) ->
       order._userId = device._userId
+      order._placeId = device._placeId
       order.deviceStatus = device.status
       db.order.createAsync order
     .then ->
@@ -111,10 +113,11 @@ SOCKS =
     arr = msg.split('#')
     return if arr.length < 3
     @cacheSock(arr[0], sock)
+    uid = arr[0]
     if @_cbs[uid]
-      if arr.length is 3 and arr[2] is 'OK'
+      if arr.length is 4 and arr[3] is 'OK'
         @_cbs[uid](true)
-      else if arr.length is 3 and arr[2] isnt 'OK'
+      else if arr.length is 4 and arr[3] isnt 'OK'
         @_cbs[uid](false, arr[1])
       else
         @_cbs[uid](false, 'NO_ANWSER')
@@ -128,6 +131,7 @@ SOCKS =
       # status in ['idle', 'work', 'fault']
       [uid, tbCount, wxTime, status, val] = arr
       status = status.toLowerCase()
+      return if status is 'ok'
       if status in ['free', 'idle']
         status = 'idle'
       else if status isnt 'work'

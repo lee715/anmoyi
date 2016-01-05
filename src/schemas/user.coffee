@@ -14,6 +14,10 @@ module.exports = (Schema) ->
     qq: String
     bankName: String
     bankAccount: String
+    contacts:
+      type: Schema.Types.Mixed
+      default: []
+    license: String
 
     password:
       type: String
@@ -25,13 +29,13 @@ module.exports = (Schema) ->
       default: Date.now
 
   User.methods.hasOrder = ->
-    @type in ['root', 'agent']
+    @role in ['root', 'agent']
 
   User.methods.format = ->
     if @role is 'agent'
-      data = _.pick @, ['name', 'company', 'phone', 'location', 'email', 'mailAddress', 'qq', 'bankName', 'bankAccount', 'role']
+      data = _.pick @, ['_id', 'name', 'company', 'phone', 'location', 'email', 'mailAddress', 'qq', 'bankName', 'bankAccount', 'role']
     else
-      data = _.pick @, ['name', 'phone', 'email', 'role']
+      data = _.pick @, ['_id', 'name', 'phone', 'email', 'role']
     return data
 
   User

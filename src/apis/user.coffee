@@ -49,22 +49,16 @@ class API
 
   logout: (req, callback) ->
     req.session._userId = ''
+    req.session._placeId = ''
     req.res.redirect('/login')
   @::logout.route = ['get', '/logout']
 
   me: (req, callback) ->
-    _userId = req.session._userId
-    if _userId
-      db.user.findOne
-        _id: _userId
-      , (err, user) ->
-        if err or not user
-          req.res.status(401).send('user')
-        else
-          callback(null, formatUser(user.toJSON()))
-    else
-      req.res.status(401).send('user')
+    callback(null, req._data.user)
   @::me.route = ['get', '/users/me']
+  @::me.before = [
+    userSrv.isLogined
+  ]
 
   fetchUsers: (req, callback) ->
     db.user.findAsync {}
@@ -85,14 +79,27 @@ class API
     userSrv.isRoot
   ]
 
+  getById: (req, callback) ->
+    _id = req.params._id
+    console.log 'getById', _id
+    db.user.findOneAsync
+      _id: _id
+    .then (user) ->
+      callback(null, user and user.format())
+  @::getById.route = ['get', '/agents/:_id']
+  @::getById.before = [
+    userSrv.isLogined
+  ]
+
   createUser: (req, callback) ->
     { email, name, role } = req.body
     unless email and name and role
       return req.res.status(302).send('paramErr')
-    if role is 'agent'
-      data = _.pick req.body, ['name', 'company', 'phone', 'location', 'email', 'mailAddress', 'qq', 'bankName', 'bankAccount', 'role']
-    else
-      data = _.pick req.body, ['name', 'phone', 'email', 'role']
+    data = req.body
+    # if role is 'agent'
+    #   data = _.pick req.body, ['name', 'company', 'phone', 'location', 'email', 'mailAddress', 'qq', 'bankName', 'bankAccount', 'role']
+    # else
+    #   data = _.pick req.body, ['name', 'phone', 'email', 'role']
     data.password = parseInt((Math.random()*1000000-1))
     db.user.findOneAsync
       email: email
@@ -105,7 +112,7 @@ class API
           callback(null, user.toJSON())
     .catch ->
       req.res.status(400).send('systemErr')
-  @::createUser.route = ['post', '/users/create']
+  @::createUser.route = ['post', '/users']
   @::createUser.before = [
     userSrv.isRoot
   ]
@@ -121,6 +128,6 @@ class API
         req.res.status(400).send('paramErr')
       else
         callback(null, formatUser(user))
-  @::editUser.route = ['post', '/users/edit']
+  @::editUser.route = ['put', '/users']
 
 module.exports = new API

@@ -10,7 +10,13 @@ module.exports = (router, controller, middlewares = [], prefix = '') ->
 
       urlsStr = urls.toString()
       urlsStr.split(',').forEach (url) ->
-        url = prefix + url.replace(/:_id/g, ':_id([0-9a-fA-F]{24})')
+        matches = url.match(/\:_.*?\//ig)
+        matches or= []
+        matches.forEach (ele) ->
+          url = url.replace(ele[..-2], "#{ele[..-2]}([0-9a-fA-F]{24})")
+        if url.indexOf('_id') is url.length - 3
+          url = url.replace(url[-3..], "_id([0-9a-fA-F]{24})")
+        url = prefix + url
         console.log url
         router[method] url, middlewares.concat(before or [], wrap(func), after or [])
 

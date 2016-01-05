@@ -32,6 +32,7 @@ app.use '/wx/notify', WX_API.useWXCallback (msg, req, res, next) ->
     _id: msg.out_trade_no
   ,
     status: "SUCCESS"
+    serviceStatus: "PAIED"
   ,
     upsert: false
     new: false

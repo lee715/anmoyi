@@ -17,8 +17,12 @@ define [
     initialize: (opts) ->
       opts or= {}
       @type = opts.type or 'create'
-      id = opts.params?.id
-      @model = Data.models[id] if id
+      id = Data.getPlaceId()
+      if id
+        @type = 'edit'
+        @model = Data.models[id]
+        unless @model
+          return Data.home()
       @render()
 
     events:
@@ -51,6 +55,10 @@ define [
         message: msg
         status: state
       , 2000
+      if @type is 'edit' and state is 'success'
+        setTimeout ->
+          Data.home()
+        , 2000
 
     onSubmit: (e) ->
       e.preventDefault()
@@ -63,6 +71,8 @@ define [
         name: data.contacts_name_bk
         phone: data.contacts_phone_bk
       ]
+      if @model
+        data._id = @model.id
       $.ajax
         url: '/api/places'
         data: data

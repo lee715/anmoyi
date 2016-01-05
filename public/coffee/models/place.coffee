@@ -21,14 +21,37 @@ define [
       bankAccount: ''
       _salesmanId: ''
       _agentId: ''
+      section: 0
+      discount: 100
+      remission: 0
       contacts: [{}, {}]
-      edit: '<a href="javascript:;">Edit</a>'
+      moneys: [0,0,0,0,0,0]
+      device:
+        total: 0
+        normal: 0
+      edit: '<a href="javascript:;">编辑</a>'
+      delete: '<a href="javascript:;">删除</a>'
+      reconciliation: '<a href="javascript:;">对账</a>'
 
     initialize: ->
 
     parse: (data) ->
       data._id = "#{data._id}"
       data.address = "#{data.province}-#{data.city}-#{data.district}"
+      normal = data.device.normal
+      total = data.device.total
+      if normal is total
+        data.deviceStatus = "<a href='javascript:;' class='route' data-url='/devices' style='color:#259b24;'>#{normal}/#{total}</a>"
+      else if normal is 0
+        data.deviceStatus = "<a href='javascript:;' class='route' data-url='/devices' style='color:#ff3c00;'>#{normal}/#{total}</a>"
+      else
+        data.deviceStatus = "<a href='javascript:;' class='route' data-url='/devices' style='color:#ff9800;'>#{normal}/#{total}</a>"
+      data.today = data.moneys[0]
+      data.yestoday = data.moneys[1]
+      data.thisWeek = data.moneys[2]
+      data.lastWeek = data.moneys[3]
+      data.thisMonth = data.moneys[4]
+      data.lastMonth = data.moneys[5]
       data
 
     idAttribute: '_id'

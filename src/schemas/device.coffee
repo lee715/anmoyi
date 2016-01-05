@@ -14,7 +14,7 @@ module.exports = (Schema) ->
     # 设备状态
     status:
       type: String
-      default: 'stop'
+      default: 'init'
     # 价格
     price:
       type: Number
@@ -44,6 +44,9 @@ module.exports = (Schema) ->
     updated:
       type: Date
       default: Date.now
+    statusUpdated:
+      type: Date
+      default: Date.now
   ,
     toObject:
       virtuals: true
@@ -56,16 +59,23 @@ module.exports = (Schema) ->
     .get ->
       return @price*@discount/100 - @remission
 
+  deviceSchema.virtual 'realStatus'
+    .get ->
+      if Date.now() - @statusUpdated < 1000*60
+        return @status
+      else
+        return 'fault'
+
   deviceSchema.methods.getPayInfo = ->
     info =
       name: @name
-      place: @place
+      _placeId: @_placeId
       cost: @cost
       status: @status
-      # time: @time
-      time: 3
+      time: @time
       uid: @uid
       _userId: @_userId
+      _placeId: @_placeId
     return info
   deviceSchema
 

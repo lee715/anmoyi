@@ -13,6 +13,8 @@ define [
       email: ''
       company: ''
       mailAddress: ''
+      contacts: [{}, {}]
+      license: ''
       qq: ''
       bankName: ''
       bankAccount: ''
@@ -32,6 +34,15 @@ define [
         url: "/users/#{@id}"
         method: 'put'
         data: params
+      ).done((res, state) ->
+        if state is 'success'
+          @set(res)
+      )
+
+    getById: (_id) ->
+      $.ajax(
+        url: "/agents/#{_id}"
+        method: 'get'
       ).done((res, state) ->
         if state is 'success'
           @set(res)

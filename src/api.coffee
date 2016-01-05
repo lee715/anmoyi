@@ -90,6 +90,9 @@ class API
           if action is "start"
             sockSrv.startAsync(uid, order.time)
             .then ->
+              order.serviceStatus = 'STARTED'
+              order.saveAsync()
+            .then ->
               callback(null, 'ok')
           else if action in ['1F', '20', '1E', '21', '22', '24']
             sockSrv.setAsync(uid, action)

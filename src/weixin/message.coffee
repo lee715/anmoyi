@@ -31,7 +31,7 @@ sendPayTmp = (uid, fromusername) ->
           first:
             value: "点击该链接付款"
           keyword1:
-            value: "#{device.name || '1号'} 按摩椅"
+            value: "#{device.name || '1号'}"
           keyword2:
             value: "#{info.cost} 元" or "5元"
           remark:

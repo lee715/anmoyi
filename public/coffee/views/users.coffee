@@ -50,7 +50,7 @@ define [
         pageSize: 50
         search: true
         onClickCell: (field, val, obj) ->
-          Data.app.navigate('/usersEdit?id='+obj._id,
+          Data.app.navigate('/usersEdit?_userId='+obj._id,
             trigger: true
           )
       @

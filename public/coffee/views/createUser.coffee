@@ -8,21 +8,18 @@ define [
   'ejs'
 ], (B, _, temp, alert, utils, Data) ->
 
-  urlMap =
-    create: '/api/users/create'
-    edit: '/api/users/edit'
-
   defaultVals =
     name: ''
     company: ''
     email: ''
     phone: ''
-    location: ''
     role: 'salesman'
     mailAddress: ''
     qq: ''
     bankName: ''
     bankAccount: ''
+    contacts: [{}, {}]
+    license: ''
     roles: ['agent', 'salesman', 'admin']
 
   class View extends B.View
@@ -30,8 +27,12 @@ define [
     initialize: (opts) ->
       opts or= {}
       @type = opts.type or 'create'
-      id = opts.params?.id
-      @model = Data.models[id] if id
+      id = Data.query._userId
+      if id
+        @type = 'edit'
+        @model = Data.models[id]
+        unless @model
+          return Data.home()
       @render()
 
     events:
@@ -70,8 +71,15 @@ define [
       e.preventDefault()
       self = @
       data = utils.formData($(e.target))
+      data.contacts = [
+        name: data.contacts_name
+        phone: data.contacts_phone
+      ,
+        name: data.contacts_name_bk
+        phone: data.contacts_phone_bk
+      ]
       $.ajax
-        url: urlMap[@type]
+        url: '/api/users'
         data: data
         json: true
         method: if @type is 'edit' then 'put' else 'post'

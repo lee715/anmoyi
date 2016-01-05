@@ -15,17 +15,24 @@ define [
       locs: null
       _userId: null
       _placeId: null
-      edit: '<a href="javascript:;">Edit</a>'
+      section: 0
+      edit: '<a href="javascript:;">编辑</a>'
+      start: '<a href="javascript:;">开机</a>'
+      delete: '<a href="javascript:;">删除</a>'
 
     initialize: ->
 
     parse: (data) ->
       data._id = "#{data._id}"
       data._userId = "#{data._userId}"
+      if data.status is 'fault'
+        data.colorStatus = '<span style="color:#ff3c00;">'+data.status+'</span>'
+      else
+        data.colorStatus = data.status
       data.locs = data.location?.split('-') or null
       data
 
-    idAttribute: '_id'
+    idAttribute: 'uid'
 
     update: (params) ->
       $.ajax(

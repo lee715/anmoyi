@@ -38,6 +38,12 @@ class API
     openid = req.query.openid
     WX_API.getPayInfoAsync(openid)
     .then (info) ->
+      db.place.findOneAsync
+        _id: info._placeId
+      .then (place) ->
+        info.placeName = place.name
+        info
+    .then (info) ->
       info.openid = openid
       if info.status in ['idle', 'work']
         db.order.createAsync
@@ -47,6 +53,7 @@ class API
           deviceStatus: info.status
           uid: info.uid
           _userId: info._userId
+          _placeId: info._placeId
           mode: "WX"
         .then (order) ->
           console.log "payTestView:getBrandWCPayRequestParamsAsync", openid, "#{order._id}", info.cost
@@ -79,6 +86,8 @@ class API
           console.log 'orderStatus:wxOrder', wx_order
           if wx_order.trade_state isnt order.status
             order.status = wx_order.trade_state
+            if wx_order.trade_state is 'SUCCESS'
+              order.serviceStatus = "PAIED"
             order.save()
           wx_order.trade_state
       else

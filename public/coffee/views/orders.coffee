@@ -16,6 +16,9 @@ define [
     field: 'status'
     title: '订单状态'
   ,
+    field: 'serviceStatus'
+    title: '服务状态'
+  ,
     field: 'money'
     title: '订单金额'
   ,
@@ -31,7 +34,7 @@ define [
     field: 'uid'
     title: '设备编号'
   ,
-    field: '_userId'
+    field: 'agentName'
     title: '代理商'
   ,
     field: 'created'

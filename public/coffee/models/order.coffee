@@ -25,6 +25,7 @@ define [
       data._id = "#{data._id}"
       data._userId = "#{data._userId or ''}"
       data.mode_zh = if data.mode is 'WX' then '微信支付' else "投币支付"
+      data.created = (new Date(data.created)).toLocaleString()
       data
 
     idAttribute: '_id'

@@ -1,6 +1,8 @@
 _ = require('lodash')
 db = require('limbo').use('anmoyi')
 u = require('../services/util')
+userSrv = require('../services/user')
+sockSrv = require('../services/socket')
 
 pluck = (keys) ->
   (arr) ->
@@ -20,14 +22,18 @@ createValidator =
   name: "String:required"
   _userId: "ObjectId:required"
 needCreate = Object.keys(createValidator)
-canEdit = '_placeId price time discount remission name _userId'.split(' ')
+canEdit = needCreate
 
 class API
 
   createDevice: (req, callback) ->
     params = _.pick req.body, needCreate
-    db.device.create params, callback
-  @::createDevice.route = ['post', '/devices/create']
+    db.device.create params, (err, device)->
+      callback(err, device)
+  @::createDevice.route = ['post', '/devices']
+  @::createDevice.before = [
+    userSrv.isRoot
+  ]
   @::createDevice.validator = createValidator
 
   editDevice: (req, callback) ->
@@ -37,7 +43,7 @@ class API
       _id: _id
     , data
     , callback
-  @::editDevice.route = ['put', '/devices/edit']
+  @::editDevice.route = ['put', '/devices']
   @::editDevice.validator =
     _id: "ObjectId:required"
     $or:
@@ -52,41 +58,66 @@ class API
   delDevice: (req, callback) ->
     { _id } = req.body
     db.device.remove _id: _id, callback
-  @::delDevice.route = ['delete', '/devices/del']
+  @::delDevice.route = ['delete', '/devices']
+
+  order: (req, callback) ->
+    { uid, order } = req.query
+    sockSrv.start(uid, 10, callback)
+  @::order.route = ['get', '/devices/order']
+  @::order.before = [
+    userSrv.isRoot
+  ]
 
   fetchDevices: (req, callback) ->
-    console.log 'fetchDevices session',req.session
-    _userId = req.session._userId
-    db.user.findOneAsync
-      _id: _userId
-    .then (user) ->
-      role = user.role
-      if role is 'root'
-        cons = {}
-      else
-        cons = _userId: _userId
-      console.log 'cons', cons
-      db.device.findAsync cons
+    user = req._data.user
+    role = user.role
+    _placeId = req.query._placeId
+    console.log 'fetchDevices._placeId', _placeId
+    if role is 'root'
+      cons = {}
+    else
+      cons = _userId: _userId
+    if _placeId
+      cons._placeId = _placeId
+    db.device.findAsync cons
     .then (devices) ->
       map = {}
-      ids = []
+      userids = []
+      placeids = []
       devices.forEach (device) ->
+        device.status = device.realStatus
         if device._userId
-          ids.push "#{device._userId}"
-      console.log 'ids', _.uniq(ids)
+          userids.push "#{device._userId}"
+        if device._placeId
+          placeids.push "#{device._placeId}"
       db.user.findAsync
-        _id: $in: _.uniq(ids)
+        _id: $in: _.uniq(userids)
       .then (users) ->
         users.forEach (user) ->
           map["#{user._id}"] = user.name
-        devices = devices.map (device) ->
-          device = _.pick device, deviceJson
+        devices.map (device) ->
+          device = device.toJSON()
           device.user = map["#{device._userId}"]
           device
-        callback(null, devices)
+      .then (devices) ->
+        db.place.findAsync
+          _id: $in: _.uniq(placeids)
+        .then (places) ->
+          places.forEach (place) ->
+            map["#{place._id}"] = place
+          devices.map (device) ->
+            device.location = map["#{device._placeId}"].location
+            device.place = map["#{device._placeId}"].name
+            device
+    .then (devices) ->
+      console.log 'devices', devices
+      callback(null, devices)
     .catch (e) ->
       console.log e.stack
 
   @::fetchDevices.route = ['get', '/devices']
+  @::fetchDevices.before = [
+    userSrv.isAgent
+  ]
 
 module.exports = new API

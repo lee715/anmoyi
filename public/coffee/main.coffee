@@ -15,6 +15,7 @@ require.config(
     'utils': './utils'
     'qrcode': '../bower/jquery-qrcode/jquery.qrcode.min'
     'distdata': '../bower/distpicker/dist/distpicker.data'
+    'datepicker': '../bower/bootstrap-datepicker/dist/js/bootstrap-datepicker.min'
     'dist': '../bower/distpicker/dist/distpicker'
     'essage': '../bower/essage/src/essage'
   shim:
@@ -30,6 +31,7 @@ require [
   'ejs'
   'distdata'
   'essage'
+  'datepicker'
 ], (
   $
   bootstrap
@@ -38,9 +40,7 @@ require [
   Data
 ) ->
   app = Data.app = new Router()
-  Backbone.history.start(
-    pushState: true
-  )
+
   $.ajax
     method: 'get'
     url: '/api/users/me'
@@ -50,11 +50,19 @@ require [
     if res._id
       res._id = "#{res._id}"
       Data.user = res
-      Data.home()
+      Backbone.history.start(
+        pushState: true
+      )
     else
+      Backbone.history.start(
+        pushState: true
+      )
       Data.login()
   .fail (res, state, error) ->
     console.log error
+    Backbone.history.start(
+      pushState: true
+    )
     Data.login()
 
   # Data.app = new Router()
