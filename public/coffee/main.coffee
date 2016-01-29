@@ -14,7 +14,7 @@ require.config(
     'data': './data'
     'utils': './utils'
     'qrcode': '../bower/jquery-qrcode/jquery.qrcode.min'
-    'distdata': '../bower/distpicker/dist/distpicker.data'
+    'ChineseDistricts': '../bower/distpicker/dist/distpicker.data'
     'datepicker': '../bower/bootstrap-datepicker/dist/js/bootstrap-datepicker.min'
     'dist': '../bower/distpicker/dist/distpicker'
     'essage': '../bower/essage/src/essage'
@@ -30,7 +30,7 @@ require [
   './router'
   'data'
   'ejs'
-  'distdata'
+  'ChineseDistricts'
   'essage'
   'datepicker'
 ], (
