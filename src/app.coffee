@@ -16,7 +16,7 @@ session   = require('cookie-session')
 
 app = express()
 
-app.set 'view', mejs.initView("public/templates/*.ejs")
+app.set 'view', mejs.initView("public/tmp/static/templates/*.ejs")
 app.use(express.static('public'))
 app.use bodyParser.json()
 app.use bodyParser.urlencoded(extended: true)

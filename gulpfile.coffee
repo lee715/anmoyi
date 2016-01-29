@@ -54,6 +54,12 @@ paths =
   coffee: [
     "public/coffee/**/*.coffee"]
   views: ["public/templates/**"]
+  css: [
+    'public/bower/bootstrap/dist/css/bootstrap.min.css'
+    'public/bower/bootstrap-table/dist/bootstrap-table.min.css'
+    'public/bower/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css'
+    'public/bower/essage/src/essage.css'
+  ]
 
 requireOnce = (module) ->
   delete require.cache[require.resolve(module)]
@@ -86,6 +92,15 @@ gulp.task 'views', ->
   gulp.src paths.views
     .pipe ejsmin()
     .pipe gulp.dest('public/tmp/static/templates')
+
+gulp.task 'css', ->
+  gulp.src paths.css
+    .pipe gulp.dest('public/tmp/static/css')
+
+gulp.task 'styleLib', ->
+  gulp.src paths.styleLib
+    .pipe rename('lib.css')
+    .pipe gulp.dest('public/tmp/static/css')
 
 gulp.task 'bower', ->
   gulp.src 'public/bower'
@@ -136,11 +151,16 @@ gulp.task 'revall', ->
     gulp.src([
       'public/tmp/static/js/app.js'
       'public/tmp/static/js/lib.js'
-    ])
+    ]),
+    gulp.src([
+      'public/bower/bootstrap/dist/css/bootstrap.min.css'
+      'public/bower/bootstrap-table/dist/bootstrap-table.min.css'
+      'public/bower/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css'
+      'public/bower/essage/src/essage.css'
+    ]).pipe(minifyCss({rebase: false}))
   ])
   .pipe revAll.revision()
   .pipe gulp.dest('public/dist')
-
 # ==== Task quene ====
 
 # For optimize
@@ -156,7 +176,7 @@ gulp.task 'move-dev', ->
 # For development
 gulp.task 'dev', sequence(
   'clean'
-  ['bower', 'coffee', 'views']
+  ['bower', 'coffee', 'views', 'css']
 )
 
 # For production
