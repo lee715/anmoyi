@@ -34,6 +34,9 @@ define [
     field: 'uid'
     title: '设备编号'
   ,
+    field: 'placeName'
+    title: '场地方'
+  ,
     field: 'agentName'
     title: '代理商'
   ,

@@ -3,8 +3,8 @@
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  define(['jquery', 'backbone', 'collections/places', 'utils', 'views/container', 'text!templates/places.ejs', 'data', 'table'], function($, B, Collection, U, ContainerView, temp, Data) {
-    var View, columns;
+  define(['jquery', 'backbone', 'collections/places', 'utils', 'views/container', 'views/confirm', 'text!templates/places.ejs', 'data', 'table'], function($, B, Collection, U, ContainerView, ConfirmView, temp, Data) {
+    var View, columns, root_columms;
     columns = [
       {
         field: 'name',
@@ -40,14 +40,17 @@
         field: 'lastMonth',
         title: '上月流水'
       }, {
+        field: 'section',
+        title: '区间'
+      }
+    ];
+    root_columms = [
+      {
         field: 'edit',
         title: '编辑'
       }, {
         field: 'delete',
         title: '删除'
-      }, {
-        field: 'section',
-        title: '区间'
       }
     ];
     return View = (function(superClass) {
@@ -65,6 +68,10 @@
             return _this.renderPlaces();
           };
         })(this));
+        this.columns = columns.slice();
+        if (Data.isRoot()) {
+          this.columns = this.columns.concat(root_columms);
+        }
         this.render();
         this.fetch();
         return this;
@@ -80,12 +87,13 @@
         this.$table = this.$el.find('#placesTable');
         this.$container = this.$el.find('#seletorContainer');
         this.$table.bootstrapTable({
-          columns: columns,
+          columns: this.columns,
           striped: true,
           pagination: true,
           pageSize: 50,
           search: true,
           onClickCell: function(field, val, obj) {
+            var view;
             if (field === 'deviceStatus') {
               return Data.app.navigate('/devices?_placeId=' + obj._id, {
                 trigger: true
@@ -95,11 +103,22 @@
                 trigger: true
               });
             } else if (field === 'edit') {
-              return Data.app.navigate('/placesEdit?_placeId=obj._id', {
+              return Data.app.navigate('/placesEdit?_placeId=' + obj._id, {
                 trigger: true
               });
             } else if (field === 'delete') {
-              return Data.del('place', obj._id);
+              view = new ConfirmView({
+                title: '删除确认',
+                content: '是否确认删除该场地?',
+                onConfirm: function() {
+                  Data.del('place', obj._id);
+                  return view.close();
+                },
+                onCancel: function() {
+                  return view.close();
+                }
+              });
+              return $('body').append(view.$el);
             }
           }
         });

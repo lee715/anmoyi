@@ -55,7 +55,7 @@
           json: true,
           method: 'post'
         }).done(function(res, state) {
-          Data.user = res;
+          Data.storeUser(res);
           return Data.home();
         }).fail(function(req, state, err) {
           if (req.status === 401) {

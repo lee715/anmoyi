@@ -37,36 +37,24 @@
         self = this;
         switch (this.type) {
           case 'create':
-            this.fetchUsers(function(users) {
-              self.users = users;
+            self.fetchPlaces(function(places) {
               data || (data = {});
-              data.users = users;
-              return self.fetchPlaces(function(places) {
-                self.places = places;
-                data.places = places;
-                console.log(data);
-                self.$el.html(ejs.render(temp, _.extend({}, defaultVals, data)));
-                return self.$el.find('#distpicker').distpicker();
-              });
+              self.places = places;
+              data.places = places;
+              self.$el.html(ejs.render(temp, _.extend({}, defaultVals, data)));
+              return self.$el.find('#distpicker').distpicker();
             });
             break;
           case 'edit':
             data = this.model.toJSON();
             if (Data.isRoot()) {
-              this.fetchUsers(function(users) {
-                data.users = users.map(function(user) {
-                  user._id = "" + user._id;
-                  return user;
-                });
-                return self.fetchPlaces(function(places) {
-                  self.places = places;
-                  data.places = places;
-                  self.$el.html(ejs.render(temp, _.extend({}, defaultVals, data)));
-                  return self.$el.find('#distpicker').distpicker();
-                });
+              self.fetchPlaces(function(places) {
+                self.places = places;
+                data.places = places;
+                self.$el.html(ejs.render(temp, _.extend({}, defaultVals, data)));
+                return self.$el.find('#distpicker').distpicker();
               });
             } else {
-              data.users = null;
               self.$el.html(ejs.render(temp, _.extend({}, defaultVals, data)));
               self.$el.find('#distpicker').distpicker();
             }
@@ -113,20 +101,6 @@
             return Data.home();
           }, 2000);
         }
-      };
-
-      Seletor.prototype.fetchUsers = function(cb) {
-        var data;
-        data = {};
-        return $.ajax({
-          url: '/api/agents',
-          method: 'get',
-          json: true
-        }).done(function(res, state) {
-          if (state === 'success') {
-            return cb(res);
-          }
-        });
       };
 
       Seletor.prototype.fetchPlaces = function(cb) {

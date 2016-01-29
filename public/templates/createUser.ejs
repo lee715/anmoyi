@@ -5,17 +5,26 @@
       <input type="text" name="name" class="form-control" placeholder="用户名或公司简称" value=<%= name||'' %>>
     </div>
   </div>
-
+  <%if(type == 'edit'){%>
+  <input type="hidden" name="email" class="form-control" placeholder="邮箱" value=<%=email || ''%>>
+  <%}else{%>
   <div class="form-group">
     <label for="email" class="col-sm-2 control-label">邮箱</label>
     <div class="col-sm-10">
-      <input type="text" name="email" class="form-control" placeholder="邮箱" value=<%=email || ''%>>
+      <input type="text" name="email" class="form-control" placeholder="邮箱" value=<%= email|| ''%>>
     </div>
   </div>
+  <%}%>
   <div class="form-group">
     <label for="phone" class="col-sm-2 control-label">手机</label>
     <div class="col-sm-10">
       <input type="text" name="phone" class="form-control" placeholder="手机" value=<%= phone|| ''%>>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="password" class="col-sm-2 control-label">密码</label>
+    <div class="col-sm-10">
+      <input type="text" name="password" class="form-control" placeholder="密码" value=<%= password|| ''%>>
     </div>
   </div>
   <%if(type == 'create'){%>

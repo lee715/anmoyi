@@ -27,6 +27,7 @@
         self = this;
         data = opts;
         data.type = 'place';
+        data._ = Date.now();
         return $.ajax({
           url: "/api/section",
           data: data,
@@ -36,6 +37,20 @@
             return self.get(key).set('section', res[key]);
           });
         });
+      };
+
+      Colection.prototype.getOne = function(_placeId, callback) {
+        return $.ajax({
+          url: "/api/places/" + _placeId,
+          json: true
+        }).done((function(_this) {
+          return function(data, state) {
+            if (state === 'success') {
+              _this.add(data);
+              return callback(null, _this.get(_placeId));
+            }
+          };
+        })(this));
       };
 
       return Colection;

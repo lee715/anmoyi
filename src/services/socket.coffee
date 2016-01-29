@@ -3,21 +3,34 @@ config = require('config')
 PORT = config.SOECKET_PORT or '7000'
 db = require('limbo').use('anmoyi')
 _ = require('lodash')
-incomeSrv = require('./income')
 moment = require('moment')
 Promise = require('bluebird')
+redis = require('./redis')
 
 updateDevice = (uid, status, income, wxTime) ->
-  console.log 'updateDevice', uid, status, income, wxTime
   db.device.findOneAsync uid: uid
   .then (device) ->
     if device
-      console.log 'device matched and update now '+uid
       device.status = status
       device.income = income
       device.wxTime = wxTime
       device.statusUpdated = Date.now()
       device.save()
+
+createTbOrder = (uid, total) ->
+  db.device.findOneAsync uid: uid
+  .then (device) ->
+    db.order.createAsync
+      uid: uid
+      money: total
+      _placeId: device._placeId
+      _userId: device._userId
+      status: "SUCCESS"
+      serviceStatus: "ENDED"
+
+record = (uid) ->
+  key = (new Date()).toLocaleDateString()
+  redis.incr("RECORD.#{uid}.#{key}")
 
 class TbService
 
@@ -57,7 +70,7 @@ class TbService
     .then (device) ->
       order._userId = device._userId
       order._placeId = device._placeId
-      order.deviceStatus = device.status
+      order.deviceStatus = device.realStatus
       db.order.createAsync order
     .then ->
       SERVICES.remove(@uid)
@@ -124,14 +137,19 @@ SOCKS =
     if arr.length is 3
       [uid, action, val] = arr
       return if val is 'OK'
-      unless SERVICES[uid]
-        SERVICES[uid] = new TbService(uid)
-      SERVICES[uid].handle(action, val)
+      # unless SERVICES[uid]
+      #   SERVICES[uid] = new TbService(uid)
+      # SERVICES[uid].handle(action, val)
+      switch action.toLowerCase()
+        when 'cashtotal'
+          createTbOrder(uid, val)
     else if arr.length > 3
       # status in ['idle', 'work', 'fault']
       [uid, tbCount, wxTime, status, val] = arr
       status = status.toLowerCase()
       return if status is 'ok'
+      if uid is '08d833f62d36'
+        record(uid)
       if status in ['free', 'idle']
         status = 'idle'
       else if status isnt 'work'
@@ -139,7 +157,7 @@ SOCKS =
       wxTime = +wxTime.slice(1)
       updateDevice(uid, status, tbCount, wxTime)
       recordStatus(uid, status)
-      incomeSrv(uid, tbCount, wxTime)
+      # incomeSrv(uid, tbCount, wxTime)
       SOCKS.resOk(uid)
 
 STATUS_VALS =

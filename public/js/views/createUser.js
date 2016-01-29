@@ -3,7 +3,7 @@
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  define(['backbone', 'underscore', 'text!templates/createUser.ejs', 'text!templates/alert.ejs', 'utils', 'data', 'ejs'], function(B, _, temp, alert, utils, Data) {
+  define(['backbone', 'underscore', 'views/confirm', 'text!templates/createUser.ejs', 'text!templates/alert.ejs', 'utils', 'data', 'ejs'], function(B, _, ConfirmView, temp, alert, utils, Data) {
     var View, defaultVals;
     defaultVals = {
       name: '',
@@ -17,7 +17,8 @@
       bankAccount: '',
       contacts: [{}, {}],
       license: '',
-      roles: ['agent', 'salesman', 'admin']
+      roles: ['agent', 'salesman', 'admin'],
+      password: ''
     };
     return View = (function(superClass) {
       extend(View, superClass);
@@ -37,6 +38,8 @@
           if (!this.model) {
             return Data.home();
           }
+        } else if (this.type === 'edit') {
+          this.model = Data.user;
         }
         return this.render();
       };
@@ -103,12 +106,46 @@
           json: true,
           method: this.type === 'edit' ? 'put' : 'post'
         }).done(function(res, state) {
+          var view;
           if (state === 'success') {
             self.render();
-            self.showAlert(state);
             if (self.type === 'create') {
-              return self.showPass(res.password);
+              view = new ConfirmView({
+                title: '用户创建',
+                content: '用户创建成功，用户密码为 ' + res.password + '。请妥善保存。',
+                btns: {
+                  confirm: '回到用户列表',
+                  cancel: '继续创建'
+                },
+                onConfirm: function() {
+                  Data.route('/users');
+                  return view.close();
+                },
+                onCancel: function() {
+                  return view.close();
+                }
+              });
+              return $('body').append(view.$el);
+            } else {
+              view = new ConfirmView({
+                title: '用户编辑',
+                content: '用户编辑成功。',
+                btns: {
+                  confirm: '回到用户列表',
+                  cancel: '继续编辑'
+                },
+                onConfirm: function() {
+                  Data.route('/users');
+                  return view.close();
+                },
+                onCancel: function() {
+                  return view.close();
+                }
+              });
+              return $('body').append(view.$el);
             }
+          } else {
+            return self.showAlert(state);
           }
         });
         return false;

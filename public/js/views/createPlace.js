@@ -3,7 +3,7 @@
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  define(['backbone', 'underscore', 'models/place', 'text!templates/createPlace.ejs', 'text!templates/alert.ejs', 'utils', 'data', 'dist', 'ejs'], function(B, _, Model, temp, alert, utils, Data) {
+  define(['backbone', 'underscore', 'models/place', 'views/confirm', 'text!templates/createPlace.ejs', 'text!templates/alert.ejs', 'utils', 'data', 'dist', 'ejs'], function(B, _, Model, ConfirmView, temp, alert, utils, Data) {
     var View, defaultVals;
     defaultVals = Model.prototype.defaults;
     return View = (function(superClass) {
@@ -33,16 +33,23 @@
       };
 
       View.prototype.render = function() {
-        var data, self;
+        var self;
         self = this;
-        data = {};
-        if (this.type === 'edit' && this.model) {
-          data = this.model.toJSON();
-        }
-        data = _.extend({}, defaultVals, data);
-        data.type = this.type;
-        self.$el.html(ejs.render(temp, data));
-        self.$el.find('#distpicker').distpicker();
+        this.fetchUsers((function(_this) {
+          return function(users) {
+            var data;
+            self.users = users;
+            data = {};
+            if (_this.type === 'edit' && _this.model) {
+              data = _this.model.toJSON();
+            }
+            data.users = users;
+            data = _.extend({}, defaultVals, data);
+            data.type = _this.type;
+            self.$el.html(ejs.render(temp, data));
+            return self.$el.find('#distpicker').distpicker();
+          };
+        })(this));
         return this;
       };
 
@@ -74,6 +81,20 @@
         }
       };
 
+      View.prototype.fetchUsers = function(cb) {
+        var data;
+        data = {};
+        return $.ajax({
+          url: '/api/agents',
+          method: 'get',
+          json: true
+        }).done(function(res, state) {
+          if (state === 'success') {
+            return cb(res);
+          }
+        });
+      };
+
       View.prototype.onSubmit = function(e) {
         var data, self;
         e.preventDefault();
@@ -97,12 +118,31 @@
           json: true,
           method: this.type === 'edit' ? 'put' : 'post'
         }).done(function(res, state) {
+          var view;
           if (state === 'success') {
             self.render();
-            self.showAlert(state);
             if (self.type === 'create') {
-              return self.showPass(res.password);
+              view = new ConfirmView({
+                title: '场地创建',
+                content: '场地创建成功，场地方密码为 ' + res.password + '。请妥善保存。',
+                btns: {
+                  confirm: '回到场地列表',
+                  cancel: '继续创建'
+                },
+                onConfirm: function() {
+                  Data.route('/places');
+                  return view.close();
+                },
+                onCancel: function() {
+                  return view.close();
+                }
+              });
+              return $('body').append(view.$el);
+            } else {
+              return self.showAlert(state);
             }
+          } else {
+            return self.showAlert(state);
           }
         });
         return false;

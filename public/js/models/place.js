@@ -31,6 +31,7 @@
         discount: 100,
         remission: 0,
         contacts: [{}, {}],
+        p: 100,
         moneys: [0, 0, 0, 0, 0, 0],
         device: {
           total: 0,
@@ -56,12 +57,12 @@
         } else {
           data.deviceStatus = "<a href='javascript:;' class='route' data-url='/devices' style='color:#ff9800;'>" + normal + "/" + total + "</a>";
         }
-        data.today = data.moneys[0];
-        data.yestoday = data.moneys[1];
-        data.thisWeek = data.moneys[2];
-        data.lastWeek = data.moneys[3];
-        data.thisMonth = data.moneys[4];
-        data.lastMonth = data.moneys[5];
+        data.today = data.moneys[0].toFixed(2);
+        data.yestoday = data.moneys[1].toFixed(2);
+        data.thisWeek = data.moneys[2].toFixed(2);
+        data.lastWeek = data.moneys[3].toFixed(2);
+        data.thisMonth = data.moneys[4].toFixed(2);
+        data.lastMonth = data.moneys[5].toFixed(2);
         return data;
       };
 

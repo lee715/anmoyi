@@ -20,6 +20,7 @@ require.config(
     'essage': '../bower/essage/src/essage'
   shim:
     'bootstrap': ['jquery']
+    'qrcode': ['jquery']
 )
 
 require [
@@ -46,10 +47,9 @@ require [
     url: '/api/users/me'
     json: true
   .done (res, state) ->
-    console.log res, state
     if res._id
       res._id = "#{res._id}"
-      Data.user = res
+      Data.storeUser(res)
       Backbone.history.start(
         pushState: true
       )

@@ -21,7 +21,6 @@
     WeixinJSBridge.invoke(
       'getBrandWCPayRequest', data,
       function(res){
-        console.log(res);
         if(res.err_msg == "get_brand_wcpay_request：ok" ) {
 
         }
@@ -33,7 +32,6 @@
       url: '/api/wx/unifiedorder?openid='+openid
       method: 'get'
     }).done(function(st, res){
-      console.log('unifiedorder',st, res);
 
     })
   }

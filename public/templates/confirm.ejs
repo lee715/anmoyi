@@ -1,0 +1,17 @@
+<div class="modal" style="display: block" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel"><%=title%></h4>
+      </div>
+      <div class="modal-body">
+        <%=content%>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default cancel" data-dismiss="modal"><%= btns.cancel || '取消'%></button>
+        <button type="button" class="btn btn-primary confirm"><%= btns.confirm || '确认'%></button>
+      </div>
+    </div>
+  </div>
+</div>
+<div style="position:fixed;top:0;bottom:0;left:0;right:0;background:black;opacity:0.5;z-index:0"></div>

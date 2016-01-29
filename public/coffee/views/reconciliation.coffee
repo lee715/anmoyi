@@ -18,13 +18,16 @@ define [
       self = @
       @fetch (err, data) ->
         month = (new Date).getMonth() + 1
-        year = (new Date).getFullYear()
+        year = year1 = year2 = (new Date).getFullYear()
         map = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        if month is 1
+          year1 = year - 1
+        if month <= 2
+          year2 = year - 1
         data.months = [
           "#{year}年#{month}月"
-          "#{year}年#{map[(month+11)%12]}月"
-          "#{year}年#{map[(month+10)%12]}月"
-          "#{year}年#{map[(month+9)%12]}月"
+          "#{year1}年#{map[(month+11)%12]}月"
+          "#{year2}年#{map[(month+10)%12]}月"
         ]
         self.$el.html ejs.render(temp, data)
 
@@ -38,7 +41,7 @@ define [
           status: 'error'
 
     fetch: (callback) ->
-      user = Data.user
+      user = Data.user.toJSON()
       if user.role is 'agent'
         @fetchPlace (err, place) =>
           @fetchTotals (err, totals) ->
@@ -48,8 +51,7 @@ define [
               totals: totals
             callback(null, data)
       else if user.role is 'place'
-
-        @fetchAgent Data.user._agentId, (err, agent) =>
+        @fetchAgent user._agentId, (err, agent) =>
           @fetchTotals (err, totals) ->
             data =
               agent: agent

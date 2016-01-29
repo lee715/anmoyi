@@ -32,30 +32,21 @@ define [
       self = @
       switch @type
         when 'create'
-          @fetchUsers (users) ->
-            self.users = users
+          self.fetchPlaces (places) ->
             data or= {}
-            data.users = users
-            self.fetchPlaces (places) ->
-              self.places = places
-              data.places = places
-              console.log data
-              self.$el.html ejs.render(temp, _.extend({}, defaultVals, data))
-              self.$el.find('#distpicker').distpicker()
+            self.places = places
+            data.places = places
+            self.$el.html ejs.render(temp, _.extend({}, defaultVals, data))
+            self.$el.find('#distpicker').distpicker()
         when 'edit'
           data = @model.toJSON()
           if Data.isRoot()
-            @fetchUsers (users) ->
-              data.users = users.map (user) ->
-                user._id = "#{user._id}"
-                user
-              self.fetchPlaces (places) ->
-                self.places = places
-                data.places = places
-                self.$el.html ejs.render(temp, _.extend({}, defaultVals, data))
-                self.$el.find('#distpicker').distpicker()
+            self.fetchPlaces (places) ->
+              self.places = places
+              data.places = places
+              self.$el.html ejs.render(temp, _.extend({}, defaultVals, data))
+              self.$el.find('#distpicker').distpicker()
           else
-            data.users = null
             self.$el.html ejs.render(temp, _.extend({}, defaultVals, data))
             self.$el.find('#distpicker').distpicker()
       @
@@ -89,15 +80,15 @@ define [
           Data.home()
         , 2000
 
-    fetchUsers: (cb) ->
-      data = {}
-      $.ajax
-        url: '/api/agents'
-        method: 'get'
-        json: true
-      .done (res, state) ->
-        if state is 'success'
-          cb(res)
+    # fetchUsers: (cb) ->
+    #   data = {}
+    #   $.ajax
+    #     url: '/api/agents'
+    #     method: 'get'
+    #     json: true
+    #   .done (res, state) ->
+    #     if state is 'success'
+    #       cb(res)
 
     fetchPlaces: (cb) ->
       data = {}

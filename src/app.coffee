@@ -40,7 +40,6 @@ app.use '/wx/notify', WX_API.useWXCallback (msg, req, res, next) ->
     res.success()
 
 app.get '/api/test', (req, res, next) ->
-  console.log req.query
   res.send('ok')
 
 require('./router')(app, require('./api'), [], '/api')

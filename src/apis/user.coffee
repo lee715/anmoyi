@@ -11,7 +11,7 @@ pluck = (keys) ->
     return rt
 
 formatUser = (user) ->
-  delete user.password
+  # delete user.password
   return user
 
 class API
@@ -54,7 +54,9 @@ class API
   @::logout.route = ['get', '/logout']
 
   me: (req, callback) ->
-    callback(null, req._data.user)
+    user = req._data.user.toJSON()
+    user.now = (new Date).getTime()
+    callback(null, user)
   @::me.route = ['get', '/users/me']
   @::me.before = [
     userSrv.isLogined
@@ -81,7 +83,6 @@ class API
 
   getById: (req, callback) ->
     _id = req.params._id
-    console.log 'getById', _id
     db.user.findOneAsync
       _id: _id
     .then (user) ->
@@ -100,7 +101,7 @@ class API
     #   data = _.pick req.body, ['name', 'company', 'phone', 'location', 'email', 'mailAddress', 'qq', 'bankName', 'bankAccount', 'role']
     # else
     #   data = _.pick req.body, ['name', 'phone', 'email', 'role']
-    data.password = parseInt((Math.random()*1000000-1))
+    data.password = data.password or parseInt((Math.random()*1000000-1))
     db.user.findOneAsync
       email: email
     .then (user) ->
@@ -118,16 +119,22 @@ class API
   ]
 
   editUser: (req, callback) ->
-    { email } = req.body
+    { email, password } = req.body
     unless email
       return req.res.status(302).send('paramErr')
-    db.user.findOneAndUpdate
+    unless password
+      delete req.body.password
+    db.user.findOneAsync
       email: email
-    , req.body, (err, user) ->
-      if err or not user
+    .then (user) ->
+      unless user
         req.res.status(400).send('paramErr')
-      else
-        callback(null, formatUser(user))
+      _.assign(user, req.body)
+      user.saveAsync()
+    .then (user) ->
+      callback(null, formatUser(user))
+    .catch (e) ->
+      callback(e)
   @::editUser.route = ['put', '/users']
 
 module.exports = new API

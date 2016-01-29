@@ -1,12 +1,13 @@
 define [
   'backbone'
   'underscore'
+  'views/confirm'
   'text!templates/createUser.ejs'
   'text!templates/alert.ejs'
   'utils'
   'data'
   'ejs'
-], (B, _, temp, alert, utils, Data) ->
+], (B, _, ConfirmView, temp, alert, utils, Data) ->
 
   defaultVals =
     name: ''
@@ -21,6 +22,7 @@ define [
     contacts: [{}, {}]
     license: ''
     roles: ['agent', 'salesman', 'admin']
+    password: ''
 
   class View extends B.View
 
@@ -33,6 +35,8 @@ define [
         @model = Data.models[id]
         unless @model
           return Data.home()
+      else if @type is 'edit'
+        @model = Data.user
       @render()
 
     events:
@@ -86,9 +90,37 @@ define [
       .done (res, state) ->
         if state is 'success'
           self.render()
-          self.showAlert(state)
           if self.type is 'create'
-            self.showPass(res.password)
+            view = new ConfirmView(
+              title: '用户创建'
+              content: '用户创建成功，用户密码为 ' + res.password + '。请妥善保存。'
+              btns:
+                confirm: '回到用户列表'
+                cancel: '继续创建'
+              onConfirm: ->
+                Data.route('/users')
+                view.close()
+              onCancel: ->
+                view.close()
+            )
+            $('body').append(view.$el)
+          else
+            # self.showAlert(state)
+            view = new ConfirmView(
+              title: '用户编辑'
+              content: '用户编辑成功。'
+              btns:
+                confirm: '回到用户列表'
+                cancel: '继续编辑'
+              onConfirm: ->
+                Data.route('/users')
+                view.close()
+              onCancel: ->
+                view.close()
+            )
+            $('body').append(view.$el)
+        else
+          self.showAlert(state)
       return false
 
     refreshAddition: (e) ->

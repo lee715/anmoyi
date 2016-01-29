@@ -39,6 +39,10 @@
           data.colorStatus = data.status;
         }
         data.locs = ((ref = data.location) != null ? ref.split('-') : void 0) || null;
+        if (data.total) {
+          data.today = (data.total.today.TB || 0).toFixed(2) + '/' + (data.total.today.WX || 0).toFixed(2);
+          data.yestoday = (data.total.yestoday.TB || 0).toFixed(2) + '/' + (data.total.yestoday.WX || 0).toFixed(2);
+        }
         return data;
       };
 

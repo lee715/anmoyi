@@ -35,11 +35,18 @@
         var ref, ref1;
         this.$el.html(ejs.render(layerTemp, {
           isLogin: !!Data.user,
-          isRoot: ((ref = Data.user) != null ? ref.role : void 0) === 'root',
-          isAgent: ((ref1 = Data.user) != null ? ref1.role : void 0) === 'agent'
+          isRoot: ((ref = Data.user) != null ? ref.get('role') : void 0) === 'root',
+          isAgent: ((ref1 = Data.user) != null ? ref1.get('role') : void 0) === 'agent'
         }));
         this.$main = this.$el.find('#mainSection');
+        this.$nav = this.$el.find('.navbar-header');
         this.renderSubView();
+        if (this.t) {
+          clearInterval(this.t);
+        }
+        if (Data.user) {
+          this.renderTime();
+        }
         return this;
       };
 
@@ -47,6 +54,16 @@
         this.params = params;
         this._route = route;
         return this.render();
+      };
+
+      Layer.prototype.renderTime = function() {
+        var time;
+        time = Data.user.get('now');
+        this.$nav.append('<span style="line-height:50px;" id="locale_time">' + (new Date(time)).toLocaleString() + '</span>');
+        return this.t = setInterval(function() {
+          time += 1000;
+          return $('#locale_time').html((new Date(time)).toLocaleString());
+        }, 1000);
       };
 
       Layer.prototype.renderSubView = function() {

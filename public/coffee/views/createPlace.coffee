@@ -2,13 +2,14 @@ define [
   'backbone'
   'underscore'
   'models/place'
+  'views/confirm'
   'text!templates/createPlace.ejs'
   'text!templates/alert.ejs'
   'utils'
   'data'
   'dist'
   'ejs'
-], (B, _, Model, temp, alert, utils, Data) ->
+], (B, _, Model, ConfirmView, temp, alert, utils, Data) ->
 
   defaultVals = Model::defaults
 
@@ -30,13 +31,16 @@ define [
 
     render: ->
       self = @
-      data = {}
-      if @type is 'edit' and @model
-        data = @model.toJSON()
-      data = _.extend({}, defaultVals, data)
-      data.type = @type
-      self.$el.html ejs.render(temp, data)
-      self.$el.find('#distpicker').distpicker()
+      @fetchUsers (users) =>
+        self.users = users
+        data = {}
+        if @type is 'edit' and @model
+          data = @model.toJSON()
+        data.users = users
+        data = _.extend({}, defaultVals, data)
+        data.type = @type
+        self.$el.html ejs.render(temp, data)
+        self.$el.find('#distpicker').distpicker()
       @
 
     showAlert: (state, err) ->
@@ -60,6 +64,16 @@ define [
           Data.home()
         , 2000
 
+    fetchUsers: (cb) ->
+      data = {}
+      $.ajax
+        url: '/api/agents'
+        method: 'get'
+        json: true
+      .done (res, state) ->
+        if state is 'success'
+          cb(res)
+
     onSubmit: (e) ->
       e.preventDefault()
       self = @
@@ -81,9 +95,25 @@ define [
       .done (res, state) ->
         if state is 'success'
           self.render()
-          self.showAlert(state)
           if self.type is 'create'
-            self.showPass(res.password)
+            view = new ConfirmView(
+              title: '场地创建'
+              content: '场地创建成功，场地方密码为 ' + res.password + '。请妥善保存。'
+              btns:
+                confirm: '回到场地列表'
+                cancel: '继续创建'
+              onConfirm: ->
+                Data.route('/places')
+                view.close()
+              onCancel: ->
+                view.close()
+            )
+            $('body').append(view.$el)
+          else
+            self.showAlert(state)
+        else
+          self.showAlert(state)
+
       return false
 
     showPass: (pass) ->

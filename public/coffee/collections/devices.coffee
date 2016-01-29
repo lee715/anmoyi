@@ -24,6 +24,7 @@ define [
       self = @
       data = opts
       data.type = 'device'
+      data._ = Date.now()
       $.ajax
         url: "/api/section"
         data: data

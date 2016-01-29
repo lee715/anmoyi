@@ -44,7 +44,7 @@ define [
         json: true
         method: 'post'
       .done (res, state) ->
-        Data.user = res
+        Data.storeUser(res)
         Data.home()
       .fail (req, state, err) ->
         if req.status is 401

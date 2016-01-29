@@ -3,8 +3,8 @@
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  define(['jquery', 'backbone', 'collections/devices', 'utils', 'views/container', 'text!templates/devices.ejs', 'data', 'table'], function($, B, devicesCollection, U, ContainerView, devicesTemp, Data) {
-    var View, columns, idMap, locales;
+  define(['jquery', 'backbone', 'collections/devices', 'collections/places', 'utils', 'views/container', 'views/confirm', 'text!templates/devices.ejs', 'data', 'table'], function($, B, devicesCollection, placesCollection, U, ContainerView, confirmView, devicesTemp, Data) {
+    var View, columns, idMap, locales, root_columns;
     locales = {
       locs: '按地址筛选',
       locations: '按地址筛选',
@@ -28,17 +28,12 @@
         title: '名称',
         sortable: true
       }, {
-        field: 'user',
-        title: '商家',
-        sortable: true
-      }, {
-        field: 'location',
-        title: '地址',
-        sortable: true
-      }, {
         field: 'colorStatus',
         title: '状态',
         sortable: true
+      }, {
+        field: 'income',
+        title: '收入'
       }, {
         field: 'price',
         title: '价格'
@@ -49,12 +44,12 @@
         field: 'discount',
         title: '费率'
       }, {
-        field: 'income',
-        title: '收入'
-      }, {
         field: 'start',
         title: '开机'
-      }, {
+      }
+    ];
+    root_columns = [
+      {
         field: 'edit',
         title: '编辑'
       }, {
@@ -81,11 +76,24 @@
           };
         })(this));
         this.columns = columns.slice();
+        if (Data.isRoot()) {
+          this.columns = this.columns.concat(root_columns);
+        }
         if (this._placeId) {
-          this.columns.push({
-            field: 'section',
-            title: '区间'
-          });
+          this.columns = this.columns.slice(0, 3).concat([
+            {
+              field: 'today',
+              title: '今日流水'
+            }, {
+              field: 'yestoday',
+              title: '昨日流水'
+            }
+          ], this.columns.slice(3), [
+            {
+              field: 'section',
+              title: '区间'
+            }
+          ]);
         }
         this.render();
         this.fetch();
@@ -110,14 +118,37 @@
           pageSize: 50,
           search: true,
           onClickCell: function(field, val, obj) {
+            var view;
             if (field === 'edit') {
               return Data.app.navigate('/devicesEdit?uid=' + obj.uid, {
                 trigger: true
               });
             } else if (field === 'delete') {
-              return Data.del('device', obj._id);
+              view = new confirmView({
+                title: '删除确认',
+                content: '是否确认删除该设备?',
+                onConfirm: function() {
+                  Data.del('device', obj._id);
+                  return view.close();
+                },
+                onCancel: function() {
+                  return view.close();
+                }
+              });
+              return $('body').append(view.$el);
             } else if (field === 'start') {
-              return Data.order('start', obj.uid);
+              view = new confirmView({
+                title: '开机确认',
+                content: '是否确认开机10分钟?',
+                onConfirm: function() {
+                  Data.order('start', obj.uid);
+                  return view.close();
+                },
+                onCancel: function() {
+                  return view.close();
+                }
+              });
+              return $('body').append(view.$el);
             }
           }
         });
@@ -125,15 +156,31 @@
       };
 
       View.prototype.renderPlace = function() {
-        var _placeId, place, ref;
+        var _placeId, models, todayTotal, yestodayTotal;
         _placeId = Data.getPlaceId();
         if (!_placeId) {
           return;
         }
-        place = (ref = this.collection.models[0]) != null ? ref.get('place') : void 0;
-        if (place) {
-          return this.$el.prepend('<div style="margin-bottom:10px">场地方: <a class="route" href="javascript:;" data-url="/places">' + place + '</a></div>');
-        }
+        (new placesCollection).getOne(_placeId, (function(_this) {
+          return function(err, place) {
+            place = place.parse(place.toJSON());
+            return _this.$el.prepend('<span style="margin-bottom:10px">场地方: <a class="route" href="javascript:;" data-url="/places">' + place.name + '</a></span><span style="margin-bottom:10px;margin-left:20px">地理位置:' + place.address + '</span>');
+          };
+        })(this));
+        models = this.collection.toJSON();
+        todayTotal = _.reduce(_.pluck(models, 'today'), function(a, b) {
+          var ref, ref1, tb1, tb2, wx1, wx2;
+          ref = a.split('/'), tb1 = ref[0], wx1 = ref[1];
+          ref1 = b.split('/'), tb2 = ref1[0], wx2 = ref1[1];
+          return (+tb1 + +tb2) + '/' + (+wx1 + +wx2);
+        });
+        yestodayTotal = _.reduce(_.pluck(models, 'yestoday'), function(a, b) {
+          var ref, ref1, tb1, tb2, wx1, wx2;
+          ref = a.split('/'), tb1 = ref[0], wx1 = ref[1];
+          ref1 = b.split('/'), tb2 = ref1[0], wx2 = ref1[1];
+          return (+tb1 + +tb2) + '/' + (+wx1 + +wx2);
+        });
+        return this.$el.append("<span>今日流水总计: " + todayTotal + "</span><span style='margin-left:10px'>昨日流水总计: " + yestodayTotal + "</span>");
       };
 
       View.prototype.renderDevices = function(devices) {
@@ -167,6 +214,9 @@
         };
         devices.forEach(function(device) {
           var base, base1, base2, locs, name, name1, name2;
+          if (!device.location) {
+            return;
+          }
           locs = U.cutLoc(device.location);
           locs.forEach(function(loc) {
             var base;

@@ -33,9 +33,9 @@ module.exports = (Schema) ->
 
   User.methods.format = ->
     if @role is 'agent'
-      data = _.pick @, ['_id', 'name', 'company', 'phone', 'location', 'email', 'mailAddress', 'qq', 'bankName', 'bankAccount', 'role']
+      data = @toJSON()
     else
-      data = _.pick @, ['_id', 'name', 'phone', 'email', 'role']
+      data = _.pick @, ['_id', 'name', 'phone', 'email', 'role', 'password']
     return data
 
   User

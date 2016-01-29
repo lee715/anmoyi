@@ -128,7 +128,6 @@ new CronJob '00 00 1 1 * *', ->
 
 module.exports = (uid, income, wxTime) ->
   return unless uid
-  console.log 'income:', uid, income, wxTime
   countDay(uid, income)
   countWeek(uid, income)
   countMonth(uid, income)

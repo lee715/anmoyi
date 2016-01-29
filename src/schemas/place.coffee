@@ -25,6 +25,9 @@ module.exports = (Schema) ->
     role:
       type: String
       default: "place"
+    p:
+      type: Number
+      default: 100
     # 折扣
     discount:
       type: Number

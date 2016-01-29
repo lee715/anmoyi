@@ -4,10 +4,11 @@ define [
   'collections/places'
   'utils'
   'views/container'
+  'views/confirm'
   'text!templates/places.ejs'
   'data'
   'table'
-], ($, B, Collection, U, ContainerView, temp, Data) ->
+], ($, B, Collection, U, ContainerView, ConfirmView, temp, Data) ->
 
   columns = [
     field: 'name'
@@ -43,14 +44,16 @@ define [
     field: 'lastMonth'
     title: '上月流水'
   ,
+    field: 'section'
+    title: '区间'
+  ]
+
+  root_columms = [
     field: 'edit'
     title: '编辑'
   ,
     field: 'delete'
     title: '删除'
-  ,
-    field: 'section'
-    title: '区间'
   ]
 
   class View extends B.View
@@ -59,6 +62,9 @@ define [
       @_filter = {}
       Data.placeColl = @collection = new Collection()
       @collection.on('change:section', => @renderPlaces())
+      @columns = columns.slice()
+      if Data.isRoot()
+        @columns = @columns.concat(root_columms)
       @render()
       @fetch()
       @
@@ -72,7 +78,7 @@ define [
       @$table = @$el.find('#placesTable')
       @$container = @$el.find('#seletorContainer')
       @$table.bootstrapTable
-        columns: columns
+        columns: @columns
         striped: true
         pagination: true
         pageSize: 50
@@ -87,11 +93,21 @@ define [
               trigger: true
             )
           else if field is 'edit'
-            Data.app.navigate('/placesEdit?_placeId=obj._id',
+            Data.app.navigate('/placesEdit?_placeId='+obj._id,
               trigger: true
             )
           else if field is 'delete'
-            Data.del('place', obj._id)
+            view = new ConfirmView(
+              title: '删除确认'
+              content: '是否确认删除该场地?'
+              onConfirm: ->
+                Data.del('place', obj._id)
+                view.close()
+              onCancel: ->
+                view.close()
+            )
+            $('body').append(view.$el)
+
       @
 
     renderPlaces: (places) ->

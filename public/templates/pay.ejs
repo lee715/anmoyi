@@ -44,15 +44,43 @@
   #info > div {
     margin-top: 10px
   }
+  .footer {
+    width:80%;
+    border-top:1px solid #ddd;
+    margin: 30px auto 0 auto;
+  }
+  .notice {
+    padding: 15px;
+    margin: 20px auto 20px auto;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    width: 80%;
+    text-indent: 2em;
+  }
+  .success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+  }
+  .fail {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+  }
+  .warn {
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+  }
   </style>
 </head>
 <body>
   <div id="main">
     <% if(it.status === 'idle' || it.status === 'work'){ %>
     <header>按摩椅服务在线支付</header>
-    <% if(it.status === 'work'){ %>
-    <div id="notice">系统检测到该设备正在运行中，请确认后购买，本次购买将视为续费!</div>
-    <% } %>
+      <% if(it.status === 'work'){ %>
+      <div id="notice" class="notice warn">系统检测到该设备正在运行中，请确认后购买，本次购买将视为续费!</div>
+      <% } %>
     <div id="info">
       <div>
         <label>场地:</label><span><%=it.placeName%></span>
@@ -61,15 +89,19 @@
         <label>商品:</label><span><%=it.name%></span>
       </div>
       <div>
-        <label>金额:</label><span><%=it.cost%></span>
+        <label>金额:</label><span><%=it.cost%> 元</span>
       </div>
       <div>
-        <label>时间:</label><span><%=it.time%></span>
+        <label>时间:</label><span><%=it.time%> 分钟</span>
       </div>
     </div>
     <a href="javascript:;" id="pay">确认支付</a>
+    <div class="footer notice warn">
+      <p style="text-align:center;font-weight:bold;text-indent:0;margin:10px;">温馨提示</p>
+      <p style="margin:0;padding:0;">支付完成后，请点击“完成”以启动按摩椅</p>
+    </div>
     <% }else { %>
-    <div id="error">设别异常,请使用其他设备或联系客服.</div>
+    <div id="error" class="notice fail">设备异常,请使用其他设备或联系客服。客服电话：4009986682。</div>
     <% } %>
   </div>
 <script type="text/javascript" src="/bower/jquery/dist/jquery.js"></script>
@@ -85,7 +117,7 @@
         send(typeof res)
         if(res.err_msg == "get_brand_wcpay_request:ok" ) {
           timer = setInterval(checkOrderStatus, 2000)
-          $('#main').html('支付成功，订单正在处理中，请稍候...')
+          $('#main').html('<div class="notice success">支付成功，订单正在处理中，请稍候...</div>')
         }
       }
     );
@@ -118,7 +150,7 @@
     }).done(function(res, status){
       send({res:res,status: status})
       if(res === 'SUCCESS'){
-        $('#main').html('订单处理成功，设备将自动启动')
+        $('#main').html('<div class="notice success">订单处理成功，设备将自动启动</div>')
         clearInterval(timer)
         start()
       }
@@ -137,7 +169,7 @@
       }
     }).done(function(res, status){
       if(res === 'ok'){
-        $('#main').html('设备启动成功，请关闭该页面，进入公众号进一步操作')
+        $('#main').html('<div class="notice success">设备启动成功，请关闭该页面，进入公众号进一步操作</div>')
       }
     })
   }

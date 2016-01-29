@@ -20,11 +20,17 @@
         var self;
         self = this;
         return this.fetch(function(err, data) {
-          var map, month, year;
+          var map, month, year, year1, year2;
           month = (new Date).getMonth() + 1;
-          year = (new Date).getFullYear();
+          year = year1 = year2 = (new Date).getFullYear();
           map = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-          data.months = [year + "年" + month + "月", year + "年" + map[(month + 11) % 12] + "月", year + "年" + map[(month + 10) % 12] + "月", year + "年" + map[(month + 9) % 12] + "月"];
+          if (month === 1) {
+            year1 = year - 1;
+          }
+          if (month <= 2) {
+            year2 = year - 1;
+          }
+          data.months = [year + "年" + month + "月", year1 + "年" + map[(month + 11) % 12] + "月", year2 + "年" + map[(month + 10) % 12] + "月"];
           return self.$el.html(ejs.render(temp, data));
         });
       };
@@ -44,7 +50,7 @@
 
       View.prototype.fetch = function(callback) {
         var user;
-        user = Data.user;
+        user = Data.user.toJSON();
         if (user.role === 'agent') {
           return this.fetchPlace((function(_this) {
             return function(err, place) {
@@ -60,7 +66,7 @@
             };
           })(this));
         } else if (user.role === 'place') {
-          return this.fetchAgent(Data.user._agentId, (function(_this) {
+          return this.fetchAgent(user._agentId, (function(_this) {
             return function(err, agent) {
               return _this.fetchTotals(function(err, totals) {
                 var data;

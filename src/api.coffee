@@ -25,10 +25,8 @@ class API
 
   unifiedorder: (req, callback) ->
     {openid} = req.query
-    console.log 'unifiedorder',openid
     productid = u.v1()
     WX_API.getBrandWCPayRequestParams(openid, (err, rt) ->
-      console.log err, rt
       callback(err, rt)
     )
   @::unifiedorder.route = ['get', '/wx/unifiedorder']
@@ -36,21 +34,16 @@ class API
   getUserInfoCode: (req, callback) ->
     {body, query} = req
     code = query.code
-    console.log 'getUserInfoCode:code', code
     return callback('unbindError') unless code
     async.waterfall [
       (next) ->
         MP_API.getUserInfoToken code, (err, token, openid) ->
-          console.log 'getUserInfoCode:token', err, token, openid
           next(null, token, openid)
       (token, openid, next) ->
         MP_API.getUserInfo token, openid, next
       (user, next) ->
-        console.log 'getUserInfoCode:user', user
         next()
     ], (err) ->
-      if err
-        console.log err
       req.redirect = config.LONG_TICKET.url
       callback()
 
@@ -69,12 +62,10 @@ class API
 
   orderDevice: (req, callback) ->
     { uid, _orderId, action, openid } = req.query
-    console.log 'orderDevice in', uid, _orderId, action, openid
     unless uid and openid and _orderId
       return callback(new Error('paramErr'))
     redis.getAsync "ORDER.COMMAND.LOCK.#{_orderId}"
     .then (lock) ->
-      console.log 'lock', lock
       throw new Error('order is handling') if lock
       redis.setexAsync "ORDER.COMMAND.LOCK.#{_orderId}", 60*10, 1
     .then ->
@@ -83,7 +74,6 @@ class API
         openId: openid
         uid: uid
       .then (order) ->
-        console.log 'orderDevice:order', order
         unless order
           throw new Error('orderNotFound')
         if order.status is 'SUCCESS'
@@ -92,6 +82,13 @@ class API
             .then ->
               order.serviceStatus = 'STARTED'
               order.saveAsync()
+            .then ->
+              db.device.updateAsync
+                uid: uid
+              , status: 'work'
+              ,
+                upsert: false
+                new: false
             .then ->
               callback(null, 'ok')
           else if action in ['1F', '20', '1E', '21', '22', '24']
@@ -105,7 +102,6 @@ class API
     .then ->
       redis.del "ORDER.COMMAND.LOCK.#{_orderId}"
     .catch (e) ->
-      console.log e
       callback(e)
   @::orderDevice.route = ['get', '/command']
 

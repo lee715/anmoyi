@@ -34,17 +34,28 @@ define [
     render: ->
       @$el.html ejs.render(layerTemp,
         isLogin: !!Data.user
-        isRoot: Data.user?.role is 'root'
-        isAgent: Data.user?.role is 'agent'
+        isRoot: Data.user?.get('role') is 'root'
+        isAgent: Data.user?.get('role') is 'agent'
       )
       @$main = @$el.find('#mainSection')
+      @$nav = @$el.find('.navbar-header')
       @renderSubView()
+      clearInterval(@t) if @t
+      @renderTime() if Data.user
       @
 
     switchTo: (route, params) ->
       @params = params
       @_route = route
       @render()
+
+    renderTime: ->
+      time = Data.user.get('now')
+      @$nav.append('<span style="line-height:50px;" id="locale_time">'+(new Date(time)).toLocaleString()+'</span>')
+      @t = setInterval ->
+        time += 1000
+        $('#locale_time').html (new Date(time)).toLocaleString()
+      , 1000
 
     renderSubView: ->
       switch @_route

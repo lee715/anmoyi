@@ -1,7 +1,6 @@
 db = require('limbo').use('anmoyi')
 module.exports =
   init: (req, res, next) ->
-    console.log JSON.stringify(req.session)
     _userId = req.session._userId
     _placeId = req.session._placeId
     req._data = {}
@@ -10,6 +9,7 @@ module.exports =
         _id: _userId
       .then (user) ->
         if user
+          console.log 'init', user
           req._data.user = user
         next()
     else if _placeId
@@ -38,6 +38,7 @@ module.exports =
 
   isLogined: (req, res, next) ->
     user = req._data.user
+    console.log 'isLogined', user
     if user
       next()
     else

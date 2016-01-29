@@ -31,6 +31,7 @@
         self = this;
         data = opts;
         data.type = 'device';
+        data._ = Date.now();
         return $.ajax({
           url: "/api/section",
           data: data,

@@ -32,7 +32,20 @@
       "root@139.196.8.138:/services/anmoyi"
     ],
     "nochdir": true,
-    "before": "coffee -o lib -c src",
+    "before": "coffee -o lib -c src && coffee -o public/js -c public/coffee",
+    "only": [
+      "config**",
+      "lib**",
+      "public**",
+      "package.json",
+      "node_modules**"
+    ]
+  },
+  "quick": {
+    "destinations": [
+      "root@139.196.8.138:/services/anmoyi"
+    ],
+    "nochdir": true,
     "only": [
       "config**",
       "lib**",

@@ -30,6 +30,9 @@ define [
       else
         data.colorStatus = data.status
       data.locs = data.location?.split('-') or null
+      if data.total
+        data.today = (data.total.today.TB or 0).toFixed(2) + '/' + (data.total.today.WX or 0).toFixed(2)
+        data.yestoday = (data.total.yestoday.TB or 0).toFixed(2) + '/' + (data.total.yestoday.WX or 0).toFixed(2)
       data
 
     idAttribute: 'uid'

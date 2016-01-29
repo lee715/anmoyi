@@ -25,7 +25,8 @@
         bankName: '',
         bankAccount: '',
         role: 'salesman',
-        edit: '<a href="javascript:;">Edit</a>'
+        edit: '<a href="javascript:;">Edit</a>',
+        password: ''
       };
 
       Model.prototype.initialize = function() {};
@@ -42,11 +43,13 @@
           url: "/users/" + this.id,
           method: 'put',
           data: params
-        }).done(function(res, state) {
-          if (state === 'success') {
-            return this.set(res);
-          }
-        });
+        }).done((function(_this) {
+          return function(res, state) {
+            if (state === 'success') {
+              return _this.set(res);
+            }
+          };
+        })(this));
       };
 
       Model.prototype.getById = function(_id) {

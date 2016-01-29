@@ -1,4 +1,4 @@
-define ['utils'], (utils) ->
+define ['utils', 'models/user'], (utils, userModel) ->
   window.data = Data =
     models: {}
     query: {}
@@ -37,8 +37,10 @@ define ['utils'], (utils) ->
       @app.navigate(url,
         trigger: true
       )
+    storeUser: (user) ->
+      @user = new userModel(user)
     isRoot: ->
-      return @user.role is 'root'
+      return @user.get('role') is 'root'
     refresh: ->
       location.reload()
     order: (order, uid) ->

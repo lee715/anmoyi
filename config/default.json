@@ -25,7 +25,7 @@
     }
   },
   "h5": {
-    "pay": "view/test/h5pay"
+    "pay": "/pay/v1/h5pay"
   },
   "sessionConfig": {
     "secret": "qingsongyike",
@@ -53,7 +53,25 @@
     "successURL": "http://project.ci",
     "authURL": "https://open.weixin.qq.com/connect/qrconnect",
     "tokenURL": "https://api.weixin.qq.com/sns/oauth2/access_token",
-    "userInfoURL": "https://api.weixin.qq.com/sns/userinfo"
+    "userInfoURL": "https://api.weixin.qq.com/sns/userinfo",
+    "buttons": {
+      "button": [{
+        "type": "click",
+        "name": "咋用?",
+        "key": "how_to_use"
+      },{
+        "type": "click",
+        "name": "启动",
+        "key": "start"
+      },{
+        "name": "更多...",
+        "sub_button": [{
+          "type": "click",
+          "name": "安全事项",
+          "key": "notice"
+        }]
+      }]
+    }
   },
   "MP_WEIXIN": {
     "appid": "wx961497b899f4b71d",

@@ -20,7 +20,6 @@ wx_date = (date) ->
 generateWxSign = (data) ->
   qsStr = u.qsParseSortByAscii(data)
   qsStr += "&key=#{key}"
-  console.log qsStr
   return u.md5(qsStr).toUpperCase()
 
 module.exports =
@@ -62,5 +61,4 @@ module.exports =
       data: data
       json: true
     , (err, res, body) ->
-      console.log err, body
       callback(err, body)

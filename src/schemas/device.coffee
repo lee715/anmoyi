@@ -57,7 +57,7 @@ module.exports = (Schema) ->
 
   deviceSchema.virtual 'cost'
     .get ->
-      return @price*@discount/100 - @remission
+      return (@price*@discount/100 - @remission).toFixed(2)
 
   deviceSchema.virtual 'realStatus'
     .get ->
@@ -71,7 +71,7 @@ module.exports = (Schema) ->
       name: @name
       _placeId: @_placeId
       cost: @cost
-      status: @status
+      status: @realStatus
       time: @time
       uid: @uid
       _userId: @_userId

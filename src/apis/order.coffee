@@ -18,8 +18,10 @@ class API
       cons.created = {}
       cons.created.$gt = startDate if startDate
       cons.created.$lt = endDate if endDate
-    db.order.findAsync cons
+    db.order.findAsync(cons)
     .then (orders) ->
+      orders = _.sortByOrder(orders, ['created'], ['desc'])
+      orders = orders.slice(0, 1000)
       alienMap = {}
       openIds = _.pluck orders, 'openId'
       db.alien.findAsync
@@ -29,22 +31,30 @@ class API
           alienMap[alien.openId] = alien
         orders = orders.map (order) ->
           order = order.toJSON()
-          order.username = alienMap[order.openId].name
+          order.username = alienMap[order.openId]?.name
           order
         orders
     .then (orders) ->
-      agentMap = {}
-      ids = _.pluck orders, '_agentId'
+      userMap = {}
+      ids = []
+      orders.forEach (order) ->
+        ids.push "#{order._placeId}" if order._placeId
+        ids.push "#{order._userId}" if order._userId
+      ids = _.uniq(ids)
       db.user.findAsync
         _id: $in: ids
       .then (users) ->
-        users.forEach (user) ->
-          agentMap[user._id] = user
-        orders = orders.map (order) ->
-          order.agentName = agentMap["#{order._agentId}"]?.name
-          order
-        orders = _.sortByOrder(orders, ['created'], ['desc'])
-        callback(null, orders)
+        db.place.findAsync
+          _id: $in: ids
+        .then (places) ->
+          users.concat(places).forEach (user) ->
+            userMap["#{user._id}"] = user
+          orders = orders.map (order) ->
+            order.agentName = userMap["#{order._userId}"]?.name
+            order.placeName = userMap["#{order._placeId}"]?.name
+            order
+          # orders = _.sortByOrder(orders, ['created'], ['desc'])
+          callback(null, orders)
     .catch (e) ->
       console.log e
       callback(new Error('systemErr'))
@@ -86,6 +96,8 @@ class API
         unless totals[key]
           totals[key] = 0
         totals[key] += order.money
+      Object.keys(totals).forEach (key) ->
+        totals[key] = totals[key].toFixed(2)
       callback(null, totals)
 
   @::section.route = ['get', '/section']

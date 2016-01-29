@@ -7,10 +7,18 @@ moment = require('moment')
 class API
 
   create: (req, callback) ->
-    data = req.body
-    db.place.createAsync data
+    {email} = req.body
+    unless email
+      return req.res.status(302).send('paramErr')
+    db.place.findOneAsync
+      email: email
     .then (place) ->
-      callback(null, place.toJSON())
+      if place
+        return req.res.status(302).send('emailUsed')
+      else
+        db.place.createAsync req.body
+        .then (place) ->
+          callback(null, place.toJSON())
   @::create.route = ['post', '/places']
   @::create.before = [
     userSrv.isRoot
@@ -22,11 +30,15 @@ class API
   @::delPlace.route = ['delete', '/places']
 
   update: (req, callback) ->
-    { _id } = req.body
-    console.log req.body
-    db.place.update
-      _id: _id
+    { email } = req.body
+    delete req.body._id
+    delete req.body.email
+    db.place.findOneAndUpdate
+      email: email
     , req.body
+    ,
+      upsert: false
+      new: false
     , callback
   @::update.route = ['put', '/places']
   @::update.before = [
@@ -73,14 +85,13 @@ class API
         thisMonth = moment().startOf('month').toDate()
         lastMonth = moment().add(-1, 'month').startOf('month').toDate()
         [[now, today], [today, yestoday], [now, thisWeek], [thisWeek, lastWeek], [now, thisMonth], [thisMonth, lastMonth]]
-      .map ([from, to]) ->
+      .map ([to, from]) ->
         db.order.findAsync
           created:
             $gt: from
             $lt: to
           _placeId: place._id
-          status:
-            $in: ['SUCCESS', 'STARTED']
+          status: 'SUCCESS'
         .then (orders) ->
           moneys = _.pluck orders, 'money'
           total = _.reduce(moneys, (a, b) -> a + b) or 0
@@ -98,7 +109,6 @@ class API
 
   getById: (req, callback) ->
     _id = req.params._id
-    console.log 'getById', _id
     db.place.findOneAsync
       _id: _id
     .then (place) ->
@@ -113,24 +123,25 @@ class API
     {_placeId} = req.params
     unless user.role in ['agent', 'place', 'root'] and _placeId
       return res.status(403).send('Forbidden')
-    db.place.findAsync
+    p = null
+    db.place.findOneAsync
       _id: _placeId
     .then (place) ->
-      _agentId = place._agentId
-      if user.role is 'agent' and "#{place._agentId}" is "#{user._id}" or user.role in ['place', 'root']
+      p = place.p
+      if (user.role is 'agent' and "#{place._agentId}" is "#{user._id}") or (user.role in ['place', 'root'])
         months = [
-          # for test
-          moment().startOf('month')
-          moment().startOf('month').add(-1, 'month')
-          moment().startOf('month').add(-2, 'month')
-          moment().startOf('month').add(-3, 'month')
+          [moment().startOf('month'), moment().startOf('day')]
+          [moment().startOf('month').add(-1, 'month'), moment().startOf('month')]
+          [moment().startOf('month').add(-1, 'month'), moment().startOf('month').add(-2, 'month')]
         ]
       else
         []
-    .map (start) ->
-      end = start.clone().endOf('month')
+    .map ([start, end]) ->
       db.order.findAsync
         _placeId: _placeId
+        status: 'SUCCESS'
+        serviceStatus: 'STARTED'
+        mode: 'WX'
         created:
           $gt: start.toDate()
           $lt: end.toDate()
@@ -138,7 +149,7 @@ class API
         total = 0
         orders.forEach (order) ->
           total += +order.money
-        total
+        (total*p/100).toFixed(2)
     .then (totals) ->
       callback(null, totals)
 

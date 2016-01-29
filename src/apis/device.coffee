@@ -3,6 +3,8 @@ db = require('limbo').use('anmoyi')
 u = require('../services/util')
 userSrv = require('../services/user')
 sockSrv = require('../services/socket')
+moment = require('moment')
+Promise = require('bluebird')
 
 pluck = (keys) ->
   (arr) ->
@@ -28,8 +30,18 @@ class API
 
   createDevice: (req, callback) ->
     params = _.pick req.body, needCreate
-    db.device.create params, (err, device)->
-      callback(err, device)
+    _placeId = req.body._placeId
+    unless params.uid
+      return req.res.status(302).send('paramErr')
+    db.place.findOneAsync
+      _id: _placeId
+    .then (place) ->
+      params._userId = place._agentId
+      db.device.createAsync params
+    .then (device)->
+      callback(null, device)
+    .catch (e) ->
+      callback(e)
   @::createDevice.route = ['post', '/devices']
   @::createDevice.before = [
     userSrv.isRoot
@@ -38,6 +50,8 @@ class API
 
   editDevice: (req, callback) ->
     { _id } = req.body
+    unless req.body.uid
+      return req.res.status(302).send('paramErr')
     data = _.pick req.body, canEdit
     db.device.update
       _id: _id
@@ -62,7 +76,18 @@ class API
 
   order: (req, callback) ->
     { uid, order } = req.query
-    sockSrv.start(uid, 10, callback)
+    sockSrv.start(uid, 10, (err) ->
+      return callback(err) if err
+      db.device.update
+        uid: uid
+      , status: 'work'
+      ,
+        upsert: false
+        new: false
+      , (err, rt) ->
+        console.log err, rt
+        callback(err, 'ok')
+    )
   @::order.route = ['get', '/devices/order']
   @::order.before = [
     userSrv.isRoot
@@ -72,11 +97,10 @@ class API
     user = req._data.user
     role = user.role
     _placeId = req.query._placeId
-    console.log 'fetchDevices._placeId', _placeId
     if role is 'root'
       cons = {}
     else
-      cons = _userId: _userId
+      cons = _userId: user._id
     if _placeId
       cons._placeId = _placeId
     db.device.findAsync cons
@@ -106,11 +130,35 @@ class API
           places.forEach (place) ->
             map["#{place._id}"] = place
           devices.map (device) ->
-            device.location = map["#{device._placeId}"].location
-            device.place = map["#{device._placeId}"].name
+            device.location = map["#{device._placeId}"]?.location
+            device.place = map["#{device._placeId}"]?.name
             device
+    .map (device) ->
+      if _placeId
+        now = new Date
+        today = moment().startOf('day').toDate()
+        yestoday = moment().add(-1, 'day').startOf('day').toDate()
+        device.total = {}
+        Promise.map [[now, today], [today, yestoday]], ([to, from]) ->
+          db.order.findAsync
+            created:
+              $gt: from
+              $lt: to
+            uid: device.uid
+            status: 'SUCCESS'
+          .then (orders) ->
+            total = {}
+            orders.forEach (order) ->
+              total[order.mode] = 0 unless total[order.mode]
+              total[order.mode] += order.money
+            total
+        .then (totals) ->
+          device.total.today = totals[0]
+          device.total.yestoday = totals[1]
+          device
+      else
+        device
     .then (devices) ->
-      console.log 'devices', devices
       callback(null, devices)
     .catch (e) ->
       console.log e.stack

@@ -20,6 +20,7 @@ define [
       bankAccount: ''
       role: 'salesman'
       edit: '<a href="javascript:;">Edit</a>'
+      password: ''
 
     initialize: ->
 
@@ -34,7 +35,7 @@ define [
         url: "/users/#{@id}"
         method: 'put'
         data: params
-      ).done((res, state) ->
+      ).done((res, state) =>
         if state is 'success'
           @set(res)
       )

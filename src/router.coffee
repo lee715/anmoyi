@@ -17,7 +17,6 @@ module.exports = (router, controller, middlewares = [], prefix = '') ->
         if url.indexOf('_id') is url.length - 3
           url = url.replace(url[-3..], "_id([0-9a-fA-F]{24})")
         url = prefix + url
-        console.log url
         router[method] url, middlewares.concat(before or [], wrap(func), after or [])
 
   # error handler
@@ -33,7 +32,6 @@ module.exports = (router, controller, middlewares = [], prefix = '') ->
     if req.template
       res.render(req.template, req.result)
     else if req.redirect
-      console.log 'redirect:', req.redirect
       res.redirect(req.redirect)
     else if req.result?
       if typeof req.result is 'string'

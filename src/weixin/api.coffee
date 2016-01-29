@@ -29,7 +29,6 @@ wx_date = (date) ->
 generateWxSign = (data) ->
   qsStr = u.qsParseSortByAscii(data)
   qsStr += "&key=#{key}"
-  console.log qsStr
   return u.md5(qsStr).toUpperCase()
 
 module.exports = WX_API =
@@ -96,9 +95,7 @@ module.exports = WX_API =
         console.log(err) if err
 
   sendTemplateMessage: (content) ->
-    console.log 'sendTemplateMessage', content
     mpAPI.getMPToken (err, access_token) ->
-      console.log err, access_token
       return if err
       request.post
         headers:
@@ -107,7 +104,6 @@ module.exports = WX_API =
         timeout: 5000
         body: JSON.stringify(content)
       , (err, res, body) ->
-        console.log err, body
 
   getUserInfo: (openid, callback) ->
     self = @
@@ -168,61 +164,56 @@ module.exports = WX_API =
   createMenu: ->
     self = @
 
-    buttons =
-      "button": [{
-        "type": "click"
-        "name": "支付续费"
-        "key": "pay"
-      },
-      {
-        "type": "view"
-        "name": "选择模式"
-        "sub_button": [{
-          "type": "click"
-          "name": "疲劳恢复"
-          "key": "set_1F"
-        },{
-          "type": "click"
-          "name": "舒适按摩"
-          "key": "set_20"
-        },{
-          "type": "click"
-          "name": "轻松按摩"
-          "key": "set_1E"
-        },{
-          "type": "click"
-          "name": "酸痛改善"
-          "key": "set_21"
-        },{
-          "type": "click"
-          "name": "颈肩自动"
-          "key": "set_22"
-        },{
-          "type": "click"
-          "name": "气压自动程序"
-          "key": "set_24"
-        }]
-      },
-      {
-        "name": "优惠促销",
-        "sub_button": [{
-          "type": "view"
-          "name": "想加盟快进来"
-          "url": "http://www.baidu.com"
-        },{
-          "type": "view"
-          "name": "安全注意事项"
-          "url": "http://www.baidu.com"
-        },{
-          "type": "view"
-          "name": "按摩椅咋么用"
-          "url": "http://www.baidu.com"
-        },{
-          "type": "view"
-          "name": "找优惠点这里"
-          "url": "http://www.baidu.com"
-        }]
-      }]
+    buttons = config.WX_OPEN_PLATFORM.buttons
+      # {
+      #   "type": "view"
+      #   "name": "选择模式"
+      #   "sub_button": [{
+      #     "type": "click"
+      #     "name": "疲劳恢复"
+      #     "key": "set_1F"
+      #   },{
+      #     "type": "click"
+      #     "name": "舒适按摩"
+      #     "key": "set_20"
+      #   },{
+      #     "type": "click"
+      #     "name": "轻松按摩"
+      #     "key": "set_1E"
+      #   },{
+      #     "type": "click"
+      #     "name": "酸痛改善"
+      #     "key": "set_21"
+      #   },{
+      #     "type": "click"
+      #     "name": "颈肩自动"
+      #     "key": "set_22"
+      #   },{
+      #     "type": "click"
+      #     "name": "气压自动程序"
+      #     "key": "set_24"
+      #   }]
+      # },
+      # {
+      #   "name": "优惠促销",
+      #   "sub_button": [{
+      #     "type": "view"
+      #     "name": "想加盟快进来"
+      #     "url": "http://www.baidu.com"
+      #   },{
+      #     "type": "view"
+      #     "name": "安全注意事项"
+      #     "url": "http://www.baidu.com"
+      #   },{
+      #     "type": "view"
+      #     "name": "按摩椅咋么用"
+      #     "url": "http://www.baidu.com"
+      #   },{
+      #     "type": "view"
+      #     "name": "找优惠点这里"
+      #     "url": "http://www.baidu.com"
+      #   }]
+      # }]
 
     async.waterfall [
       (next) ->

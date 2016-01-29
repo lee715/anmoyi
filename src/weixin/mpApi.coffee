@@ -99,14 +99,12 @@ module.exports = MP_API =
       'access_token': token
       'openid': openid
     }
-    console.log "MP_API:getUserInfo:fields", fields
     query = qs.stringify(fields)
     request.get
       url: urlType.userInfoURL(query)
       timeout: 5000
       json: true
     , (err, resp, body) ->
-      console.log err, body
       return callback('wxAPIError') if err or body?.errcode
 
       {openid, nickname, unionid} = body
@@ -132,7 +130,6 @@ module.exports = MP_API =
       return callback('wxAPIError') if err or body?.errcode
 
       {access_token, expires_in} = body
-      console.log "access_token", access_token
       redis.set config.MP_WEIXIN.tokenKey, access_token
       redis.expire config.MP_WEIXIN.tokenKey, expires_in
       callback null, body
