@@ -79,7 +79,8 @@ class API
         if order.status is 'SUCCESS'
           if action is "start"
             sockSrv.startAsync(uid, order.time)
-            .then ->
+            .then (state) ->
+              throw new Error('start failed') unless state
               order.serviceStatus = 'STARTED'
               order.saveAsync()
             .then ->

@@ -14,12 +14,15 @@ sneaky('dev', function () {
 + public
 + public/templates**
 + public/tmp**
++ public/bower
++ public/bower/jquery**
 + package.json
 + app.js
 - *
 `
 
   this.before('rm -rf lib && coffee -o lib -c src')
+  this.after('pm2 restart app')
   this.overwrite = true
   this.nochdir = true
 

@@ -16,7 +16,7 @@ session   = require('cookie-session')
 
 app = express()
 
-app.set 'view', mejs.initView("public/tmp/static/templates/*.ejs")
+app.set 'view', mejs.initView("public/templates/*.ejs")
 app.use(express.static('public'))
 app.use bodyParser.json()
 app.use bodyParser.urlencoded(extended: true)
@@ -26,18 +26,18 @@ app.use require('cookie-parser')()
 app.use session(config.sessionConfig)
 app.use require('./services/user').init
 
-app.use '/wx/notify', WX_API.useWXCallback (msg, req, res, next) ->
-  console.log '/wx/notify',msg
-  db.order.updateAsync
-    _id: msg.out_trade_no
-  ,
-    status: "SUCCESS"
-    serviceStatus: "PAIED"
-  ,
-    upsert: false
-    new: false
-  .then ->
-    res.success()
+# app.use '/wx/notify', WX_API.useWXCallback (msg, req, res, next) ->
+#   console.log '/wx/notify',msg
+#   db.order.updateAsync
+#     _id: msg.out_trade_no
+#   ,
+#     status: "SUCCESS"
+#     serviceStatus: "PAIED"
+#   ,
+#     upsert: false
+#     new: false
+#   .then ->
+#     res.success()
 
 app.get '/api/test', (req, res, next) ->
   res.send('ok')

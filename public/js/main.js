@@ -16,7 +16,7 @@
       'data': './data',
       'utils': './utils',
       'qrcode': '../bower/jquery-qrcode/jquery.qrcode.min',
-      'distdata': '../bower/distpicker/dist/distpicker.data',
+      'ChineseDistricts': '../bower/distpicker/dist/distpicker.data',
       'datepicker': '../bower/bootstrap-datepicker/dist/js/bootstrap-datepicker.min',
       'dist': '../bower/distpicker/dist/distpicker',
       'essage': '../bower/essage/src/essage'
@@ -27,7 +27,7 @@
     }
   });
 
-  require(['jquery', 'bootstrap', 'backbone', './router', 'data', 'ejs', 'distdata', 'essage', 'datepicker'], function($, bootstrap, Backbone, Router, Data) {
+  require(['jquery', 'bootstrap', 'backbone', './router', 'data', 'ejs', 'ChineseDistricts', 'essage', 'datepicker'], function($, bootstrap, Backbone, Router, Data) {
     var app;
     app = Data.app = new Router();
     return $.ajax({

@@ -146,6 +146,7 @@ class API
               $lt: to
             uid: device.uid
             status: 'SUCCESS'
+            serviceStatus: $in: ['STARTED', 'ENDED']
           .then (orders) ->
             total = {}
             orders.forEach (order) ->

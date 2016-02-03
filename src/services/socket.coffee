@@ -105,12 +105,15 @@ SOCKS =
       sock.write("~#{uid}#startup##{time}\r")
 
   handleCB: (uid, callback) ->
-    @_cbs[uid] = (state, err) =>
-      if state
-        callback(null, uid)
-      else
-        callback(err)
-      delete @_cbs[uid]
+    unless @_cbs[uid]
+      @_cbs[uid] = []
+      @_cbs[uid].cb = (state, err) =>
+        console.log 'cb called'
+        cb = @_cbs[uid].shift()
+        cb(null, !!state)
+        console.log @_cbs[uid].length
+        delete @_cbs[uid] unless @_cbs[uid].length
+    @_cbs[uid].push callback
 
   cacheSock: (uid, sock) ->
     if uid and sock
@@ -129,11 +132,11 @@ SOCKS =
     uid = arr[0]
     if @_cbs[uid]
       if arr.length is 4 and arr[3] is 'OK'
-        @_cbs[uid](true)
+        @_cbs[uid].cb(true)
       else if arr.length is 4 and arr[3] isnt 'OK'
-        @_cbs[uid](false, arr[1])
+        @_cbs[uid].cb(false, arr[1])
       else
-        @_cbs[uid](false, 'NO_ANWSER')
+        @_cbs[uid].cb(false, 'NO_ANWSER')
     if arr.length is 3
       [uid, action, val] = arr
       return if val is 'OK'

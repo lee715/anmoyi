@@ -106,18 +106,17 @@
   </div>
 <script type="text/javascript" src="/bower/jquery/dist/jquery.js"></script>
 <script type="text/javascript">
-  var openid = "<%=it.openid%>"
-  var order = "<%=it.order%>"
-  var uid = "<%=it.uid%>"
-  var timer
+  var openid = "<%=it.openid%>";
+  var order = "<%=it.order%>";
+  var uid = "<%=it.uid%>";
+  var timer;
   function pay(){
     WeixinJSBridge.invoke(
       'getBrandWCPayRequest', <%-JSON.stringify(it.payargs)%>,
       function(res){
-        send(typeof res)
         if(res.err_msg == "get_brand_wcpay_request:ok" ) {
-          timer = setInterval(checkOrderStatus, 2000)
-          $('#main').html('<div class="notice success">支付成功，订单正在处理中，请稍候...</div>')
+          run();
+          $('#main').html('<div class="notice success">支付成功，订单正在处理中，请稍候...请勿关闭该页面</div>');
         }
       }
     );
@@ -125,8 +124,8 @@
 
   function onBridgeReady(){
     $('#pay').click(function(){
-      pay()
-      return false
+      pay();
+      return false;
     })
   }
 
@@ -150,9 +149,27 @@
     }).done(function(res, status){
       send({res:res,status: status})
       if(res === 'SUCCESS'){
-        $('#main').html('<div class="notice success">订单处理成功，设备将自动启动</div>')
-        clearInterval(timer)
-        start()
+        $('#main').html('<div class="notice success">订单处理成功，设备将自动启动</div>');
+        clearInterval(timer);
+        start();
+      }
+    })
+  }
+
+  function run(){
+    $.ajax({
+      url: "/wx/order/run",
+      method: 'get',
+      data: {
+        _orderId: order,
+        uid: uid,
+        openid: openid
+      }
+    }).done(function(res, status){
+      if(res === 'ok'){
+        $('#main').html('<div class="notice success">设备启动成功，请关闭该页面，祝您使用愉快</div>')
+      }else{
+        $('#main').html('<div class="notice fail">设备启动失败，请关闭该页面，进入公众号点击“启动”按钮手动启动按摩椅</div>')
       }
     })
   }

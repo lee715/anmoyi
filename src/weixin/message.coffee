@@ -133,22 +133,24 @@ module.exports = (message) ->
           created:
             $gt: today
           status: 'SUCCESS'
-          serviceStatus: 'BEFORE'
+          serviceStatus:
+            $ne: 'STARTED'
         .then (orders) ->
           total.unstarted = orders.length
           orders
         .map (order) ->
           sockSrv.startAsync(order.uid, order.time)
-          .then ->
-            order.serviceStatus = 'STARTED'
-            order.saveAsync()
-          .then ->
-            db.device.updateAsync
-              uid: order.uid
-            , status: 'work'
-            ,
-              upsert: false
-              new: false
+          .then (state) ->
+            if state
+              order.serviceStatus = 'STARTED'
+              order.saveAsync()
+              .then ->
+                db.device.updateAsync
+                  uid: order.uid
+                , status: 'work'
+                ,
+                  upsert: false
+                  new: false
         .then ->
           db.order.findAsync
             openId: fromusername
@@ -161,16 +163,17 @@ module.exports = (message) ->
             if wx_order.trade_state is 'SUCCESS'
               order.status = "SUCCESS"
               sockSrv.startAsync(order.uid, order.time)
-              .then ->
-                order.serviceStatus = 'STARTED'
-                order.saveAsync()
-              .then ->
-                db.device.updateAsync
-                  uid: order.uid
-                , status: 'work'
-                ,
-                  upsert: false
-                  new: false
+              .then (state) ->
+                if state
+                  order.serviceStatus = 'STARTED'
+                  order.saveAsync()
+                  .then ->
+                    db.device.updateAsync
+                      uid: order.uid
+                    , status: 'work'
+                    ,
+                      upsert: false
+                      new: false
               .then ->
                 wx_order.trade_state
             else
@@ -203,6 +206,8 @@ module.exports = (message) ->
                 其他问题，请致电4009986682，谢谢！
                 """
               subscribe(message, msg)
+        .catch (e) ->
+          console.log e.stack
   else if type is 'text'
     subscribe(message)
   # else if type is 'click'

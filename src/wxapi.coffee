@@ -6,6 +6,23 @@ WXPay = require('weixin-pay')
 async = require('async')
 wxReply = require('./weixin/message')
 redis = require('./services/redis')
+Promise = require('bluebird')
+sockSrv = require('./services/socket')
+
+queryOrderByTimes = (_orderId, times, callback) ->
+  _doOne = ->
+    WX_API.queryOrder out_trade_no: "#{_orderId}", (err, wx_order) ->
+      console.log 'times', times, wx_order.trade_state
+      if wx_order.trade_state isnt 'SUCCESS'
+        times--
+        if times > 0
+          setTimeout(_doOne, 1000)
+        else
+          callback(null, false)
+      else
+        callback(null, true)
+  _doOne()
+queryOrderByTimesAsync = Promise.promisify(queryOrderByTimes)
 
 class API
 
@@ -100,6 +117,52 @@ class API
     .catch ->
       req.res.send('system error, please try later')
   @::payView.route = ['get', '/pay/v1/h5pay']
+
+  confirmAndStart: (req, callback) ->
+    {_orderId, uid, openid} = req.query
+    console.log 'confirmAndStart', _orderId, uid, openid
+    unless uid and _orderId
+      return callback(new Error('paramErr'))
+    order = null
+    db.order.findOneAsync
+      _id: _orderId
+    .then (_order) ->
+      order = _order
+      if order.status isnt 'SUCCESS'
+        queryOrderByTimesAsync(order._id, 3)
+        .then (state) ->
+          console.log 'state', state
+          throw new Error('confirm failed') unless state
+    .then ->
+      order.status = "SUCCESS"
+      order.serviceStatus = 'PAIED'
+      order.saveAsync()
+    .then ->
+      redis.getAsync "ORDER.COMMAND.LOCK.#{_orderId}"
+    .then (lock) ->
+      throw new Error('order is handling') if lock
+      redis.setexAsync "ORDER.COMMAND.LOCK.#{_orderId}", 60*10, 1
+    .then ->
+      sockSrv.startAsync(uid, order.time)
+      .then (state) ->
+        throw new Error('start failed') unless state
+        order.serviceStatus = 'STARTED'
+        order.saveAsync()
+      .then ->
+        db.device.updateAsync
+          uid: uid
+        , status: 'work'
+        ,
+          upsert: false
+          new: false
+      .then ->
+        callback(null, 'ok')
+    .then ->
+      redis.del "ORDER.COMMAND.LOCK.#{_orderId}"
+    .catch (e) ->
+      console.log e.stack
+      callback(e)
+  @::confirmAndStart.route = ['get', '/wx/order/run']
 
   orderStatus: (req, callback) ->
     order = req.query.order

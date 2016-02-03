@@ -92,6 +92,7 @@ class API
             $lt: to
           _placeId: place._id
           status: 'SUCCESS'
+          serviceStatus: $in: ['STARTED', 'ENDED']
         .then (orders) ->
           moneys = _.pluck orders, 'money'
           total = _.reduce(moneys, (a, b) -> a + b) or 0
