@@ -12,7 +12,12 @@ _ = require('lodash')
 subscribe = (message, words) ->
 
   weixinAPI.sendMessage(message.fromusername, words or """
-    感谢您关注 轻松驿客 ！
+    感谢使用"轻松驿客"。
+
+    在使用过程中遇到任何疑问请在公众号内留言或致电4009986682.
+    我们会竭诚为您服务。
+
+    轻松驿客祝您生活愉快~
   """)
 
 sendPayTmp = (uid, fromusername) ->
@@ -31,13 +36,13 @@ sendPayTmp = (uid, fromusername) ->
         topcolor: "#ff0000"
         data:
           first:
-            value: "点击该链接付款"
+            value: "请点击这里进入微信安全支付"
           keyword1:
             value: "#{device.name || '1号'}"
           keyword2:
             value: "#{info.cost} 元" or "5元"
           remark:
-            value: "请确认该按摩椅空闲"
+            value: "支付完成后请点击下方的“启动”按钮"
       )
 
 module.exports = (message) ->

@@ -127,6 +127,7 @@ SOCKS =
       return
     msg = msg.replace(/[^0-9a-zA-Z\#]+/g, '')
     arr = msg.split('#')
+    arr[0] = arr[0].slice(-12)
     return if arr.length < 3
     @cacheSock(arr[0], sock)
     uid = arr[0]

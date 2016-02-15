@@ -116,7 +116,7 @@
       function(res){
         if(res.err_msg == "get_brand_wcpay_request:ok" ) {
           run();
-          $('#main').html('<div class="notice success">支付成功，订单正在处理中，请稍候...请勿关闭该页面</div>');
+          $('#main').html('<div class="notice success">设备启动中。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：4009986682</div>');
         }
       }
     );
@@ -149,7 +149,7 @@
     }).done(function(res, status){
       send({res:res,status: status})
       if(res === 'SUCCESS'){
-        $('#main').html('<div class="notice success">订单处理成功，设备将自动启动</div>');
+        $('#main').html('<div class="notice success">订单处理成功，设备将自动启动。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：4009986682</div>');
         clearInterval(timer);
         start();
       }
@@ -167,7 +167,7 @@
       }
     }).done(function(res, status){
       if(res === 'ok'){
-        $('#main').html('<div class="notice success">设备启动成功，请关闭该页面，祝您使用愉快</div>')
+        $('#main').html('<div class="notice success">设备启动成功，请关闭该页面，祝您使用愉快<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：4009986682</div>')
       }else{
         $('#main').html('<div class="notice fail">设备启动失败，请关闭该页面，进入公众号点击“启动”按钮手动启动按摩椅</div>')
       }
