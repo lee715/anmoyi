@@ -16,8 +16,8 @@ define ['utils', 'models/user'], (utils, userModel) ->
     home: ->
       return if @dontHandle()
       if @user
-        role = @user.role
-        @_placeId = @user._id if role is 'place'
+        role = @user.get('role')
+        @_placeId = @user.id if role is 'place'
         url = if role is 'place' then '/reconciliation' else '/places'
         @app.navigate(url,
           trigger: true
