@@ -75,7 +75,9 @@ class API
     db[type].findAsync cons
     .then (data) ->
       ids = _.pluck data, '_id'
-      match = status: 'SUCCESS'
+      match =
+        status: 'SUCCESS'
+        serviceStatus: $in: ['STARTED', 'ENDED']
       if type is 'place'
         match._placeId = $in: ids
       else

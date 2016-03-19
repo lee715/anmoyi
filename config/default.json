@@ -25,7 +25,8 @@
     }
   },
   "h5": {
-    "pay": "/pay/v1/h5pay"
+    "pay": "/pay/v1/h5pay",
+    "pay2": "/pay/v1/h5page"
   },
   "sessionConfig": {
     "secret": "qingsongyike",

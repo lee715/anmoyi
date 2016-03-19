@@ -45,6 +45,29 @@ sendPayTmp = (uid, fromusername) ->
             value: "支付完成后请点击下方的“启动”按钮"
       )
 
+sendPayTmp2 = (_placeId, fromusername) ->
+  db.place.findOne
+    _id: _placeId
+  , (err, place) ->
+    if err or not place
+      return subscribe("场地未找到，请联系管理员")
+
+    weixinAPI.sendTemplateMessage(
+      touser: fromusername
+      template_id: config.MP_WEIXIN.templateIDs.pay
+      url: "#{config.host}#{config.h5.pay2}?openid=#{fromusername}&_placeId=#{_placeId}"
+      topcolor: "#ff0000"
+      data:
+        first:
+          value: "请点击这里进入支付操作界面"
+        keyword1:
+          value: "#{place.name}"
+        keyword2:
+          value: ""
+        remark:
+          value: ""
+    )
+
 module.exports = (message) ->
   type = message.msgtype
   event = message.event
@@ -69,8 +92,6 @@ module.exports = (message) ->
         alien.province = user.province
         alien.country = user.country
         alien.saveAsync()
-    .then (alien) ->
-      console.log 'alien', alien
     .catch (e) ->
       console.log 'alien', e
   if type is 'event'

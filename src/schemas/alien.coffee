@@ -6,6 +6,9 @@ module.exports = (Schema) ->
     province: String
     openId: String
     country: String
+    money:
+      type: Number
+      default: 0
     created:
       type: Date
       default: Date.now

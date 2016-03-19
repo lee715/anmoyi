@@ -14,6 +14,16 @@ define [
   'views/orders'
 ], ($, B, Data, layerTemp, devicesView, usersView, placesView, createDeviceView, createUserView, createPlaceView, reconciliationView, loginView, ordersView) ->
 
+  formatDate = (time) ->
+    now = new Date(time)
+    y = now.getFullYear()
+    m = now.getMonth() + 1
+    d = now.getDate()
+    hh = now.getHours()
+    mm = now.getMinutes()
+    ss = now.getSeconds()
+    return "#{y}/#{m}/#{d} #{hh}:#{mm}:#{ss}"
+
   class Layer extends B.View
 
     initialize: (options) ->
@@ -50,11 +60,11 @@ define [
       @render()
 
     renderTime: ->
-      time = Data.user.get('now')
-      @$nav.append('<span style="line-height:50px;" id="locale_time">'+(new Date(time)).toLocaleString()+'</span>')
+      time = Data.user.get('now') or Date.now()
+      @$nav.append('<span style="line-height:50px;" id="locale_time">'+formatDate(time)+'</span>')
       @t = setInterval ->
         time += 1000
-        $('#locale_time').html (new Date(time)).toLocaleString()
+        $('#locale_time').html formatDate(time)
       , 1000
 
     renderSubView: ->

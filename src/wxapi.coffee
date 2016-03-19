@@ -118,6 +118,47 @@ class API
       req.res.send('system error, please try later')
   @::payView.route = ['get', '/pay/v1/h5pay']
 
+  recharge: (req, callback) ->
+    unless money and openid and _placeId
+      return callback(new Error('params error'))
+    money = req.query.money
+    openid = req.query.openid
+    _placeId = req.query._placeId
+    db.order.createAsync
+      money: money
+      openId: openid
+      _placeId: _placeId
+      mode: "WX_RECHARGE"
+    .then (order) ->
+      WX_API.getBrandWCPayRequestParamsAsync openid, "#{order._id}", money * 100
+      .then (args) ->
+        callback(null, args)
+    .catch (e) ->
+      callback(e)
+  @::recharge.route = ['get', '/pay/v1/recharge']
+
+  pageView: (req, callback) ->
+    openid = req.query.openid
+    _placeId = req.query._placeId
+    info = {}
+    db.place.findOneAsync
+      _id: _placeId
+    .then (place) ->
+      info.placeName = place.name
+      info.openid = openid
+      db.device.findAsync
+        _placeId: _placeId
+    .then (devices) ->
+      info.devices = _.map(devices, (device) -> device.toJSON())
+      db.alien.findOneAsync
+        openId: openid
+    .then (alien) ->
+      info.user = alien.toJSON()
+      req.res.render('payWithPlace', info)
+    .catch ->
+      req.res.send('system error, please try later')
+  @::pageView.route = ['get', '/pay/v1/h5page']
+
   confirmAndStart: (req, callback) ->
     {_orderId, uid, openid} = req.query
     console.log 'confirmAndStart', _orderId, uid, openid

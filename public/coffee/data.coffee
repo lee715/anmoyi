@@ -34,6 +34,8 @@ define ['utils', 'models/user'], (utils, userModel) ->
       )
     route: (url) ->
       console.log 'Data.route', url
+      if @user.get('role') is 'place' and url isnt '/usersEdit'
+        return @home()
       @app.navigate(url,
         trigger: true
       )
