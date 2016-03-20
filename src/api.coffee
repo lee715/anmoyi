@@ -54,11 +54,60 @@ class API
   @::getAuthUrl.route = ['get', '/auth']
 
   getTicketUrl: (req, callback) ->
-    { uid } = req.query
-    MP_API.getQrcodeTicket(uid, (err, ticket) ->
+    { uid, _placeId } = req.query
+    MP_API.getQrcodeTicket(uid or _placeId, (err, ticket) ->
       callback(err, ticket.url)
     )
   @::getTicketUrl.route = ['get', '/ticket']
+
+  payAjax: (req, callback) ->
+    {openId, _deviceId, count} = req.query
+    unless openId and _deviceId and count
+      return callback(new Error('params error'))
+    db.alien.findOneAsync openId: openId
+    .then (alien) ->
+      unless alien.money
+        throw new Error('need more money')
+      db.device.findOneAsync _id: _deviceId
+      .then (device) ->
+        price = device.price * count
+        time = device.time * count
+        if alien.money < price
+          throw new Error('need more money')
+        sockSrv.startAsync(device.uid, time)
+        .then (state) ->
+          throw new Error('start failed') unless state
+          alien.money = alien.money - price
+          alien.saveAsync()
+        .then ->
+          db.order.createAsync
+            openId: openId
+            uid: device.uid
+            time: time
+            money: price
+            status: "SUCCESS"
+            serviceStatus: "STARTED"
+            mode: "API"
+            _userId: device._userId
+            _placeId: device._placeId
+        .then ->
+          callback(null, 'ok')
+    .catch callback
+  @::payAjax.route = ['get', '/payAjax']
+
+  prepay: (req, callback) ->
+    {money, openId} = req.query
+    unless money and openId
+      return callback(new Error('params error'))
+    db.order.createAsync
+      money: money
+      openId: openId
+      mode: "WX_EXCHARGE"
+    .then (order) ->
+      WX_API.getBrandWCPayRequestParamsAsync openId, "#{order._id}", money  # 微信金额单位为分
+      .then (args) ->
+        callback(null, {args: args, order: order._id})
+  @::prepay.route = ['get', '/prepay']
 
   orderDevice: (req, callback) ->
     { uid, _orderId, action, openid } = req.query

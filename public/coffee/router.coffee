@@ -78,12 +78,15 @@ define [
           text: res
 
     wx_ticket: ->
-      query = location.search.slice(1).split('=')[1]
+      obj = utils.query2obj(location.search)
+      if obj.uid
+        query = "uid=#{obj.uid}"
+      else if obj._placeId
+        query = "_placeId=#{obj._placeId}"
       $.ajax(
-        url: "/api/ticket?uid=#{query}"
+        url: "/api/ticket?#{query}"
         method: 'get'
       ).done (res, state) ->
-        console.log res
         $qr = $('<div id="qrcode" style="width:256px;height:256px"></div>')
         $('body').html($qr)
         $qr.qrcode

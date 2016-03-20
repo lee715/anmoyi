@@ -159,6 +159,37 @@ class API
       req.res.send('system error, please try later')
   @::pageView.route = ['get', '/pay/v1/h5page']
 
+  wxExcharge: (req, callback) ->
+    {_orderId, openid} = req.query
+    unless openid and _orderId
+      return callback(new Error('paramErr'))
+    order = null
+    alien = null
+    db.alien.findOneAsync openId: openid
+    .then (_alien) ->
+      unless _alien
+        throw new Error('alien isnt found')
+      alien = _alien
+      db.order.findOneAsync
+        _id: _orderId
+    .then (_order) ->
+      order = _order
+      if order.status isnt 'SUCCESS'
+        queryOrderByTimesAsync(order._id, 3)
+        .then (state) ->
+          console.log 'state', state
+          throw new Error('confirm failed') unless state
+        .then ->
+          order.status = "SUCCESS"
+          order.saveAsync()
+        .then ->
+          alien.money += order.money
+          alien.saveAsync()
+    .then ->
+      callback(null, {state: 'ok', money: alien.money})
+    .catch callback
+  @::wxExcharge.route = ['get', '/wx/excharge']
+
   confirmAndStart: (req, callback) ->
     {_orderId, uid, openid} = req.query
     console.log 'confirmAndStart', _orderId, uid, openid

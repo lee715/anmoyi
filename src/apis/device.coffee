@@ -23,6 +23,7 @@ createValidator =
   uid: "String:required"
   name: "String:required"
   _userId: "ObjectId:required"
+  type: "String"
 needCreate = Object.keys(createValidator)
 canEdit = needCreate
 
@@ -30,6 +31,8 @@ class API
 
   createDevice: (req, callback) ->
     params = _.pick req.body, needCreate
+    if(params.type == 'pulse')
+      params.time = 1
     _placeId = req.body._placeId
     unless params.uid
       return req.res.status(302).send('paramErr')

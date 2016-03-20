@@ -55,7 +55,7 @@ sendPayTmp2 = (_placeId, fromusername) ->
     weixinAPI.sendTemplateMessage(
       touser: fromusername
       template_id: config.MP_WEIXIN.templateIDs.pay
-      url: "#{config.host}#{config.h5.pay2}?openid=#{fromusername}&_placeId=#{_placeId}"
+      url: "#{config.host}#{config.h5.page}?openid=#{fromusername}&_placeId=#{_placeId}"
       topcolor: "#ff0000"
       data:
         first:
@@ -102,8 +102,10 @@ module.exports = (message) ->
         sendPayTmp(uid, fromusername)
     else if event is 'SCAN'
       uid = eventkey
-      if uid
+      if uid.length is 12
         sendPayTmp(uid, fromusername)
+      else if uid.length is 24
+        sendPayTmp2(uid, fromusername)
     else if event is 'unsubscribe'
       console.log 'unsubscribe'
     else if event is 'CLICK'

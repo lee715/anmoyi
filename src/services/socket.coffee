@@ -196,7 +196,6 @@ recordStatus = (uid, status) ->
 net.createServer( (sock) ->
   console.log "CONNECTED: #{sock.remoteAddress}:#{sock.remotePort}"
   sock.on 'data', (data) ->
-    console.log "DATA: #{data}"
     SOCKS.handleMsg((new Buffer(data)).toString('utf8'), sock)
   sock.on 'close', ->
     console.log "CLOSED: #{sock.remoteAddress}:#{sock.remotePort}"

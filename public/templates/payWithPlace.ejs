@@ -189,16 +189,16 @@
 <div class="header">
   <div class="left">
     <div class="label">余额</div>
-    <div class="money">999</div>
+    <div class="money"><%= rest%></div>
   </div>
   <div class="right">
     <ul class="money_list">
-      <li class="money_item">¥ 1元</li>
-      <li class="money_item">¥ 5元</li>
-      <li class="money_item">¥ 10元</li>
-      <li class="money_item">¥ 20元</li>
-      <li class="money_item">¥ 50元</li>
-      <li class="money_item">¥ 100元</li>
+      <li class="money_item" data-money=1>¥ 1元</li>
+      <li class="money_item" data-money=5>¥ 5元</li>
+      <li class="money_item" data-money=10>¥ 10元</li>
+      <li class="money_item" data-money=20>¥ 20元</li>
+      <li class="money_item" data-money=50>¥ 50元</li>
+      <li class="money_item" data-money=100>¥ 100元</li>
     </ul>
     <div id="submit">充值</div>
   </div>
@@ -206,69 +206,19 @@
 <div class="main">
   <div class="title">请点击设备编号启动</div>
   <ul class="device_list">
-    <li class="device_item">
-      <div class="device_total">¥ 10</div>
-      <div class="device_op">
-        <div class="device_plus">+</div>
-        <div class="device_minus">-</div>
-      </div>
-    </li>
-    <li class="device_item">
-      <div class="device_name">A</div>
+    <% for(var i=0,len=devices.length;i<len;i++){ %>
+    <li class="device_item" data-index=<%= i%> data-id=<%= devices[i]._id%>>
+      <div class="device_name"><%= devices[i].name%></div>
       <div class="device_info">
-        <div class="device_price">¥ 5</div>
-        <div class="device_time">8分钟</div>
+        <% if(devices[i].type == 'pulse'){ %>
+        <div class="device_price">¥ <%= devices[i].price %></div>
+        <% else { %>
+        <div class="device_price">¥ <%= devices[i].price %></div>
+        <div class="device_time"><%= devices[i].time %>分钟</div>
+        <% } %>
       </div>
     </li>
-    <li class="device_item">
-      <div class="device_name">A</div>
-      <div class="device_info">
-        <div class="device_price">¥ 5</div>
-        <div class="device_time">8分钟</div>
-      </div>
-    </li>
-    <li class="device_item">
-      <div class="device_name">A</div>
-      <div class="device_info">
-        <div class="device_price">¥ 5</div>
-        <div class="device_time">8分钟</div>
-      </div>
-    </li>
-    <li class="device_item">
-      <div class="device_name">A</div>
-      <div class="device_info">
-        <div class="device_price">¥ 5</div>
-        <div class="device_time">8分钟</div>
-      </div>
-    </li>
-    <li class="device_item">
-      <div class="device_name">A</div>
-      <div class="device_info">
-        <div class="device_price">¥ 5</div>
-        <div class="device_time">8分钟</div>
-      </div>
-    </li>
-    <li class="device_item">
-      <div class="device_name">A</div>
-      <div class="device_info">
-        <div class="device_price">¥ 5</div>
-        <div class="device_time">8分钟</div>
-      </div>
-    </li>
-    <li class="device_item">
-      <div class="device_name">A</div>
-      <div class="device_info">
-        <div class="device_price">¥ 5</div>
-        <div class="device_time">8分钟</div>
-      </div>
-    </li>
-    <li class="device_item">
-      <div class="device_name">A</div>
-      <div class="device_info">
-        <div class="device_price">¥ 5</div>
-        <div class="device_time">8分钟</div>
-      </div>
-    </li>
+    <%}%>
   </ul>
 </div>
 <div class="footer">
@@ -278,52 +228,141 @@
 <script type="text/javascript" src="../bower/jquery/dist/jquery.js"></script>
 <script type="text/javascript">
 $(function(){
+  var devices = <%= devices%>
+  var openid = <%= openid%>
+  var order = null
+  var paying = false
 
-  var renderDeviceOp = function(){
-    return '<div class="device_total">¥ 5</div>  \
+  var renderDeviceOp = function(device){
+    return '<div class="device_total">¥ '+ device.price +'</div>  \
       <div class="device_op">                    \
         <div class="device_plus">+</div>         \
         <div class="device_minus">-</div>        \
       </div>'
   }
 
-  var renderDeviceInfo = function(){
-    return '<div class="device_name">A</div> \
+  var renderDeviceInfo = function(device){
+    var str = '<div class="device_name">'+device.name+'</div> \
       <div class="device_info">              \
-        <div class="device_price">¥ 5</div>  \
-        <div class="device_time">8分钟</div>  \
-      </div>'
+        <div class="device_price">¥ '+device.price+'</div>'
+    if(device.type !== 'pulse'){
+      str += '<div class="device_time">'+device.time+'分钟</div>'
+    }
+    str += '</div>'
+    return str
   }
 
+  var cur = 0
   $('.device_item').click(function(e){
+    if (paying) return
     var $t = $(e.target)
+    var index = $(this).data('index')
+    var device = devices[index]
     if($t.hasClass('device_plus')){
       var $total = $(this).find('.device_total')
-      var val = +$total.html().replace(/[^0-9]+/g, '')
-      val += 5
+      cur++
+      var val = device.price * cur
       $total.html('¥ '+val)
     }else if($t.hasClass('device_minus')){
       var $item = $(this)
       var $total = $item.find('.device_total')
-      var val = +$total.html().replace(/[^0-9]+/g, '')
-      val -= 5
+      cur--
+      var val = device.price * cur
       if(val > 0){
         $total.html('¥ '+val)
       }else{
-        $item.html(renderDeviceInfo())
+        $item.html(renderDeviceInfo(device))
       }
     }else if($(this).hasClass('active')){
       return
     }else{
       var $active = $(this).parent().find('.active')
       if($active[0]){
-        $active.html(renderDeviceInfo())
+        $active.html(renderDeviceInfo(device))
         $active.removeClass('active')
       }
-      $(this).html(renderDeviceOp())
+      $(this).html(renderDeviceOp(device))
       $(this).addClass('active')
+      cur = 1
     }
   })
+
+  $('#start').click(function(){
+    if (paying) return
+    if(!cur){
+      return showMsg('请先选择设备')
+    }
+    paying = true
+    $.ajax({
+      url: '/api/payAjax',
+      body: {
+        _deviceId: $('.main .active').data('id'),
+        count: cur,
+        openId: openid
+      },
+      method: 'get'
+    }).done(function(res, status){
+      console.log(res)
+      paying = false
+    })
+  })
+
+  function showMsg(msg) {
+
+  }
+
+  $('.money_item').click(function(){
+    if (paying) return
+    $(this).parent().find('.active').removeClass('active')
+    $(this).addClass('active')
+  })
+
+  function onBridgeReady(){
+    $('#submit').click(function(){
+      if (paying) return
+      paying = true
+      $active = $(this).parent().find('.active')
+      money = $active.data('money')
+      if (!$active[0]){
+        return showMsg('请先选择充值金额')
+      }
+      $.ajax({
+        url: '/api/prepay',
+        body: {
+          money: money,
+          openId: openid
+        }
+      }).done(function(res, state){
+        console.log(res)
+        WeixinJSBridge.invoke(
+          'getBrandWCPayRequest', JSON.stringify(res.args),
+          function(res){
+            if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+              run();
+            }
+          }
+        );
+      })
+    })
+
+    function run(){
+      $.ajax({
+        url: "/wx/excharge",
+        method: 'get',
+        data: {
+          _orderId: order,
+          openId: openid
+        }
+      }).done(function(res, status){
+        paying = false
+        if(res.state === 'ok'){
+          $('.left .money').html(res.money)
+        }else{
+          showMsg('支付异常，请重新支付')
+        }
+      })
+    }
+  }
 
   // $('.device_plus').click(function(){
   //   var $total = $(this).closest('.device_item').find('.device_total')
@@ -342,6 +381,16 @@ $(function(){
   //     $item.html(renderDeviceInfo())
   //   }
   // })
+  if (typeof WeixinJSBridge == "undefined"){
+     if( document.addEventListener ){
+         document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+     }else if (document.attachEvent){
+         document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+         document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+     }
+  }else{
+     onBridgeReady();
+  }
 })
 </script>
 </body>
