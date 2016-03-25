@@ -126,14 +126,15 @@
   }
   .device_name {
     height: 50%;
-    font-size: 40px;
+    font-size: 20px;
     font-weight: bold;
     padding-left: 10px;
+    padding-top: 3px;
   }
   .device_info {
     height: 49%;
     text-align: right;
-    padding: 2px 10px;
+    padding: 0px 10px;
     font-size: 18px;
   }
   .device_total {
@@ -183,13 +184,34 @@
     margin-top: 12px;
     box-shadow: 1px 1px 3px #999;
   }
+  .msg {
+    position: absolute;
+    left:0;
+    right:0;
+    background: white;
+    opacity: 0.9;
+    padding: 10px;
+    text-align: center;
+    z-index: 999;
+    top: 30%;
+    color: #666;
+    border: 1px solid #999;
+  }
+  .msg.error {
+    color: #ff3c00;
+    border: 1px solid #ff3c00;
+  }
+  .hide {
+    display: none
+  }
   </style>
 </head>
 <body>
+<div class="msg hide"></div>
 <div class="header">
   <div class="left">
     <div class="label">余额</div>
-    <div class="money"><%= rest%></div>
+    <div class="money"><%= it.rest%></div>
   </div>
   <div class="right">
     <ul class="money_list">
@@ -206,32 +228,33 @@
 <div class="main">
   <div class="title">请点击设备编号启动</div>
   <ul class="device_list">
-    <% for(var i=0,len=devices.length;i<len;i++){ %>
-    <li class="device_item" data-index=<%= i%> data-id=<%= devices[i]._id%>>
-      <div class="device_name"><%= devices[i].name%></div>
+    <% for(var i=0,len=it.devices.length;i<len;i++){ %>
+    <li class="device_item" data-index=<%= i%> data-id=<%= it.devices[i]._id%>>
+      <div class="device_name"><%= it.devices[i].name%></div>
       <div class="device_info">
-        <% if(devices[i].type == 'pulse'){ %>
-        <div class="device_price">¥ <%= devices[i].price %></div>
-        <% else { %>
-        <div class="device_price">¥ <%= devices[i].price %></div>
-        <div class="device_time"><%= devices[i].time %>分钟</div>
+        <% if(it.devices[i].type == 'pulse'){ %>
+        <div class="device_price">¥ <%= it.devices[i].price %></div>
+        <% }else { %>
+        <div class="device_price">¥ <%= it.devices[i].price %></div>
+        <div class="device_time"><%= it.devices[i].time %>分钟</div>
         <% } %>
       </div>
     </li>
-    <%}%>
+    <% } %>
   </ul>
 </div>
 <div class="footer">
   <a href="javascript:;" id="start">启动</a>
   <!-- <a href="javascript:;" id="envelope">红包</a> -->
 </div>
-<script type="text/javascript" src="../bower/jquery/dist/jquery.js"></script>
+<script type="text/javascript" src="/bower/jquery/dist/jquery.js"></script>
 <script type="text/javascript">
 $(function(){
-  var devices = <%= devices%>
-  var openid = <%= openid%>
+  var devices = <%-JSON.stringify(it.devices)%>
+  var openId = "<%= it.openId%>"
   var order = null
   var paying = false
+  var $msg = $('.msg')
 
   var renderDeviceOp = function(device){
     return '<div class="device_total">¥ '+ device.price +'</div>  \
@@ -250,6 +273,10 @@ $(function(){
     }
     str += '</div>'
     return str
+  }
+
+  var updateTotal = function (money) {
+    $('.left .money').html(money)
   }
 
   var cur = 0
@@ -278,7 +305,8 @@ $(function(){
     }else{
       var $active = $(this).parent().find('.active')
       if($active[0]){
-        $active.html(renderDeviceInfo(device))
+        var _index = $active.data('index')
+        $active.html(renderDeviceInfo(devices[_index]))
         $active.removeClass('active')
       }
       $(this).html(renderDeviceOp(device))
@@ -295,20 +323,37 @@ $(function(){
     paying = true
     $.ajax({
       url: '/api/payAjax',
-      body: {
+      data: {
         _deviceId: $('.main .active').data('id'),
         count: cur,
-        openId: openid
+        openId: openId
       },
       method: 'get'
     }).done(function(res, status){
-      console.log(res)
+      if(res.state == 'ok'){
+        updateTotal(res.rest)
+        showMsg('支付成功，使用愉快！', 'success')
+      }else{
+        showMsg('支付失败，请重试！', 'error')
+      }
+      paying = false
+    }).error(function(){
+      showMsg('支付失败，请重试！', 'error')
       paying = false
     })
   })
 
-  function showMsg(msg) {
-
+  function showMsg(msg, state) {
+    $msg.html(msg)
+    if(state == 'error'){
+      $msg.addClass('error')
+    }else{
+      $msg.removeClass('error')
+    }
+    $msg.removeClass('hide')
+    setTimeout(function(){
+      $msg.addClass('hide')
+    }, 2000)
   }
 
   $('.money_item').click(function(){
@@ -317,31 +362,40 @@ $(function(){
     $(this).addClass('active')
   })
 
+  function send(data){
+    $.ajax({
+      url: "/api/test",
+      method: 'get',
+      data: data
+    })
+  }
+
   function onBridgeReady(){
     $('#submit').click(function(){
       if (paying) return
-      paying = true
       $active = $(this).parent().find('.active')
       money = $active.data('money')
       if (!$active[0]){
         return showMsg('请先选择充值金额')
       }
+      paying = true
       $.ajax({
         url: '/api/prepay',
-        body: {
+        data: {
           money: money,
-          openId: openid
+          openId: openId
         }
       }).done(function(res, state){
-        console.log(res)
+        send(res)
+        order = res.order
         WeixinJSBridge.invoke(
-          'getBrandWCPayRequest', JSON.stringify(res.args),
+          'getBrandWCPayRequest', res.args,
           function(res){
             if(res.err_msg == "get_brand_wcpay_request:ok" ) {
               run();
             }
           }
-        );
+        )
       })
     })
 
@@ -351,12 +405,13 @@ $(function(){
         method: 'get',
         data: {
           _orderId: order,
-          openId: openid
+          openId: openId
         }
       }).done(function(res, status){
         paying = false
+        send(res)
         if(res.state === 'ok'){
-          $('.left .money').html(res.money)
+          $('.left .money').html(res.rest)
         }else{
           showMsg('支付异常，请重新支付')
         }
@@ -364,23 +419,6 @@ $(function(){
     }
   }
 
-  // $('.device_plus').click(function(){
-  //   var $total = $(this).closest('.device_item').find('.device_total')
-  //   var val = +$total.html().replace(/[^0-9]+/g, '')
-  //   val += 5
-  //   $total.html('¥ '+val)
-  // })
-  // $('.device_minus').click(function(){
-  //   var $item = $(this).closest('.device_item')
-  //   var $total = $item.find('.device_total')
-  //   var val = +$total.html().replace(/[^0-9]+/g, '')
-  //   val -= 5
-  //   if(val > 0){
-  //     $total.html('¥ '+val)
-  //   }else{
-  //     $item.html(renderDeviceInfo())
-  //   }
-  // })
   if (typeof WeixinJSBridge == "undefined"){
      if( document.addEventListener ){
          document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);

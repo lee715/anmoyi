@@ -24,9 +24,9 @@ formatUser = (user) ->
 class API
 
   unifiedorder: (req, callback) ->
-    {openid} = req.query
+    {openId} = req.query
     productid = u.v1()
-    WX_API.getBrandWCPayRequestParams(openid, (err, rt) ->
+    WX_API.getBrandWCPayRequestParams(openId, (err, rt) ->
       callback(err, rt)
     )
   @::unifiedorder.route = ['get', '/wx/unifiedorder']
@@ -37,10 +37,10 @@ class API
     return callback('unbindError') unless code
     async.waterfall [
       (next) ->
-        MP_API.getUserInfoToken code, (err, token, openid) ->
-          next(null, token, openid)
-      (token, openid, next) ->
-        MP_API.getUserInfo token, openid, next
+        MP_API.getUserInfoToken code, (err, token, openId) ->
+          next(null, token, openId)
+      (token, openId, next) ->
+        MP_API.getUserInfo token, openId, next
       (user, next) ->
         next()
     ], (err) ->
@@ -62,6 +62,7 @@ class API
 
   payAjax: (req, callback) ->
     {openId, _deviceId, count} = req.query
+    console.log('payAjax', req.query)
     unless openId and _deviceId and count
       return callback(new Error('params error'))
     db.alien.findOneAsync openId: openId
@@ -91,8 +92,13 @@ class API
             _userId: device._userId
             _placeId: device._placeId
         .then ->
-          callback(null, 'ok')
-    .catch callback
+          rt =
+            state: 'ok'
+            rest: alien.money
+          callback(null, rt)
+    .catch (e) ->
+      console.log e
+      callback(e)
   @::payAjax.route = ['get', '/payAjax']
 
   prepay: (req, callback) ->
@@ -110,8 +116,8 @@ class API
   @::prepay.route = ['get', '/prepay']
 
   orderDevice: (req, callback) ->
-    { uid, _orderId, action, openid } = req.query
-    unless uid and openid and _orderId
+    { uid, _orderId, action, openId } = req.query
+    unless uid and openId and _orderId
       return callback(new Error('paramErr'))
     redis.getAsync "ORDER.COMMAND.LOCK.#{_orderId}"
     .then (lock) ->
@@ -120,7 +126,7 @@ class API
     .then ->
       db.order.findOneAsync
         _id: _orderId
-        openId: openid
+        openId: openId
         uid: uid
       .then (order) ->
         unless order

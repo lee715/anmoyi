@@ -10,7 +10,7 @@ module.exports = (Schema) ->
     mode:
       type: String
       default: "TB"
-    # 用户wx openid
+    # 用户wx openId
     openId: String
     # 设备uid
     uid: String

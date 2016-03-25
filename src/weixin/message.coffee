@@ -32,7 +32,7 @@ sendPayTmp = (uid, fromusername) ->
       weixinAPI.sendTemplateMessage(
         touser: fromusername
         template_id: config.MP_WEIXIN.templateIDs.pay
-        url: "#{config.host}#{config.h5.pay}?openid=#{fromusername}"
+        url: "#{config.host}#{config.h5.pay}?openId=#{fromusername}"
         topcolor: "#ff0000"
         data:
           first:
@@ -55,7 +55,7 @@ sendPayTmp2 = (_placeId, fromusername) ->
     weixinAPI.sendTemplateMessage(
       touser: fromusername
       template_id: config.MP_WEIXIN.templateIDs.pay
-      url: "#{config.host}#{config.h5.page}?openid=#{fromusername}&_placeId=#{_placeId}"
+      url: "#{config.host}#{config.h5.page}?openId=#{fromusername}&_placeId=#{_placeId}"
       topcolor: "#ff0000"
       data:
         first:

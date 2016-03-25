@@ -54,7 +54,7 @@ module.exports = WX_API =
       req.weixin_auth = body: body
       next()
 
-  getUserInfo: ({access_token, openid, isMP}, callback) ->
+  getUserInfo: ({access_token, openId, isMP}, callback) ->
     self = @
 
     async.waterfall [
@@ -67,7 +67,7 @@ module.exports = WX_API =
       return callback(err) if err
       query = qs.stringify
         access_token: token or access_token
-        openid: openid
+        openid: openId
 
       request.get
         url: urlType.userInfoURL(query, isMP)
@@ -105,7 +105,7 @@ module.exports = WX_API =
         body: JSON.stringify(content)
       , (err, res, body) ->
 
-  getUserInfo: (openid, callback) ->
+  getUserInfo: (openId, callback) ->
     self = @
 
     async.waterfall [
@@ -114,7 +114,7 @@ module.exports = WX_API =
       (access_token, next) ->
         query = qs.stringify
           access_token: access_token
-          openid: openid
+          openid: openId
 
         request.get
           url: urlType.openIdURL(query)
@@ -275,8 +275,8 @@ module.exports = WX_API =
     data.paySign = generateWxSign(data)
     return u.qsParseSortByAscii(data)
 
-  getPayInfo: (openid, callback) ->
-    redis.getAsync "PAYINFO.#{openid}"
+  getPayInfo: (openId, callback) ->
+    redis.getAsync "PAYINFO.#{openId}"
     .then (uid) ->
       db.device.findOneAsync uid: uid
     .then (device) ->
