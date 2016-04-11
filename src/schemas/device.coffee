@@ -34,6 +34,9 @@ module.exports = (Schema) ->
     income:
       type: Number
       default: 0
+    type:
+      type: String
+      default: 'normal'
     wxTime:
       type: Number
       default: 0

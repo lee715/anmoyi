@@ -91,13 +91,13 @@ module.exports = MP_API =
         log.error(err)
         return callback('wxAPIError')
 
-      {access_token, expires_in, openid} = body
-      callback(err, access_token, openid)
+      {access_token, expires_in, openId} = body
+      callback(err, access_token, openId)
 
-  getUserInfo: (token, openid, callback) ->
+  getUserInfo: (token, openId, callback) ->
     fields = {
       'access_token': token
-      'openid': openid
+      'openid': openId
     }
     query = qs.stringify(fields)
     request.get
@@ -107,11 +107,11 @@ module.exports = MP_API =
     , (err, resp, body) ->
       return callback('wxAPIError') if err or body?.errcode
 
-      {openid, nickname, unionid} = body
+      {openId, nickname, unionid} = body
       if unionid
         userid = unionid
       else
-        userid = openid
+        userid = openId
       callback err, body
 
   getMPToken: (callback) ->

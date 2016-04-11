@@ -28,6 +28,9 @@ class API
     { _id } = req.body
     db.place.remove _id: _id, callback
   @::delPlace.route = ['delete', '/places']
+  @::delPlace.before = [
+    userSrv.isRoot
+  ]
 
   update: (req, callback) ->
     { email } = req.body

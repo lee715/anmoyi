@@ -53,7 +53,7 @@ module.exports =
       notify_url: "#{host}/wx/notify"
       trade_type: "NATIVE"
       product_id: product_id
-      openid: openid
+      openId: openId
     data.sign = generateWxSign(data)
     query = u.qsParseSortByAscii(data)
     request.post

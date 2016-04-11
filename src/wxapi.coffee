@@ -8,6 +8,7 @@ wxReply = require('./weixin/message')
 redis = require('./services/redis')
 Promise = require('bluebird')
 sockSrv = require('./services/socket')
+util = require('./services/util')
 
 queryOrderByTimes = (_orderId, times, callback) ->
   _doOne = ->
@@ -35,9 +36,26 @@ class API
       (next) ->
         WX_API.checkSingle _message, next
     ], (err) ->
-      wxReply _message
-
-    callback(null, '')
+      console.log('11', _message)
+      if _message.msgtype is 'text'
+        # req.res.writeHead(200)
+        req.res.set('Content-Type', 'text/xml')
+        console.log(util.json2xml(
+          ToUserName: "<![CDATA[#{_message.tousername}]]>"
+          FromUserName: "<![CDATA[#{_message.fromusername}]]>"
+          CreateTime: _message.createtime
+          MsgType: '<![CDATA[transfer_customer_service]]>'
+        ))
+        req.res.end(util.json2xml(
+          ToUserName: "<![CDATA[#{_message.tousername}]]>"
+          FromUserName: "<![CDATA[#{_message.fromusername}]]>"
+          CreateTime: _message.createtime
+          MsgType: '<![CDATA[transfer_customer_service]]>'
+        ))
+        return
+      else
+        wxReply _message
+        callback(null, '')
 
   @::handleMessage.route = ['post', '/wx/message']
   @::handleMessage.before = [
@@ -51,8 +69,8 @@ class API
   ]
 
   payTestView: (req, callback) ->
-    openid = req.query.openid
-    WX_API.getPayInfoAsync(openid)
+    openId = req.query.openId
+    WX_API.getPayInfoAsync(openId)
     .then (info) ->
       db.place.findOneAsync
         _id: info._placeId
@@ -60,19 +78,19 @@ class API
         info.placeName = place.name
         info
     .then (info) ->
-      info.openid = openid
+      info.openId = openId
       if info.status in ['idle', 'work']
         db.order.createAsync
           money: info.cost
           time: info.time
-          openId: openid
+          openId: openId
           deviceStatus: info.status
           uid: info.uid
           _userId: info._userId
           _placeId: info._placeId
           mode: "WX"
         .then (order) ->
-          WX_API.getBrandWCPayRequestParamsAsync openid, "#{order._id}", info.cost
+          WX_API.getBrandWCPayRequestParamsAsync openId, "#{order._id}", info.cost
           .then (args) ->
             info.payargs = args
             info.order = "#{order._id}"
@@ -85,8 +103,8 @@ class API
   @::payTestView.route = ['get', '/view/test/h5pay']
 
   payView: (req, callback) ->
-    openid = req.query.openid
-    WX_API.getPayInfoAsync(openid)
+    openId = req.query.openId
+    WX_API.getPayInfoAsync(openId)
     .then (info) ->
       db.place.findOneAsync
         _id: info._placeId
@@ -94,19 +112,19 @@ class API
         info.placeName = place.name
         info
     .then (info) ->
-      info.openid = openid
+      info.openId = openId
       if info.status in ['idle', 'work']
         db.order.createAsync
           money: info.cost
           time: info.time
-          openId: openid
+          openId: openId
           deviceStatus: info.status
           uid: info.uid
           _userId: info._userId
           _placeId: info._placeId
           mode: "WX"
         .then (order) ->
-          WX_API.getBrandWCPayRequestParamsAsync openid, "#{order._id}", info.cost * 100  # 微信金额单位为分
+          WX_API.getBrandWCPayRequestParamsAsync openId, "#{order._id}", info.cost * 100  # 微信金额单位为分
           .then (args) ->
             info.payargs = args
             info.order = "#{order._id}"
@@ -119,49 +137,87 @@ class API
   @::payView.route = ['get', '/pay/v1/h5pay']
 
   recharge: (req, callback) ->
-    unless money and openid and _placeId
+    unless money and openId and _placeId
       return callback(new Error('params error'))
     money = req.query.money
-    openid = req.query.openid
+    openId = req.query.openId
     _placeId = req.query._placeId
     db.order.createAsync
       money: money
-      openId: openid
+      openId: openId
       _placeId: _placeId
       mode: "WX_RECHARGE"
     .then (order) ->
-      WX_API.getBrandWCPayRequestParamsAsync openid, "#{order._id}", money * 100
+      WX_API.getBrandWCPayRequestParamsAsync openId, "#{order._id}", money * 100
       .then (args) ->
-        callback(null, args)
+        rt =
+          args: args
+          order: order._id
+        callback(null, rt)
     .catch (e) ->
       callback(e)
   @::recharge.route = ['get', '/pay/v1/recharge']
 
   pageView: (req, callback) ->
-    openid = req.query.openid
+    openId = req.query.openId
     _placeId = req.query._placeId
     info = {}
     db.place.findOneAsync
       _id: _placeId
     .then (place) ->
       info.placeName = place.name
-      info.openid = openid
+      info.openId = openId
       db.device.findAsync
         _placeId: _placeId
     .then (devices) ->
-      info.devices = _.map(devices, (device) -> device.toJSON())
+      info.devices = _.sortBy(_.map(devices, (device) -> device.toJSON()), (device) -> return device.name)
       db.alien.findOneAsync
-        openId: openid
+        openId: openId
     .then (alien) ->
       info.user = alien.toJSON()
-      req.res.render('payWithPlace', info)
-    .catch ->
-      req.res.send('system error, please try later')
+      info.rest = alien.money
+      req.res.render('page', info)
+    .catch (e) ->
+      req.res.send(e.message)
   @::pageView.route = ['get', '/pay/v1/h5page']
 
+  wxExcharge: (req, callback) ->
+    {_orderId, openId} = req.query
+    console.log('wx_wx query', req.query)
+    unless openId and _orderId
+      return callback(new Error('paramErr'))
+    order = null
+    alien = null
+    db.alien.findOneAsync openId: openId
+    .then (_alien) ->
+      unless _alien
+        throw new Error('alien isnt found')
+      alien = _alien
+      db.order.findOneAsync
+        _id: _orderId
+    .then (_order) ->
+      order = _order
+      if order.status isnt 'SUCCESS'
+        queryOrderByTimesAsync(order._id, 3)
+        .then (state) ->
+          console.log 'state', state
+          throw new Error('confirm failed') unless state
+        .then ->
+          order.status = "SUCCESS"
+          order.saveAsync()
+        .then ->
+          alien.money += order.money
+          alien.saveAsync()
+    .then ->
+      callback(null, {state: 'ok', rest: alien.money})
+    .catch (e) ->
+      console.log(e)
+      callback(e)
+  @::wxExcharge.route = ['get', '/wx/excharge']
+
   confirmAndStart: (req, callback) ->
-    {_orderId, uid, openid} = req.query
-    console.log 'confirmAndStart', _orderId, uid, openid
+    {_orderId, uid, openId} = req.query
+    console.log 'confirmAndStart', _orderId, uid, openId
     unless uid and _orderId
       return callback(new Error('paramErr'))
     order = null

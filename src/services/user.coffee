@@ -36,6 +36,13 @@ module.exports =
     else
       res.status(403).send('Forbidden')
 
+  isServer: (req, res, next) ->
+    user = req._data.user
+    if user and user.role in ['agent', 'root', 'server']
+      next()
+    else
+      res.status(403).send('Forbidden')
+
   isLogined: (req, res, next) ->
     user = req._data.user
     console.log 'isLogined', user

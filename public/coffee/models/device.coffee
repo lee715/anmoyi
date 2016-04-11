@@ -16,6 +16,7 @@ define [
       _userId: null
       _placeId: null
       section: 0
+      type: 'normal'
       edit: '<a href="javascript:;">编辑</a>'
       start: '<a href="javascript:;">开机</a>'
       delete: '<a href="javascript:;">删除</a>'

@@ -35,5 +35,8 @@ U =
     str += "</xml>"
     return str
 
+  isDate: (str) ->
+    return !!(new Date(str)).getTime()
+
 
 module.exports = U

@@ -46,6 +46,8 @@ define [
         isLogin: !!Data.user
         isRoot: Data.user?.get('role') is 'root'
         isAgent: Data.user?.get('role') is 'agent'
+        isServer: Data.user?.get('role') is 'server'
+        isPlace: Data.user?.get('role') is 'place'
       )
       @$main = @$el.find('#mainSection')
       @$nav = @$el.find('.navbar-header')

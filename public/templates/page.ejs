@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>place</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, width=device-width, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <style type="text/css">
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: Helvetica Neue,Helvetica,Arial,sans-serif;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  ul li {
+    float:left;
+  }
+  a {
+    text-decoration: none;
+  }
+  .header {
+    width: 100%;
+    height: 138px;
+    background-color: #a66800;
+    /*background-color: #50cdf1;*/
+    box-shadow: 1px 1px 2px #000;
+  }
+  .left {
+    float: left;
+    width: 25%;
+    text-align: center;
+    font-size: 30px;
+    font-weight: bolder;
+    /* color: #6bd283; */
+    /* color: #67aae8; */
+    color: #fff;
+  }
+  .right {
+    float: right;
+    width: 74%;
+    margin: 10px 0;
+    border-left: 2px dashed #d6d7db;
+  }
+  .label {
+    font-size: 20px;
+    margin-top: 10px;
+  }
+  .money {
+    margin-top: 5px;
+    font-size: 38px;
+    font-weight: normal;
+  }
+  .label, .money {
+    padding: 5px;
+  }
+  .money_item {
+    padding: 6px;
+    /*background-color: #e1ad91;*/
+    background-color: #fff;
+    border:2px solid #fff;
+    /* background-color: #a4ddf3; */
+    /* background-color: #161616; */
+    width: 22%;
+    height: 18px;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 6px;
+    margin-left: 5%;
+    margin-top: 5px;
+    color: #000;
+    /*opacity: 0.8;*/
+    line-height: 20px;
+    box-shadow: 1px 1px 3px #333;
+  }
+  .money_item.active {
+    background-color: #FF9900;
+  }
+  .money_list {
+    height: 80px;
+  }
+  #submit {
+    width: 120px;
+    margin: auto;
+    text-align: center;
+    font-size: 18px;
+    color: #000;
+    background-color: #FF9900;
+    border-radius: 5px;
+    padding: 5px;
+    box-shadow: 1px 1px 3px #999;
+    margin-top: 5px;
+    border:2px solid #fff;
+  }
+  .main {
+    background-color: black;
+    position: absolute;
+    top: 138px;
+    bottom: 60px;
+    left:0;
+    right: 0;
+  }
+  .title {
+    font-size: 14px;
+    padding: 9px 0 4px 0;
+    width: 320px;
+    margin: auto;
+    color: white;
+  }
+  .device_list {
+    width: 330px;
+    display: block;
+    margin: auto;
+  }
+  .device_item {
+    width: 100px;
+    height: 100px;
+    background-color: #a66800;
+    /*opacity: 0.8;*/
+    color: white;
+    border-radius: 6px;
+    margin: 5px;
+    box-shadow: 1px 1px 5px #333;
+  }
+  .device_item.active {
+    background-color: #EE113D;
+  }
+  .device_name {
+    height: 50%;
+    font-size: 20px;
+    font-weight: bold;
+    padding-left: 10px;
+    padding-top: 3px;
+  }
+  .device_info {
+    height: 49%;
+    text-align: right;
+    padding: 0px 10px;
+    font-size: 18px;
+  }
+  .device_total {
+    height: 50%;
+    font-size: 26px;
+    text-align: center;
+    line-height: 50px;
+  }
+  .device_op {
+    height: 50%;
+  }
+  .device_op > div {
+    float: left;
+    width: 50%;
+    height: 100%;
+    background-color: white;
+    color: #a66800;
+    font-size: 50px;
+    line-height: 40px;
+    text-align: center;
+  }
+  .device_plus {
+    border-bottom-left-radius: 6px;
+  }
+  .device_minus {
+    border-bottom-right-radius: 6px;
+  }
+  .footer {
+    background-color: black;
+    height: 60px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    /*box-shadow: 1px 0px 4px #333;*/
+  }
+  #start {
+    display: block;
+    width: 120px;
+    margin: auto;
+    text-align: center;
+    font-size: 22px;
+    color: white;
+    background-color: #EE113D;
+    border-radius: 5px;
+    padding: 6px;
+    margin-top: 12px;
+    box-shadow: 1px 1px 3px #999;
+  }
+  .msg {
+    position: absolute;
+    left:0;
+    right:0;
+    background: white;
+    opacity: 0.9;
+    padding: 10px;
+    text-align: center;
+    z-index: 999;
+    top: 30%;
+    color: #666;
+    border: 1px solid #999;
+  }
+  .msg.error {
+    color: #ff3c00;
+    border: 1px solid #ff3c00;
+  }
+  .hide {
+    display: none
+  }
+  </style>
+</head>
+<body>
+<div class="msg hide"></div>
+<div class="header">
+  <div class="left">
+    <div class="label">余额</div>
+    <div class="money"><%= +it.rest.toFixed(2)%></div>
+  </div>
+  <div class="right">
+    <ul class="money_list">
+      <li class="money_item" data-money=1>¥ 1元</li>
+      <li class="money_item" data-money=5>¥ 5元</li>
+      <li class="money_item" data-money=10>¥ 10元</li>
+      <li class="money_item" data-money=20>¥ 20元</li>
+      <li class="money_item" data-money=50>¥ 50元</li>
+      <li class="money_item" data-money=100>¥ 100元</li>
+    </ul>
+    <div id="submit">充值</div>
+  </div>
+</div>
+<div class="main">
+  <div class="title">请点击设备编号启动</div>
+  <ul class="device_list">
+    <% for(var i=0,len=it.devices.length;i<len;i++){ %>
+    <li class="device_item" data-index=<%= i%> data-id=<%= it.devices[i]._id%>>
+      <div class="device_name"><%= it.devices[i].name%></div>
+      <div class="device_info">
+        <% if(it.devices[i].type == 'pulse'){ %>
+        <div class="device_price">¥ <%= it.devices[i].price %></div>
+        <% }else { %>
+        <div class="device_price">¥ <%= it.devices[i].price %></div>
+        <div class="device_time"><%= it.devices[i].time %>分钟</div>
+        <% } %>
+      </div>
+    </li>
+    <% } %>
+  </ul>
+</div>
+<div class="footer">
+  <a href="javascript:;" id="start">启动</a>
+  <!-- <a href="javascript:;" id="envelope">红包</a> -->
+</div>
+<script type="text/javascript" src="/bower/jquery/dist/jquery.js"></script>
+<script type="text/javascript">
+$(function(){
+  var devices = <%-JSON.stringify(it.devices)%>
+  var openId = "<%= it.openId%>"
+  var order = null
+  var paying = false
+  var $msg = $('.msg')
+
+  var renderDeviceOp = function(device){
+    return '<div class="device_total">¥ '+ device.price +'</div>  \
+      <div class="device_op">                    \
+        <div class="device_plus">+</div>         \
+        <div class="device_minus">-</div>        \
+      </div>'
+  }
+
+  var renderDeviceInfo = function(device){
+    var str = '<div class="device_name">'+device.name+'</div> \
+      <div class="device_info">              \
+        <div class="device_price">¥ '+device.price+'</div>'
+    if(device.type !== 'pulse'){
+      str += '<div class="device_time">'+device.time+'分钟</div>'
+    }
+    str += '</div>'
+    return str
+  }
+
+  var updateTotal = function (money) {
+    $('.left .money').html(+money.toFixed(2))
+  }
+
+  var cur = 0
+  $('.device_item').click(function(e){
+    if (paying) return
+    var $t = $(e.target)
+    var index = $(this).data('index')
+    var device = devices[index]
+    if($t.hasClass('device_plus')){
+      var $total = $(this).find('.device_total')
+      cur++
+      var val = (device.price * cur).toFixed(2)
+      $total.html('¥ '+val)
+    }else if($t.hasClass('device_minus')){
+      var $item = $(this)
+      var $total = $item.find('.device_total')
+      cur--
+      var val = (device.price * cur).toFixed(2)
+      if(val > 0){
+        $total.html('¥'+val)
+      }else{
+        $(this).removeClass('active')
+        $item.html(renderDeviceInfo(device))
+      }
+    }else if($(this).hasClass('active')){
+      return
+    }else{
+      var $active = $(this).parent().find('.active')
+      if($active[0]){
+        var _index = $active.data('index')
+        $active.html(renderDeviceInfo(devices[_index]))
+        $active.removeClass('active')
+      }
+      $(this).html(renderDeviceOp(device))
+      $(this).addClass('active')
+      cur = 1
+    }
+  })
+
+  $('#start').click(function(){
+    if (paying) return
+    if(!cur){
+      return showMsg('亲，你要用哪台啊？？')
+    }
+    var need = +$('.main .active .device_total').html().slice(1)
+    var has = +$('.left .money').html()
+    if (has < need) {
+      return showMsg('呃~余额不足，先充个十万吧~')
+    }
+    paying = true
+    $.ajax({
+      url: '/api/payAjax',
+      data: {
+        _deviceId: $('.main .active').data('id'),
+        count: cur,
+        openId: openId
+      },
+      method: 'get'
+    }).done(function(res, status){
+      if(res.state == 'ok'){
+        updateTotal(res.rest)
+        showMsg('启动啦！玩的开心哦～', 'success')
+      } else if (res.msg == 'device is fault') {
+        showMsg('设备异常，请换一台试试看！', 'error')
+      } else if (res.msg == 'need more money') {
+        return showMsg('呃~余额不足，先充个十万吧~')
+      } else {
+        showMsg('支付失败，请重新尝试！', 'error')
+      }
+      paying = false
+    }).error(function(e){
+      showMsg('支付失败，请重新尝试！', 'error')
+      paying = false
+    })
+  })
+
+  function showMsg(msg, state) {
+    $msg.html(msg)
+    if(state == 'error'){
+      $msg.addClass('error')
+    }else{
+      $msg.removeClass('error')
+    }
+    $msg.removeClass('hide')
+    setTimeout(function(){
+      $msg.addClass('hide')
+    }, 2000)
+  }
+
+  $('.money_item').click(function(){
+    if (paying) return
+    $(this).parent().find('.active').removeClass('active')
+    $(this).addClass('active')
+  })
+
+  function send(data){
+    $.ajax({
+      url: "/api/test",
+      method: 'get',
+      data: data
+    })
+  }
+
+  function onBridgeReady(){
+    $('#submit').click(function(){
+      if (paying) return
+      $active = $(this).parent().find('.active')
+      money = $active.data('money')
+      if (!$active[0]){
+        return showMsg('大虾，您要充多少啊？')
+      }
+      paying = true
+      $.ajax({
+        url: '/api/prepay',
+        data: {
+          money: money,
+          openId: openId
+        }
+      }).done(function(res, state){
+        order = res.order
+        WeixinJSBridge.invoke(
+          'getBrandWCPayRequest', res.args,
+          function(res){
+            if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+              run();
+            } else {
+              paying = false
+            }
+          }
+        )
+      }).error(function(){
+        paying = false
+      })
+    })
+
+    function run(){
+      $.ajax({
+        url: "/wx/excharge",
+        method: 'get',
+        data: {
+          _orderId: order,
+          openId: openId
+        }
+      }).done(function(res, status){
+        paying = false
+        if(res.state === 'ok'){
+          showMsg('恭喜你，充值成功啦~')
+          $('.left .money').html(res.rest)
+        }else{
+          showMsg('充值异常，请重新尝试')
+        }
+      }).error(function(){
+        paying = false
+        showMsg('充值异常，请重新尝试')
+      })
+    }
+  }
+
+  if (typeof WeixinJSBridge == "undefined"){
+     if( document.addEventListener ){
+         document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+     }else if (document.attachEvent){
+         document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+         document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+     }
+  }else{
+     onBridgeReady();
+  }
+})
+</script>
+</body>
+</html>

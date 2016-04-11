@@ -43,7 +43,11 @@ wrap = (func) -> (req, res, next) ->
   func req, (err, result) ->
     if err is 'noContent'
       return res.status(204).json({})
-    return next(err) if err?
+    if err
+      rt =
+        code: 400
+        msg: err.message
+      return res.status(200).json(rt)
     req.result = if result instanceof Array
       result.map _toJSON
     else

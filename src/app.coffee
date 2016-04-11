@@ -40,6 +40,7 @@ app.use require('./services/user').init
 #     res.success()
 
 app.get '/api/test', (req, res, next) ->
+  console.log('send', req.query)
   res.send('ok')
 
 require('./router')(app, require('./api'), [], '/api')

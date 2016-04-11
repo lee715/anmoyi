@@ -4,10 +4,11 @@ define [
   'collections/orders'
   'utils'
   'views/container'
+  'views/timepicker'
   'text!templates/orders.ejs'
   'data'
   'table'
-], ($, B, ordersCollection, U, ContainerView, ordersTemp, Data) ->
+], ($, B, ordersCollection, U, ContainerView, TimeView, ordersTemp, Data) ->
 
   columns = [
     field: '_id'
@@ -31,8 +32,8 @@ define [
     field: 'username'
     title: '用户'
   ,
-    field: 'uid'
-    title: '设备编号'
+    field: 'deviceName'
+    title: '设备名称'
   ,
     field: 'placeName'
     title: '场地方'
@@ -58,6 +59,8 @@ define [
 
     render: ->
       @$el.html ejs.render(ordersTemp)
+      timeView = new TimeView()
+      @$el.prepend(timeView.render().el)
       @$table = @$el.find('#ordersTable')
       @$container = @$el.find('#seletorContainer')
       @$table.bootstrapTable
@@ -70,6 +73,9 @@ define [
           # Data.app.navigate('/devicesEdit?id='+obj._id,
           #   trigger: true
           # )
+      timeView.on('submit', (data) =>
+        @fetch(data)
+      )
       @
 
     renderOrders: (orders) ->
@@ -111,10 +117,10 @@ define [
     #       data: Object.keys(val)
     #   @renderQuerys()
 
-    fetch: ->
+    fetch: (opts) ->
       self = @
       @collection.fetch
-        remove: false
+        data: opts
         success: (coll, res, opts) ->
           # self.refreshQuerys()
           self.renderOrders()

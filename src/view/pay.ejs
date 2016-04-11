@@ -8,7 +8,7 @@
 </head>
 <body>
 <form>
-  <div id="openid"><%=openid%></div>
+  <div id="openId"><%=openId%></div>
   <label>商品名</label><span><%=name%></span>
   <label>金额</label><span><%=cost%></span>
   <label>时间</label><span><%=time%></span>
@@ -16,7 +16,7 @@
 </form>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript">
-  var openid = $('#openid').html()
+  var openId = $('#openId').html()
   function pay(data){
     WeixinJSBridge.invoke(
       'getBrandWCPayRequest', data,
@@ -29,7 +29,7 @@
   }
   function onBridgeReady(){
     $.ajax({
-      url: '/api/wx/unifiedorder?openid='+openid
+      url: '/api/wx/unifiedorder?openId='+openId
       method: 'get'
     }).done(function(st, res){
 
