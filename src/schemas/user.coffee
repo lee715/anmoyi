@@ -29,7 +29,7 @@ module.exports = (Schema) ->
       default: Date.now
 
   User.methods.hasOrder = ->
-    @role in ['root', 'agent']
+    @role in ['root', 'agent', 'server']
 
   User.methods.format = ->
     if @role is 'agent'

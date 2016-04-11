@@ -1,0 +1,21 @@
+<form class="form-inline" onsubmit="return false">
+  <div class="form-group">
+    <label>开始时间:&nbsp;&nbsp;</label>
+    <input data-provide="datepicker" class="form-control" name="startDate" />&nbsp;&nbsp;
+    <select class="form-control" name="startTime">
+      <% for (var i =0, l= 24;i<l;i++) { %>
+      <option value=<%= i%>><%= i%>点</option>
+      <% } %>
+    </select>
+    <div class="h10"></div>
+    <label>结束时间:&nbsp;&nbsp;</label>
+    <input data-provide="datepicker" class="form-control" name="endDate" />&nbsp;&nbsp;
+    <select class="form-control" name="endTime">
+      <% for (var i =0, l= 24;i<l;i++) { %>
+      <option value=<%= i%>><%= i%>点</option>
+      <% } %>
+    </select>
+  </div>
+  <div class="h10"></div>
+  <input class="btn btn-primary" type="submit" value="区间查询">
+</form>

@@ -24,7 +24,15 @@ define [
     parse: (data) ->
       data._id = "#{data._id}"
       data._userId = "#{data._userId or ''}"
-      data.mode_zh = if data.mode is 'WX' then '微信支付' else "投币支付"
+      switch data.mode
+        when 'WX'
+          data.mode_zh = '微信支付'
+        when 'WX_EXCHARGE'
+          data.mode_zh = '充值'
+        when 'API'
+          data.mode_zh = '余额扣费'
+        else
+          data.mode_zh = '投币支付'
       data.created = (new Date(data.created)).toLocaleString()
       data
 

@@ -18,7 +18,12 @@ define ['utils', 'models/user'], (utils, userModel) ->
       if @user
         role = @user.get('role')
         @_placeId = @user.id if role is 'place'
-        url = if role is 'place' then '/reconciliation' else '/places'
+        if role is 'place'
+          url = '/reconciliation'
+        else if role is 'server'
+          url = '/orders'
+        else
+          url = '/places'
         @app.navigate(url,
           trigger: true
         )

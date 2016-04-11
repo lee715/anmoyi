@@ -7,21 +7,24 @@ moment = require('moment')
 class API
 
   getOrders: (req, callback) ->
+    { startDate, endDate } = req.query
     user = req._data.user
     startDate = req.query.startDate
     endDate = req.query.endDate
-    if user.role is 'root'
-      cons = {}
-    else
+    if not startDate or not endDate or not u.isDate(startDate) or not u.isDate(endDate)
+      return callback(new Error('invalid date'))
+    if user.role is 'agent'
       cons = _userId: user._id
+    else
+      cons = {}
     if startDate or endDate
       cons.created = {}
-      cons.created.$gt = startDate if startDate
-      cons.created.$lt = endDate if endDate
+      cons.created.$gt = moment(startDate).toDate() if startDate
+      cons.created.$lt = moment(endDate).toDate() if endDate
     db.order.findAsync(cons)
     .then (orders) ->
       orders = _.sortByOrder(orders, ['created'], ['desc'])
-      orders = orders.slice(0, 1000)
+      orders = orders.slice(0, 3000)
       alienMap = {}
       openIds = _.pluck orders, 'openId'
       db.alien.findAsync
@@ -36,31 +39,41 @@ class API
         orders
     .then (orders) ->
       userMap = {}
+      deviceMap = {}
       ids = []
+      uids = []
       orders.forEach (order) ->
         ids.push "#{order._placeId}" if order._placeId
         ids.push "#{order._userId}" if order._userId
+        uids.push "#{order.uid}" if order.uid
       ids = _.uniq(ids)
+      uids = _.uniq(uids)
       db.user.findAsync
         _id: $in: ids
       .then (users) ->
         db.place.findAsync
           _id: $in: ids
         .then (places) ->
-          users.concat(places).forEach (user) ->
-            userMap["#{user._id}"] = user
-          orders = orders.map (order) ->
-            order.agentName = userMap["#{order._userId}"]?.name
-            order.placeName = userMap["#{order._placeId}"]?.name
-            order
-          # orders = _.sortByOrder(orders, ['created'], ['desc'])
-          callback(null, orders)
+          db.device.findAsync
+            uid: $in: uids
+          .then (devices) ->
+            devices.forEach (device) ->
+              deviceMap["#{device.uid}"] = device
+            users.concat(places).forEach (user) ->
+              userMap["#{user._id}"] = user
+            orders = orders.map (order) ->
+              order.agentName = userMap["#{order._userId}"]?.name
+              order.placeName = userMap["#{order._placeId}"]?.name
+              order.deviceName = deviceMap["#{order.uid}"]?.name
+              order
+            # orders = _.sortByOrder(orders, ['created'], ['desc'])
+            callback(null, orders)
     .catch (e) ->
       console.log e
       callback(new Error('systemErr'))
   @::getOrders.route = ['get', '/orders']
   @::getOrders.before = [
-    userSrv.isAgent
+    userSrv.isServer
   ]
 
   section: (req, callback) ->
@@ -103,7 +116,7 @@ class API
       callback(null, totals)
 
   @::section.route = ['get', '/section']
-  @::section.before = @::getOrders.before = [
+  @::section.before = [
     userSrv.isAgent
   ]
 

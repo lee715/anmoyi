@@ -73,6 +73,8 @@ class API
       .then (device) ->
         price = device.price * count
         time = device.time * count
+        if device.realStatus is 'fault'
+          throw new Error('device is fault')
         if alien.money < price
           throw new Error('need more money')
         sockSrv.startAsync(device.uid, time)
@@ -110,7 +112,7 @@ class API
       openId: openId
       mode: "WX_EXCHARGE"
     .then (order) ->
-      WX_API.getBrandWCPayRequestParamsAsync openId, "#{order._id}", money  # 微信金额单位为分
+      WX_API.getBrandWCPayRequestParamsAsync openId, "#{order._id}", money*100  # 微信金额单位为分
       .then (args) ->
         callback(null, {args: args, order: order._id})
   @::prepay.route = ['get', '/prepay']

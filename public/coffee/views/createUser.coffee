@@ -21,7 +21,7 @@ define [
     bankAccount: ''
     contacts: [{}, {}]
     license: ''
-    roles: ['agent', 'salesman', 'admin']
+    roles: ['agent', 'server']
     password: ''
 
   class View extends B.View

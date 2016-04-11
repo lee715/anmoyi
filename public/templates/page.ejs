@@ -25,9 +25,8 @@
   .header {
     width: 100%;
     height: 138px;
-    /*background-color: #7c7f84;*/
+    background-color: #a66800;
     /*background-color: #50cdf1;*/
-    background-color: #50cdf1;
     box-shadow: 1px 1px 2px #000;
   }
   .left {
@@ -38,7 +37,7 @@
     font-weight: bolder;
     /* color: #6bd283; */
     /* color: #67aae8; */
-    color: #d2e5ed;
+    color: #fff;
   }
   .right {
     float: right;
@@ -52,7 +51,7 @@
   }
   .money {
     margin-top: 5px;
-    font-size: 42px;
+    font-size: 38px;
     font-weight: normal;
   }
   .label, .money {
@@ -60,24 +59,25 @@
   }
   .money_item {
     padding: 6px;
-    background-color: #e1ad91;
-    background-color: #878381;
+    /*background-color: #e1ad91;*/
+    background-color: #fff;
+    border:2px solid #fff;
     /* background-color: #a4ddf3; */
     /* background-color: #161616; */
     width: 22%;
-    height: 22px;
+    height: 18px;
     text-align: center;
     font-size: 16px;
     border-radius: 6px;
     margin-left: 5%;
     margin-top: 5px;
-    color: #fff;
-    opacity: 0.8;
+    color: #000;
+    /*opacity: 0.8;*/
     line-height: 20px;
     box-shadow: 1px 1px 3px #333;
   }
   .money_item.active {
-    background-color: #161616;
+    background-color: #FF9900;
   }
   .money_list {
     height: 80px;
@@ -87,15 +87,16 @@
     margin: auto;
     text-align: center;
     font-size: 18px;
-    color: #ddd;
-    background-color: #99cc00;
+    color: #000;
+    background-color: #FF9900;
     border-radius: 5px;
     padding: 5px;
     box-shadow: 1px 1px 3px #999;
     margin-top: 5px;
+    border:2px solid #fff;
   }
   .main {
-    background-color: #d6d7db;
+    background-color: black;
     position: absolute;
     top: 138px;
     bottom: 60px;
@@ -107,7 +108,7 @@
     padding: 9px 0 4px 0;
     width: 320px;
     margin: auto;
-    color: #666;
+    color: white;
   }
   .device_list {
     width: 330px;
@@ -117,12 +118,15 @@
   .device_item {
     width: 100px;
     height: 100px;
-    background-color: #eb5837;
-    opacity: 0.8;
-    color: #d2e5ed;
+    background-color: #a66800;
+    /*opacity: 0.8;*/
+    color: white;
     border-radius: 6px;
     margin: 5px;
     box-shadow: 1px 1px 5px #333;
+  }
+  .device_item.active {
+    background-color: #EE113D;
   }
   .device_name {
     height: 50%;
@@ -150,8 +154,8 @@
     float: left;
     width: 50%;
     height: 100%;
-    background-color: #d6d7db;
-    color: #eb5837;
+    background-color: white;
+    color: #a66800;
     font-size: 50px;
     line-height: 40px;
     text-align: center;
@@ -163,13 +167,13 @@
     border-bottom-right-radius: 6px;
   }
   .footer {
-    background-color: #50cdf1;
+    background-color: black;
     height: 60px;
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    box-shadow: 1px 0px 4px #333;
+    /*box-shadow: 1px 0px 4px #333;*/
   }
   #start {
     display: block;
@@ -177,8 +181,8 @@
     margin: auto;
     text-align: center;
     font-size: 22px;
-    color: #ddd;
-    background-color: #99cc00;
+    color: white;
+    background-color: #EE113D;
     border-radius: 5px;
     padding: 6px;
     margin-top: 12px;
@@ -276,7 +280,7 @@ $(function(){
   }
 
   var updateTotal = function (money) {
-    $('.left .money').html(money)
+    $('.left .money').html(+money.toFixed(2))
   }
 
   var cur = 0
@@ -298,6 +302,7 @@ $(function(){
       if(val > 0){
         $total.html('¥ '+val)
       }else{
+        $(this).removeClass('active')
         $item.html(renderDeviceInfo(device))
       }
     }else if($(this).hasClass('active')){
@@ -318,7 +323,7 @@ $(function(){
   $('#start').click(function(){
     if (paying) return
     if(!cur){
-      return showMsg('请先选择设备')
+      return showMsg('亲，你要用哪台啊？？')
     }
     paying = true
     $.ajax({
@@ -332,13 +337,13 @@ $(function(){
     }).done(function(res, status){
       if(res.state == 'ok'){
         updateTotal(res.rest)
-        showMsg('支付成功，使用愉快！', 'success')
+        showMsg('启动啦！玩的开心哦～', 'success')
       }else{
-        showMsg('支付失败，请重试！', 'error')
+        showMsg('支付失败，请重新尝试！', 'error')
       }
       paying = false
     }).error(function(){
-      showMsg('支付失败，请重试！', 'error')
+      showMsg('支付失败，请重新尝试！', 'error')
       paying = false
     })
   })
@@ -376,7 +381,7 @@ $(function(){
       $active = $(this).parent().find('.active')
       money = $active.data('money')
       if (!$active[0]){
-        return showMsg('请先选择充值金额')
+        return showMsg('大虾，您要充多少啊？')
       }
       paying = true
       $.ajax({
@@ -393,9 +398,13 @@ $(function(){
           function(res){
             if(res.err_msg == "get_brand_wcpay_request:ok" ) {
               run();
+            } else {
+              paying = false
             }
           }
         )
+      }).error(function(){
+        paying = false
       })
     })
 
@@ -411,10 +420,13 @@ $(function(){
         paying = false
         send(res)
         if(res.state === 'ok'){
+          showMsg('恭喜你，充值成功啦~')
           $('.left .money').html(res.rest)
         }else{
-          showMsg('支付异常，请重新支付')
+          showMsg('充值异常，请重新尝试')
         }
+      }).error(function(){
+        paying = false
       })
     }
   }

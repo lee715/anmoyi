@@ -163,6 +163,7 @@ class API
       else
         device
     .then (devices) ->
+      devices = _.sortBy(devices, ['name'])
       callback(null, devices)
     .catch (e) ->
       console.log e.stack
