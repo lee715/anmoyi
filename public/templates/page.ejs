@@ -143,7 +143,7 @@
   }
   .device_total {
     height: 50%;
-    font-size: 30px;
+    font-size: 26px;
     text-align: center;
     line-height: 50px;
   }
@@ -215,7 +215,7 @@
 <div class="header">
   <div class="left">
     <div class="label">余额</div>
-    <div class="money"><%= it.rest%></div>
+    <div class="money"><%= +it.rest.toFixed(2)%></div>
   </div>
   <div class="right">
     <ul class="money_list">
@@ -292,15 +292,15 @@ $(function(){
     if($t.hasClass('device_plus')){
       var $total = $(this).find('.device_total')
       cur++
-      var val = device.price * cur
+      var val = (device.price * cur).toFixed(2)
       $total.html('¥ '+val)
     }else if($t.hasClass('device_minus')){
       var $item = $(this)
       var $total = $item.find('.device_total')
       cur--
-      var val = device.price * cur
+      var val = (device.price * cur).toFixed(2)
       if(val > 0){
-        $total.html('¥ '+val)
+        $total.html('¥'+val)
       }else{
         $(this).removeClass('active')
         $item.html(renderDeviceInfo(device))
@@ -325,6 +325,11 @@ $(function(){
     if(!cur){
       return showMsg('亲，你要用哪台啊？？')
     }
+    var need = +$('.main .active .device_total').html().slice(1)
+    var has = +$('.left .money').html()
+    if (has < need) {
+      return showMsg('呃~余额不足，先充个十万吧~')
+    }
     paying = true
     $.ajax({
       url: '/api/payAjax',
@@ -338,11 +343,15 @@ $(function(){
       if(res.state == 'ok'){
         updateTotal(res.rest)
         showMsg('启动啦！玩的开心哦～', 'success')
-      }else{
+      } else if (res.msg == 'device is fault') {
+        showMsg('设备异常，请换一台试试看！', 'error')
+      } else if (res.msg == 'need more money') {
+        return showMsg('呃~余额不足，先充个十万吧~')
+      } else {
         showMsg('支付失败，请重新尝试！', 'error')
       }
       paying = false
-    }).error(function(){
+    }).error(function(e){
       showMsg('支付失败，请重新尝试！', 'error')
       paying = false
     })
@@ -391,7 +400,6 @@ $(function(){
           openId: openId
         }
       }).done(function(res, state){
-        send(res)
         order = res.order
         WeixinJSBridge.invoke(
           'getBrandWCPayRequest', res.args,
@@ -418,7 +426,6 @@ $(function(){
         }
       }).done(function(res, status){
         paying = false
-        send(res)
         if(res.state === 'ok'){
           showMsg('恭喜你，充值成功啦~')
           $('.left .money').html(res.rest)
@@ -427,6 +434,7 @@ $(function(){
         }
       }).error(function(){
         paying = false
+        showMsg('充值异常，请重新尝试')
       })
     }
   }

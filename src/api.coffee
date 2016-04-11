@@ -62,7 +62,6 @@ class API
 
   payAjax: (req, callback) ->
     {openId, _deviceId, count} = req.query
-    console.log('payAjax', req.query)
     unless openId and _deviceId and count
       return callback(new Error('params error'))
     db.alien.findOneAsync openId: openId
@@ -99,7 +98,6 @@ class API
             rest: alien.money
           callback(null, rt)
     .catch (e) ->
-      console.log e
       callback(e)
   @::payAjax.route = ['get', '/payAjax']
 

@@ -127,7 +127,6 @@ class API
           WX_API.getBrandWCPayRequestParamsAsync openId, "#{order._id}", info.cost * 100  # 微信金额单位为分
           .then (args) ->
             info.payargs = args
-            console.log('payargs', args)
             info.order = "#{order._id}"
             req.res.render('pay', info)
       else
@@ -171,7 +170,7 @@ class API
       db.device.findAsync
         _placeId: _placeId
     .then (devices) ->
-      info.devices = _.map(devices, (device) -> device.toJSON())
+      info.devices = _.sortBy(_.map(devices, (device) -> device.toJSON()), (device) -> return device.name)
       db.alien.findOneAsync
         openId: openId
     .then (alien) ->
@@ -179,7 +178,6 @@ class API
       info.rest = alien.money
       req.res.render('page', info)
     .catch (e) ->
-      console.log(e)
       req.res.send(e.message)
   @::pageView.route = ['get', '/pay/v1/h5page']
 

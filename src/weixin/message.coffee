@@ -63,7 +63,7 @@ sendPayTmp2 = (_placeId, fromusername) ->
         keyword1:
           value: "#{place.name}"
         keyword2:
-          value: ""
+          value: "请根据提示选择"
         remark:
           value: ""
     )
