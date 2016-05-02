@@ -145,7 +145,6 @@ class API
         _placeId: _placeId
         status: 'SUCCESS'
         serviceStatus: 'STARTED'
-        mode: 'WX'
         created:
           $gt: start.toDate()
           $lt: end.toDate()
