@@ -36,6 +36,7 @@ define [
             data or= {}
             self.places = places
             data.places = places
+            data.users = null
             self.$el.html ejs.render(temp, _.extend({}, defaultVals, data))
             self.$el.find('#distpicker').distpicker()
         when 'edit'
