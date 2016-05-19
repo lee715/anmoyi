@@ -199,6 +199,8 @@ net.createServer( (sock) ->
     SOCKS.handleMsg((new Buffer(data)).toString('utf8'), sock)
   sock.on 'close', ->
     console.log "CLOSED: #{sock.remoteAddress}:#{sock.remotePort}"
+  sock.on 'error', ->
+    console.log "ERROR: #{sock.remoteAddress}:#{sock.remotePort} connect failed"
 ).listen(PORT, ->
   console.log('Server listening on:'+ PORT)
 )
