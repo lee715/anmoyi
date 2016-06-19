@@ -9,6 +9,12 @@ redis = require('./services/redis')
 Promise = require('bluebird')
 sockSrv = require('./services/socket')
 util = require('./services/util')
+config = require('config')
+wechat = require('wechat')
+wechatConfig =
+  token: config.MP_WEIXIN.token
+  appid: config.MP_WEIXIN.appid
+  encodingAESKey: 'btmKnp72T2FmkMLQF9xrBzHWHLviwKA1dKpf0CQe2Ao'
 
 queryOrderByTimes = (_orderId, times, callback) ->
   _doOne = ->
@@ -36,26 +42,25 @@ class API
       (next) ->
         WX_API.checkSingle _message, next
     ], (err) ->
-      console.log('11', _message)
-      if _message.msgtype is 'text'
-        # req.res.writeHead(200)
-        req.res.set('Content-Type', 'text/xml')
-        console.log(util.json2xml(
-          ToUserName: "<![CDATA[#{_message.tousername}]]>"
-          FromUserName: "<![CDATA[#{_message.fromusername}]]>"
-          CreateTime: _message.createtime
-          MsgType: '<![CDATA[transfer_customer_service]]>'
-        ))
-        req.res.end(util.json2xml(
-          ToUserName: "<![CDATA[#{_message.tousername}]]>"
-          FromUserName: "<![CDATA[#{_message.fromusername}]]>"
-          CreateTime: _message.createtime
-          MsgType: '<![CDATA[transfer_customer_service]]>'
-        ))
-        return
-      else
-        wxReply _message
-        callback(null, '')
+      # if _message.msgtype is 'text'
+      #   # req.res.writeHead(200)
+      #   req.res.set('Content-Type', 'text/xml')
+      #   console.log(util.json2xml(
+      #     ToUserName: "<![CDATA[#{_message.tousername}]]>"
+      #     FromUserName: "<![CDATA[#{_message.fromusername}]]>"
+      #     CreateTime: _message.createtime
+      #     MsgType: '<![CDATA[transfer_customer_service]]>'
+      #   ))
+      #   req.res.end(util.json2xml(
+      #     ToUserName: "<![CDATA[#{_message.tousername}]]>"
+      #     FromUserName: "<![CDATA[#{_message.fromusername}]]>"
+      #     CreateTime: _message.createtime
+      #     MsgType: '<![CDATA[transfer_customer_service]]>'
+      #   ))
+      #   return
+      # else
+      wxReply _message
+      callback(null, '')
 
   @::handleMessage.route = ['post', '/wx/message']
   @::handleMessage.before = [
@@ -66,6 +71,13 @@ class API
         msg[key] = val?[0]
       req._message = msg
       next()
+    wechat(wechatConfig, (req, res, next) ->
+      msg = req.weixin
+      if msg.MsgType is 'text'
+        res.transfer2CustomerService()
+      else
+        next()
+    )
   ]
 
   payTestView: (req, callback) ->

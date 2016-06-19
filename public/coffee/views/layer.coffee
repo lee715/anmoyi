@@ -6,13 +6,14 @@ define [
   'views/devices'
   'views/users'
   'views/places'
+  'views/placesWithStatistic'
   'views/createDevice'
   'views/createUser'
   'views/createPlace'
   'views/reconciliation'
   'views/login'
   'views/orders'
-], ($, B, Data, layerTemp, devicesView, usersView, placesView, createDeviceView, createUserView, createPlaceView, reconciliationView, loginView, ordersView) ->
+], ($, B, Data, layerTemp, devicesView, usersView, placesView, placesDetailView, createDeviceView, createUserView, createPlaceView, reconciliationView, loginView, ordersView) ->
 
   formatDate = (time) ->
     now = new Date(time)
@@ -82,6 +83,9 @@ define [
           #   @$main.html @_views.devices.el
           # else
           @_views.places = new placesView
+            el: @$main[0]
+        when 'placesDetail'
+          @_views.places = new placesDetailView
             el: @$main[0]
         when 'orders'
           @_views.orders = new ordersView

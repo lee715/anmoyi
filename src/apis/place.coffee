@@ -55,8 +55,20 @@ class API
     else
       cons = _agentId: user._id
     db.place.findAsync cons
+    .map (place) ->
+      place = place.format()
+      db.device.findAsync
+        _placeId: place._id
+      .then (devices) ->
+        place.device = {}
+        place.device.total = devices.length
+        place.device.normal = 0
+        devices.forEach (device) ->
+          if device.realStatus in ['idle', 'work']
+            place.device.normal++
+        place
     .then (places) ->
-      callback(null, _.map(places, (place) -> return place.format()))
+      callback(null, places)
   @::get.route = ['get', '/places']
   @::get.before = [
     userSrv.isAgent
@@ -136,7 +148,7 @@ class API
         months = [
           [moment().startOf('month'), moment().startOf('day')]
           [moment().startOf('month').add(-1, 'month'), moment().startOf('month')]
-          [moment().startOf('month').add(-1, 'month'), moment().startOf('month').add(-2, 'month')]
+          [moment().startOf('month').add(-2, 'month'), moment().startOf('month').add(-1, 'month')]
         ]
       else
         []

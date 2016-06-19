@@ -75,25 +75,28 @@ module.exports = (message) ->
   console.log type, event, eventkey
   fromusername = message.fromusername
   weixinAPI.getUserInfo fromusername, (err, user) ->
-    db.alien.findOneAsync
-      openId: fromusername
-    .then (alien) ->
-      unless alien
-        db.alien.createAsync
-          openId: fromusername
-          name: user.nickname
-          city: user.city
-          province: user.province
-          country: user.country
-      else
-        alien.openId = fromusername
-        alien.name = user.nickname
-        alien.city = user.city
-        alien.province = user.province
-        alien.country = user.country
-        alien.saveAsync()
-    .catch (e) ->
-      console.log 'alien', e
+    if err
+      console.log(err)
+    else
+      db.alien.findOneAsync
+        openId: fromusername
+      .then (alien) ->
+        unless alien
+          db.alien.createAsync
+            openId: fromusername
+            name: user.nickname
+            city: user.city
+            province: user.province
+            country: user.country
+        else
+          alien.openId = fromusername
+          alien.name = user.nickname
+          alien.city = user.city
+          alien.province = user.province
+          alien.country = user.country
+          alien.saveAsync()
+      .catch (e) ->
+        console.log 'alien', e
   if type is 'event'
     if event is 'subscribe'
       subscribe(message)

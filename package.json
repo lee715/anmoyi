@@ -12,7 +12,7 @@
     "body-parser": "^1.0.2",
     "config": "^1.7.0",
     "cookie-parser": "^1.4.0",
-    "cookie-session": "^1.2.0",
+    "cookie-session": "^2.0.0-alpha.1",
     "cron": "^1.0.9",
     "crypto": "0.0.3",
     "express": "^4.1.1",
@@ -27,6 +27,7 @@
     "redis": "^0.8.6",
     "request": "^2.65.0",
     "uuid": "^2.0.1",
+    "wechat": "^2.0.3",
     "weixin-pay": "^1.1.6",
     "xml2js": "^0.4.9"
   },

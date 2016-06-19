@@ -31,6 +31,7 @@ define [
       'devices': -> goto('devices')
       'orders': -> goto('orders')
       'places': -> goto('places')
+      'places/detail': -> goto('placesDetail')
       'users': -> goto('users')
       'reconciliation': -> goto('reconciliation')
       'devicesCreate': -> goto('devicesCreate')

@@ -25,6 +25,27 @@ define [
   ,
     field: 'reconciliation'
     title: '对账'
+  ,
+    field: 'today'
+    title: '今日流水'
+  ,
+    field: 'yestoday'
+    title: '昨日流水'
+  ,
+    field: 'thisWeek'
+    title: '本周流水'
+  ,
+    field: 'lastWeek'
+    title: '上周流水'
+  ,
+    field: 'thisMonth'
+    title: '本月流水'
+  ,
+    field: 'lastMonth'
+    title: '上月流水'
+  ,
+    field: 'section'
+    title: '区间'
   ]
 
   root_columms = [
@@ -39,7 +60,8 @@ define [
 
     initialize: ->
       @_filter = {}
-      @collection = new Collection()
+      Data.placeColl = @collection = new Collection()
+      @collection.on('change:section', => @renderPlaces())
       @columns = columns.slice()
       if Data.isRoot()
         @columns = @columns.concat(root_columms)
@@ -49,6 +71,7 @@ define [
 
     events:
       'click .selector': 'onSelect'
+      'submit #timeForm': 'querySection'
 
     render: ->
       @$el.html ejs.render(temp)
@@ -88,24 +111,18 @@ define [
       @
 
     renderPlaces: (places) ->
-      places or= @collection.models.map((place) ->
-        return place.parse(place.toJSON())
-      )
+      places or= @collection.toJSON()
       @$table.bootstrapTable('load', places)
 
     fetch: ->
       self = @
-      $.ajax({
-        url: '/api/places'
-        json: true
-      })
-      .done((places) =>
-        @collection.add(places)
-        @renderPlaces()
-      )
-      .fail((err)->
-        console.log(err)
-      )
+      @collection.fetch
+        remove: false
+        success: (coll, res, opts) ->
+          # self.refreshQuerys()
+          self.renderPlaces()
+        error: ->
+          console.log arguments
 
     onSelect: (e) ->
       $target = $(e.target)
@@ -114,3 +131,11 @@ define [
       f = {}
       f[id] = val
       @filter f
+
+    querySection: (e) ->
+      e.preventDefault()
+      self = @
+      data = U.formData($(e.target))
+      data.startDate = new Date(data.startDate)
+      data.endDate = new Date(data.endDate)
+      @collection.querySection(data)
