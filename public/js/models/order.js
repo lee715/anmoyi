@@ -35,7 +35,7 @@
           case 'WX':
             data.mode_zh = '微信支付';
             break;
-          case 'WX_RECHARGE':
+          case 'WX_EXCHARGE':
             data.mode_zh = '充值';
             break;
           case 'API':

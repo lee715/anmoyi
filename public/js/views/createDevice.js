@@ -41,6 +41,7 @@
               data || (data = {});
               self.places = places;
               data.places = places;
+              data.users = null;
               self.$el.html(ejs.render(temp, _.extend({}, defaultVals, data)));
               return self.$el.find('#distpicker').distpicker();
             });
@@ -48,11 +49,14 @@
           case 'edit':
             data = this.model.toJSON();
             if (Data.isRoot()) {
-              self.fetchPlaces(function(places) {
-                self.places = places;
-                data.places = places;
-                self.$el.html(ejs.render(temp, _.extend({}, defaultVals, data)));
-                return self.$el.find('#distpicker').distpicker();
+              self.fetchUsers(function(users) {
+                return self.fetchPlaces(function(places) {
+                  self.places = places;
+                  data.places = places;
+                  data.users = users;
+                  self.$el.html(ejs.render(temp, _.extend({}, defaultVals, data)));
+                  return self.$el.find('#distpicker').distpicker();
+                });
               });
             } else {
               self.$el.html(ejs.render(temp, _.extend({}, defaultVals, data)));
@@ -101,6 +105,20 @@
             return Data.home();
           }, 2000);
         }
+      };
+
+      Seletor.prototype.fetchUsers = function(cb) {
+        var data;
+        data = {};
+        return $.ajax({
+          url: '/api/agents',
+          method: 'get',
+          json: true
+        }).done(function(res, state) {
+          if (state === 'success') {
+            return cb(res);
+          }
+        });
       };
 
       Seletor.prototype.fetchPlaces = function(cb) {

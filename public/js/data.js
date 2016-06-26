@@ -75,12 +75,13 @@
       refresh: function() {
         return location.reload();
       },
-      order: function(order, uid) {
+      order: function(order, uid, time) {
         return $.ajax({
           url: "/api/devices/order",
           data: {
             uid: uid,
-            order: order
+            order: order,
+            time: time
           },
           json: true
         }).done(function(res, state) {

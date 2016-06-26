@@ -27,7 +27,6 @@ app.use session(config.sessionConfig)
 app.use require('./services/user').init
 
 # app.use '/wx/notify', WX_API.useWXCallback (msg, req, res, next) ->
-#   console.log '/wx/notify',msg
 #   db.order.updateAsync
 #     _id: msg.out_trade_no
 #   ,

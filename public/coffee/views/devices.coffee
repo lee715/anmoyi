@@ -109,11 +109,13 @@ define [
             )
             $('body').append(view.$el)
           else if field is 'start'
+            id = '' + Date.now()
             view = new confirmView(
               title: '开机确认'
-              content: '是否确认开机10分钟?'
+              content: '开机<input id="'+ id +'" type="text" value="10" />分钟?'
               onConfirm: ->
-                Data.order('start', obj.uid)
+                time = $('#' + id).val()
+                Data.order('start', obj.uid, time)
                 view.close()
               onCancel: ->
                 view.close()

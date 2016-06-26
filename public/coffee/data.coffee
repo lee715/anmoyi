@@ -50,12 +50,13 @@ define ['utils', 'models/user'], (utils, userModel) ->
       return @user.get('role') is 'root'
     refresh: ->
       location.reload()
-    order: (order, uid) ->
+    order: (order, uid, time) ->
       $.ajax
         url: "/api/devices/order"
         data:
           uid: uid
           order: order
+          time: time
         json: true
       .done((res, state) ->
         Essage.show

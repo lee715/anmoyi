@@ -72,12 +72,9 @@ module.exports = (message) ->
   type = message.msgtype
   event = message.event
   eventkey = message.eventkey
-  console.log type, event, eventkey
   fromusername = message.fromusername
   weixinAPI.getUserInfo fromusername, (err, user) ->
-    if err
-      console.log(err)
-    else
+    if not err
       db.alien.findOneAsync
         openId: fromusername
       .then (alien) ->
@@ -96,7 +93,6 @@ module.exports = (message) ->
           alien.country = user.country
           alien.saveAsync()
       .catch (e) ->
-        console.log 'alien', e
   if type is 'event'
     if event is 'subscribe'
       subscribe(message)
@@ -238,7 +234,6 @@ module.exports = (message) ->
                 """
               subscribe(message, msg)
         .catch (e) ->
-          console.log e.stack
   else if type is 'text'
     subscribe(message)
   # else if type is 'click'

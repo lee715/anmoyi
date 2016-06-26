@@ -69,7 +69,6 @@ class API
             # orders = _.sortByOrder(orders, ['created'], ['desc'])
             callback(null, orders)
     .catch (e) ->
-      console.log e
       callback(new Error('systemErr'))
   @::getOrders.route = ['get', '/orders']
   @::getOrders.before = [

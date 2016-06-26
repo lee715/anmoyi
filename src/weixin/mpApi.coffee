@@ -71,7 +71,6 @@ module.exports = MP_API =
             }
           })
         , (err, res, body) ->
-          console.log(err) if err
           next(err, JSON.parse(body))
     ], callback
 
@@ -88,7 +87,6 @@ module.exports = MP_API =
       json: true
     , (err, resp, body) ->
       if err
-        console.log(err)
         return callback('wxAPIError')
 
       {access_token, expires_in, openId} = body
@@ -126,7 +124,6 @@ module.exports = MP_API =
       timeout: 5000
       json: true
     , (err, resp, body) ->
-      console.log(err) if err
       return callback('wxAPIError') if err or body?.errcode
 
       {access_token, expires_in} = body
@@ -144,7 +141,6 @@ module.exports = MP_API =
       timeout: 5000
       json: true
     , (err, resp, body) ->
-      console.log(err) if err
       return callback('wxAPIError') if err or body?.errcode
 
       {ticket, expires_in} = body

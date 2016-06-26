@@ -118,7 +118,7 @@
           pageSize: 50,
           search: true,
           onClickCell: function(field, val, obj) {
-            var view;
+            var id, view;
             if (field === 'edit') {
               return Data.app.navigate('/devicesEdit?uid=' + obj.uid, {
                 trigger: true
@@ -137,11 +137,14 @@
               });
               return $('body').append(view.$el);
             } else if (field === 'start') {
+              id = '' + Date.now();
               view = new confirmView({
                 title: '开机确认',
-                content: '是否确认开机10分钟?',
+                content: '开机<input id="' + id(+'" type="text" value="10" />分钟?'),
                 onConfirm: function() {
-                  Data.order('start', obj.uid);
+                  var time;
+                  time = $('#' + id).val();
+                  Data.order('start', obj.uid, time);
                   return view.close();
                 },
                 onCancel: function() {

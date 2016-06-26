@@ -48,7 +48,6 @@ module.exports = WX_API =
       timeout: 5000
       json: true
     , (err, resp, body) ->
-      console.log(err) if err
       return next('unbindError') if body?.errcode is 40029
       return next('wxAPIError') if err or body?.errcode
       req.weixin_auth = body: body
@@ -74,7 +73,6 @@ module.exports = WX_API =
         timeout: 5000
         json: true
       , (err, resp, body) ->
-        console.log(err) if err
         return callback('wxAPIError') if err or body?.errcode
         return callback null, body
 

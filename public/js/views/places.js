@@ -21,27 +21,6 @@
       }, {
         field: 'reconciliation',
         title: '对账'
-      }, {
-        field: 'today',
-        title: '今日流水'
-      }, {
-        field: 'yestoday',
-        title: '昨日流水'
-      }, {
-        field: 'thisWeek',
-        title: '本周流水'
-      }, {
-        field: 'lastWeek',
-        title: '上周流水'
-      }, {
-        field: 'thisMonth',
-        title: '本月流水'
-      }, {
-        field: 'lastMonth',
-        title: '上月流水'
-      }, {
-        field: 'section',
-        title: '区间'
       }
     ];
     root_columms = [
@@ -62,12 +41,7 @@
 
       View.prototype.initialize = function() {
         this._filter = {};
-        Data.placeColl = this.collection = new Collection();
-        this.collection.on('change:section', (function(_this) {
-          return function() {
-            return _this.renderPlaces();
-          };
-        })(this));
+        this.collection = new Collection();
         this.columns = columns.slice();
         if (Data.isRoot()) {
           this.columns = this.columns.concat(root_columms);
@@ -78,8 +52,7 @@
       };
 
       View.prototype.events = {
-        'click .selector': 'onSelect',
-        'submit #timeForm': 'querySection'
+        'click .selector': 'onSelect'
       };
 
       View.prototype.render = function() {
@@ -126,21 +99,25 @@
       };
 
       View.prototype.renderPlaces = function(places) {
-        places || (places = this.collection.toJSON());
+        places || (places = this.collection.models.map(function(place) {
+          return place.parse(place.toJSON());
+        }));
         return this.$table.bootstrapTable('load', places);
       };
 
       View.prototype.fetch = function() {
         var self;
         self = this;
-        return this.collection.fetch({
-          remove: false,
-          success: function(coll, res, opts) {
-            return self.renderPlaces();
-          },
-          error: function() {
-            return console.log(arguments);
-          }
+        return $.ajax({
+          url: '/api/places',
+          json: true
+        }).done((function(_this) {
+          return function(places) {
+            _this.collection.add(places);
+            return _this.renderPlaces();
+          };
+        })(this)).fail(function(err) {
+          return console.log(err);
         });
       };
 
@@ -152,16 +129,6 @@
         f = {};
         f[id] = val;
         return this.filter(f);
-      };
-
-      View.prototype.querySection = function(e) {
-        var data, self;
-        e.preventDefault();
-        self = this;
-        data = U.formData($(e.target));
-        data.startDate = new Date(data.startDate);
-        data.endDate = new Date(data.endDate);
-        return this.collection.querySection(data);
       };
 
       return View;

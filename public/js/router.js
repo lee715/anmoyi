@@ -39,6 +39,9 @@
         'places': function() {
           return goto('places');
         },
+        'places/detail': function() {
+          return goto('placesDetail');
+        },
         'users': function() {
           return goto('users');
         },

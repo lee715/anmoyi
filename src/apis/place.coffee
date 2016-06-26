@@ -117,7 +117,7 @@ class API
     .then (places) ->
       callback(null, places)
     .catch (e) ->
-      console.log e.stack
+      callback(e)
   @::getPlacesWithStatistic.route = ['get', '/places/statistic']
   @::getPlacesWithStatistic.before = [
     userSrv.isAgent

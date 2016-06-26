@@ -19,7 +19,6 @@ wechatConfig =
 queryOrderByTimes = (_orderId, times, callback) ->
   _doOne = ->
     WX_API.queryOrder out_trade_no: "#{_orderId}", (err, wx_order) ->
-      console.log 'times', times, wx_order.trade_state
       if wx_order.trade_state isnt 'SUCCESS'
         times--
         if times > 0
@@ -42,23 +41,6 @@ class API
       (next) ->
         WX_API.checkSingle _message, next
     ], (err) ->
-      # if _message.msgtype is 'text'
-      #   # req.res.writeHead(200)
-      #   req.res.set('Content-Type', 'text/xml')
-      #   console.log(util.json2xml(
-      #     ToUserName: "<![CDATA[#{_message.tousername}]]>"
-      #     FromUserName: "<![CDATA[#{_message.fromusername}]]>"
-      #     CreateTime: _message.createtime
-      #     MsgType: '<![CDATA[transfer_customer_service]]>'
-      #   ))
-      #   req.res.end(util.json2xml(
-      #     ToUserName: "<![CDATA[#{_message.tousername}]]>"
-      #     FromUserName: "<![CDATA[#{_message.fromusername}]]>"
-      #     CreateTime: _message.createtime
-      #     MsgType: '<![CDATA[transfer_customer_service]]>'
-      #   ))
-      #   return
-      # else
       wxReply _message
       callback(null, '')
 
@@ -114,6 +96,45 @@ class API
       req.res.send('system error, please try later')
   @::payTestView.route = ['get', '/view/test/h5pay']
 
+  getPrepayOrder: (req, callback) ->
+    openId = req.query.openId
+    type = req.query.type
+    map =
+      a:
+        time: 10
+        cost: 5
+      b:
+        time: 20
+        cost: 10
+      c:
+        time: 30 * 24 * 60
+        cost: 200
+    choosed = map[type]
+    unless choosed
+      return callback(new Error('invalid type'))
+    WX_API.getPayInfoAsync(openId)
+    .then (info) ->
+      info.openId = openId
+      if info.status in ['idle', 'work']
+        db.order.createAsync
+          money: choosed.cost
+          time: choosed.time
+          openId: openId
+          deviceStatus: info.status
+          uid: info.uid
+          _userId: info._userId
+          _placeId: info._placeId
+          mode: "WX"
+        .then (order) ->
+          WX_API.getBrandWCPayRequestParamsAsync openId, "#{order._id}", info.cost * 100  # 微信金额单位为分
+          .then (args) ->
+            callback(null, args)
+      else
+        callback(new Error('prepay failed'))
+    .catch ->
+      callback(new Error('system error, please try later'))
+  @::getPrepayOrder.route = ['get', '/api/prepay/cost']
+
   payView: (req, callback) ->
     openId = req.query.openId
     WX_API.getPayInfoAsync(openId)
@@ -125,25 +146,7 @@ class API
         info
     .then (info) ->
       info.openId = openId
-      if info.status in ['idle', 'work']
-        db.order.createAsync
-          money: info.cost
-          time: info.time
-          openId: openId
-          deviceStatus: info.status
-          uid: info.uid
-          _userId: info._userId
-          _placeId: info._placeId
-          mode: "WX"
-        .then (order) ->
-          WX_API.getBrandWCPayRequestParamsAsync openId, "#{order._id}", info.cost * 100  # 微信金额单位为分
-          .then (args) ->
-            info.payargs = args
-            info.order = "#{order._id}"
-            req.res.render('pay', info)
-      else
-        info.payargs = {}
-        req.res.render('pay', info)
+      req.res.render('pay', info)
     .catch ->
       req.res.send('system error, please try later')
   @::payView.route = ['get', '/pay/v1/h5pay']
@@ -195,7 +198,6 @@ class API
 
   wxExcharge: (req, callback) ->
     {_orderId, openId} = req.query
-    console.log('wx_wx query', req.query)
     unless openId and _orderId
       return callback(new Error('paramErr'))
     order = null
@@ -212,7 +214,6 @@ class API
       if order.status isnt 'SUCCESS'
         queryOrderByTimesAsync(order._id, 3)
         .then (state) ->
-          console.log 'state', state
           throw new Error('confirm failed') unless state
         .then ->
           order.status = "SUCCESS"
@@ -223,13 +224,11 @@ class API
     .then ->
       callback(null, {state: 'ok', rest: alien.money})
     .catch (e) ->
-      console.log(e)
       callback(e)
   @::wxExcharge.route = ['get', '/wx/excharge']
 
   confirmAndStart: (req, callback) ->
     {_orderId, uid, openId} = req.query
-    console.log 'confirmAndStart', _orderId, uid, openId
     unless uid and _orderId
       return callback(new Error('paramErr'))
     order = null
@@ -240,7 +239,6 @@ class API
       if order.status isnt 'SUCCESS'
         queryOrderByTimesAsync(order._id, 3)
         .then (state) ->
-          console.log 'state', state
           throw new Error('confirm failed') unless state
     .then ->
       order.status = "SUCCESS"
@@ -269,7 +267,6 @@ class API
     .then ->
       redis.del "ORDER.COMMAND.LOCK.#{_orderId}"
     .catch (e) ->
-      console.log e.stack
       callback(e)
   @::confirmAndStart.route = ['get', '/wx/order/run']
 
@@ -295,7 +292,6 @@ class API
     .then (status) ->
       callback(null, status)
     .catch (e) ->
-      console.log e
       callback(e)
   @::orderStatus.route = ['get', '/wx/order/status']
 

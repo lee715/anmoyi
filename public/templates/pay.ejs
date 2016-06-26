@@ -89,10 +89,12 @@
         <label>商品:</label><span><%=it.name%></span>
       </div>
       <div>
-        <label>金额:</label><span><%=it.cost%> 元</span>
-      </div>
-      <div>
-        <label>时间:</label><span><%=it.time%> 分钟</span>
+        <label>金额:</label>
+        <select id="typeSelect">
+          <option selected value="a">5块钱10分钟</option>
+          <option value="b">10块钱20分钟</option>
+          <option value="c">200块钱包月</option>
+        </select>
       </div>
     </div>
     <a href="javascript:;" id="pay">确认支付</a>
@@ -107,19 +109,31 @@
 <script type="text/javascript" src="/bower/jquery/dist/jquery.js"></script>
 <script type="text/javascript">
   var openId = "<%=it.openId%>";
-  var order = "<%=it.order%>";
   var uid = "<%=it.uid%>";
   var timer;
   function pay(){
-    WeixinJSBridge.invoke(
-      'getBrandWCPayRequest', <%-JSON.stringify(it.payargs)%>,
-      function(res){
-        if(res.err_msg == "get_brand_wcpay_request:ok" ) {
-          run();
-          $('#main').html('<div class="notice success">设备启动中。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：4009986682</div>');
-        }
+    $.ajax({
+      url: "/api/prepay/cost",
+      method: 'get',
+      data: {
+        openId: openId,
+        type: $('#typeSelect').val()
       }
-    );
+    })
+    .done(function (arg) {
+      WeixinJSBridge.invoke(
+        'getBrandWCPayRequest', arg,
+        function(res){
+          if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+            run();
+            $('#main').html('<div class="notice success">设备启动中。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：4009986682</div>');
+          }
+        }
+      );
+    })
+    .error(function () {
+      $('#main').html('<div class="notice fail">支付失败，请重新扫码。</div>')
+    })
   }
 
   function onBridgeReady(){

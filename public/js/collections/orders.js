@@ -30,6 +30,11 @@
           json: true
         }).done((function(_this) {
           return function(data, state) {
+            var m;
+            m = new model();
+            data = data.map(function(item) {
+              return m.parse(item);
+            });
             if (state === 'success') {
               _this.add(data);
               return opts.success && opts.success(_this, data);

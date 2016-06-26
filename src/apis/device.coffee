@@ -78,8 +78,8 @@ class API
   @::delDevice.route = ['delete', '/devices']
 
   order: (req, callback) ->
-    { uid, order } = req.query
-    sockSrv.start(uid, 10, (err) ->
+    { uid, order, time } = req.query
+    sockSrv.start(uid, time or 10, (err) ->
       return callback(err) if err
       db.device.update
         uid: uid
@@ -88,7 +88,6 @@ class API
         upsert: false
         new: false
       , (err, rt) ->
-        console.log err, rt
         callback(err, 'ok')
     )
   @::order.route = ['get', '/devices/order']
@@ -166,7 +165,7 @@ class API
       devices = _.sortBy(devices, (device) -> return device.name)
       callback(null, devices)
     .catch (e) ->
-      console.log e.stack
+      callback(e)
 
   @::fetchDevices.route = ['get', '/devices']
   @::fetchDevices.before = [
