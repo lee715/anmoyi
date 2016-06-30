@@ -21,10 +21,12 @@ subscribe = (message, words) ->
   """)
 
 sendPayTmp = (uid, fromusername) ->
+  console.log('sendPayTmp', uid, fromusername)
   db.device.findOne
     uid: uid
   , (err, device) ->
     if err or not device
+      console.log('devicenotfound', err, device)
       subscribe("设备未找到，请联系管理员")
     else
       redis.setex "PAYINFO.#{fromusername}", 60*60, device.uid, ->
@@ -72,14 +74,14 @@ module.exports = (message) ->
   type = message.msgtype
   event = message.event
   eventkey = message.eventkey
-  console.log type, event, eventkey
   fromusername = message.fromusername
   weixinAPI.getUserInfo fromusername, (err, user) ->
     if err
-      console.log(err)
+      console.log('getUserInfoFailed', err, fromusername)
     else
+      console.log('getUserInfo', user)
       db.alien.findOneAsync
-        openId: fromusername
+         openId: fromusername
       .then (alien) ->
         unless alien
           db.alien.createAsync
@@ -241,34 +243,5 @@ module.exports = (message) ->
           console.log e.stack
   else if type is 'text'
     subscribe(message)
-  # else if type is 'click'
-    # if eventkey is 'pay'
-    #   redis.getAsync "PAYINFO.#{fromusername}"
-    #   .then (uid) ->
-    #     if not uid
-    #       return subscribe(message, "系统未检测到您扫描过任何设备，请先扫描一台设备二维码进行支付。")
-    #     sendPayTmp(uid, fromusername)
-    #   .catch (e) ->
-    #     subscribe(message, "系统异常，请稍后再试！")
-    # else if /^set/.test(eventkey)
-    #   code = eventkey.split('_')[1]
-    #   redis.getAsync "PAYINFO.#{fromusername}"
-    #   .then (uid) ->
-    #     if not uid
-    #       return subscribe(message, "系统未检测到您使用的设备。请先支付使用按摩椅，再使用该功能！如已支付，请联系客服。")
-    #     db.device.findOneAsync
-    #       uid: uid
-    #   .then (device) ->
-    #     unless device.realStatus is 'work'
-    #       return subscribe(message, "您的服务时间已结束，如需继续使用，可以点击'支付续费'快捷续费！")
-    #     sockSrv.set(device.uid, code, (err) ->
-    #       if err
-    #         subscribe(message, "操作失败，请稍后再试!")
-    #       else
-    #         subscribe(message, "操作成功!")
-    #     )
-    #   .catch (e) ->
-    #     subscribe(message, "系统异常，请稍后再试！")
-
 
 

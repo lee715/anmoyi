@@ -96,7 +96,9 @@ module.exports = WX_API =
 
   sendTemplateMessage: (content) ->
     mpAPI.getMPToken (err, access_token) ->
-      return if err
+      if err
+        console.log('sendTemplateMessage getMPToken failed', err, access_token)
+        return
       request.post
         headers:
           'content-type': 'application/json'
@@ -104,6 +106,8 @@ module.exports = WX_API =
         timeout: 5000
         body: JSON.stringify(content)
       , (err, res, body) ->
+        if err
+          console.log('sendTemplateMessage failed', err, body)
 
   getUserInfo: (openId, callback) ->
     self = @

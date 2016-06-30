@@ -22,7 +22,9 @@ module.exports = MP_API =
         expires.push expires_in
         self._getTicket access_token, next
     ], (err, res) ->
-      return callback err if err
+      if err
+        console.log('refreshTicket', err)
+        return callback err
       { expires_in } = res
       expires.push expires_in
       callback null, Math.min.apply(Math, expires)
@@ -71,7 +73,8 @@ module.exports = MP_API =
             }
           })
         , (err, res, body) ->
-          console.log(err) if err
+          if err
+            return console.log('getQrcodeTicket', err)
           next(err, JSON.parse(body))
     ], callback
 
@@ -88,7 +91,7 @@ module.exports = MP_API =
       json: true
     , (err, resp, body) ->
       if err
-        console.log(err)
+        console.log('getUserInfoToken', err)
         return callback('wxAPIError')
 
       {access_token, expires_in, openId} = body
@@ -126,7 +129,7 @@ module.exports = MP_API =
       timeout: 5000
       json: true
     , (err, resp, body) ->
-      console.log(err) if err
+      console.log('_getMPToken', err) if err
       return callback('wxAPIError') if err or body?.errcode
 
       {access_token, expires_in} = body
@@ -144,7 +147,7 @@ module.exports = MP_API =
       timeout: 5000
       json: true
     , (err, resp, body) ->
-      console.log(err) if err
+      console.log('_getTicket', err) if err
       return callback('wxAPIError') if err or body?.errcode
 
       {ticket, expires_in} = body
@@ -157,7 +160,9 @@ module.exports = MP_API =
     self = @
     doRefresh = ->
       self.refreshTicket (err, expires) ->
-        return callback(err) if err
+        if err
+          console.log('setupMpTicket', err, expires)
+          return callback(err)
         setTimeout doRefresh, expires * 1000 - 5000
     doRefresh()
 Promise.promisifyAll(MP_API)

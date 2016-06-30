@@ -99,7 +99,6 @@ SOCKS =
 
   resStart: (uid, time, callback) ->
     sock = @get(uid)
-    console.log 'resStart:sock', uid, time
     if sock
       @handleCB(uid, callback)
       sock.write("~#{uid}#startup##{time}\r")
@@ -108,10 +107,8 @@ SOCKS =
     unless @_cbs[uid]
       @_cbs[uid] = []
       @_cbs[uid].cb = (state, err) =>
-        console.log 'cb called'
         cb = @_cbs[uid].shift()
         cb(null, !!state)
-        console.log @_cbs[uid].length
         delete @_cbs[uid] unless @_cbs[uid].length
     @_cbs[uid].push callback
 
@@ -205,10 +202,8 @@ net.createServer( (sock) ->
 
 apis = module.exports =
   start: ->
-    console.log 'socket:start', arguments
     SOCKS.resStart.apply(SOCKS, arguments)
   set: ->
-    console.log 'socket:set', arguments
     SOCKS.resSet.apply(SOCKS, arguments)
 
 Promise.promisifyAll(apis)
