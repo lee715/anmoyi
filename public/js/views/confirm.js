@@ -14,6 +14,7 @@
 
       View.prototype.initialize = function(opts) {
         var base;
+        console.log(333, opts);
         this.opts = opts || {};
         (base = this.opts).btns || (base.btns = {});
         this.render(opts);
@@ -26,6 +27,7 @@
       };
 
       View.prototype.render = function(opts) {
+        console.log(444, opts);
         this.$el.html(ejs.render(temp, opts));
         return this;
       };

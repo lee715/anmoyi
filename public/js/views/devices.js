@@ -138,9 +138,10 @@
               return $('body').append(view.$el);
             } else if (field === 'start') {
               id = '' + Date.now();
+              console.log(id, "开机<input id=\"" + id + "\" type=\"text\" value=\"10\" />分钟?");
               view = new confirmView({
                 title: '开机确认',
-                content: '开机<input id="' + id(+'" type="text" value="10" />分钟?'),
+                content: "开机<input style=\"margin:0 10px 0 10px;width:60px\" id=\"" + id + "\" type=\"text\" value=\"10\" />分钟?",
                 onConfirm: function() {
                   var time;
                   time = $('#' + id).val();

@@ -52,16 +52,16 @@ require('./weixin/mpApi').setupMpTicket (err) ->
   console.log(err) if err
 require('./weixin/api').createMenu()
 
-# app.get '/wx/message', (req, res, next) ->
-#   {timestamp, nonce, signature, echostr} = req.query
-#   token = 'anmoyi'
-#   arr = [timestamp, nonce, token]
-#   arr.sort()
-#   tmpStr = U.sha1(arr.join(''))
-#   if tmpStr is signature
-#     res.send(echostr)
-#   else
-#     res.send(echostr)
+app.get '/wx/message', (req, res, next) ->
+  {timestamp, nonce, signature, echostr} = req.query
+  token = 'anmoyi'
+  arr = [timestamp, nonce, token]
+  arr.sort()
+  tmpStr = U.sha1(arr.join(''))
+  if tmpStr is signature
+    res.send(echostr)
+  else
+    res.send(echostr)
 
 app.get '*', (req, res, next) ->
   res.render('index')

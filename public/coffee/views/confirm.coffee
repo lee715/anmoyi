@@ -7,6 +7,7 @@ define [
   class View extends B.View
 
     initialize: (opts) ->
+      console.log(333, opts)
       @opts = opts or {}
       @opts.btns or= {}
       @render(opts)
@@ -17,6 +18,7 @@ define [
       'click .cancel': 'cancel'
 
     render: (opts) ->
+      console.log(444, opts)
       @$el.html ejs.render(temp, opts)
       @
 
