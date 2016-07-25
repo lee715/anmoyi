@@ -12,12 +12,12 @@ _ = require('lodash')
 subscribe = (message, words) ->
 
   weixinAPI.sendMessage(message.fromusername, words or """
-    感谢使用"轻松驿客"。
+    感谢使用"澳尼浦健身器材"。
 
-    在使用过程中遇到任何疑问请在公众号内留言或致电4009986682.
+    在使用过程中遇到任何疑问请在公众号内留言或致电021-57494593.
     我们会竭诚为您服务。
 
-    轻松驿客祝您生活愉快~
+    祝您生活愉快~
   """)
 
 sendPayTmp = (uid, fromusername) ->
@@ -119,7 +119,7 @@ module.exports = (message) ->
           二维码仅对所在的那台设备有效，如您更换了座位，请重新扫描。
           如需续费，请重新扫描并支付即可。
 
-          任何疑问请致电4009986682，谢谢！
+          任何疑问请致电021-57494593，谢谢！
         """
         )
       else if eventkey is 'notice'
@@ -150,7 +150,7 @@ module.exports = (message) ->
         """)
       else if eventkey is 'more_info'
         subscribe(message, """
-          您好，如有任何疑问或者建议，请致电4009986682，或留言，我们会及时回复您的信息，谢谢！
+          您好，如有任何疑问或者建议，请致电021-57494593，或留言，我们会及时回复您的信息，谢谢！
         """)
       else if eventkey is 'start'
         today = moment().startOf('day').toDate()
@@ -213,7 +213,7 @@ module.exports = (message) ->
             msg = """
             找到 #{total.unstarted} 条已付款未启动的设备，正在为您自动启动
             找到 #{total.unpayed} 条未确认状态的订单，已成功标记订单状态，并自动启动设备
-            如仍有问题，请致电4009986682，谢谢！
+            如仍有问题，请致电021-57494593，谢谢！
             """
             subscribe(message, msg)
           else
@@ -223,14 +223,14 @@ module.exports = (message) ->
                 msg = """
                 您好！请点击上面的链接，成功支付后，点击“完成”，按摩椅会自行启动。
                 如果按摩椅没有自行启动，请点击“启动”按钮。
-                其他问题，请致电4009986682，谢谢！
+                其他问题，请致电021-57494593，谢谢！
                 """
               else
                 msg = """
                 您好！
                 请扫描您所乘坐的按摩椅上的二维码，成功支付后，点击“完成”，按摩椅会自行启动。
                 如果按摩椅没有自行启动，请点击“启动”按钮。
-                其他问题，请致电4009986682，谢谢！
+                其他问题，请致电021-57494593，谢谢！
                 """
               subscribe(message, msg)
         .catch (e) ->
