@@ -3,11 +3,24 @@ db = require('limbo').use('anmoyi')
 u = require('../services/util')
 userSrv = require('../services/user')
 moment = require('moment')
-
+modes =
+  hotel:
+    price: '10,30,50'
+    time: '5,60,720'
+  airport:
+    price: '2'
+    time: '30'
+  test:
+    price: '0.02'
+    time: '60'
+  changsha:
+    price: '0.01,0.03,0.06'
+    time: '10,30,60'
 class API
 
   create: (req, callback) ->
     {email} = req.body
+    mode = req.body.mode or 'airport'
     unless email
       return req.res.status(302).send('paramErr')
     db.place.findOneAsync
@@ -16,6 +29,8 @@ class API
       if place
         return req.res.status(302).send('emailUsed')
       else
+        req.body.price = modes[mode].price
+        req.body.time = modes[mode].time
         db.place.createAsync req.body
         .then (place) ->
           callback(null, place.toJSON())
@@ -36,6 +51,9 @@ class API
     { email } = req.body
     delete req.body._id
     delete req.body.email
+    mode = req.body.mode or 'airport'
+    req.body.price = modes[mode].price
+    req.body.time = modes[mode].time
     db.place.findOneAndUpdate
       email: email
     , req.body

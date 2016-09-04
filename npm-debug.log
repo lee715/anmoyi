@@ -3,7 +3,7 @@
 1 verbose cli   '/Users/lilei/.nvm/versions/node/v4.4.4/bin/npm',
 1 verbose cli   'run',
 1 verbose cli   'app' ]
-2 info using npm@2.15.1
+2 info using npm@2.15.10
 3 info using node@v4.4.4
 4 verbose run-script [ 'preapp', 'app', 'postapp' ]
 5 info preapp smsguy@0.1.0
@@ -22,10 +22,10 @@
 9 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:211:5)
 10 verbose pkgid smsguy@0.1.0
 11 verbose cwd /Users/lilei/Documents/github/anmoyi
-12 error Darwin 14.5.0
+12 error Darwin 15.5.0
 13 error argv "/Users/lilei/.nvm/versions/node/v4.4.4/bin/node" "/Users/lilei/.nvm/versions/node/v4.4.4/bin/npm" "run" "app"
 14 error node v4.4.4
-15 error npm  v2.15.1
+15 error npm  v2.15.10
 16 error code ELIFECYCLE
 17 error smsguy@0.1.0 app: `coffee -o public/js -c public/coffee && coffee -o lib -c src && coffee src/app.coffee`
 17 error Exit status 1

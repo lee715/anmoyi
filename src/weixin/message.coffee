@@ -73,6 +73,7 @@ module.exports = (message) ->
   event = message.event
   eventkey = message.eventkey
   fromusername = message.fromusername
+  console.log('wxreply', message)
   weixinAPI.getUserInfo fromusername, (err, user) ->
     if not err
       db.alien.findOneAsync
@@ -140,9 +141,8 @@ module.exports = (message) ->
           ◎严禁坐在按摩椅扶手上！以免发生意外！
 
           ★★温馨提示★★
-          ◎本机为投币式全自动按摩椅
+          ◎本机为微信扫码支付式全自动按摩椅
           ◎使用前请务必阅读注意事项
-          ◎足额投币后按摩椅自动运行
           ◎贴近靠背乘坐以获得最佳体验
           ◎请妥善保管好您的随身物品
           ◎禁止在按摩椅上吸烟

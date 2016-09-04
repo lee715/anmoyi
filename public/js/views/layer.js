@@ -3,7 +3,7 @@
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  define(['jquery', 'backbone', 'data', 'text!templates/layer.ejs', 'views/devices', 'views/users', 'views/places', 'views/placesWithStatistic', 'views/createDevice', 'views/createUser', 'views/createPlace', 'views/reconciliation', 'views/login', 'views/orders'], function($, B, Data, layerTemp, devicesView, usersView, placesView, placesDetailView, createDeviceView, createUserView, createPlaceView, reconciliationView, loginView, ordersView) {
+  define(['jquery', 'backbone', 'data', 'text!templates/layer.ejs', 'views/devices', 'views/users', 'views/places', 'views/placesWithStatistic', 'views/createDevice', 'views/createUser', 'views/createPlace', 'views/createType', 'views/reconciliation', 'views/login', 'views/orders'], function($, B, Data, layerTemp, devicesView, usersView, placesView, placesDetailView, createDeviceView, createUserView, createPlaceView, createTypeView, reconciliationView, loginView, ordersView) {
     var Layer, formatDate;
     formatDate = function(time) {
       var d, hh, m, mm, now, ss, y;
@@ -107,6 +107,10 @@
             });
           case 'devicesCreate':
             return this._views.createDevice = new createDeviceView({
+              el: this.$main[0]
+            });
+          case 'typesCreate':
+            return this._views.createType = new createTypeView({
               el: this.$main[0]
             });
           case 'usersCreate':

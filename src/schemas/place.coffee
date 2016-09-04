@@ -28,14 +28,16 @@ module.exports = (Schema) ->
     p:
       type: Number
       default: 100
-    # 折扣
-    discount:
-      type: Number
-      default: 100
-    # 减免
-    remission:
-      type: Number
-      default: 0
+    # 价格
+    price:
+      type: String
+      default: 5
+    time:
+      type: String
+      default: 10
+    mode:
+      type: String
+      default: 'airport'
     created:
       type: Date
       default: Date.now

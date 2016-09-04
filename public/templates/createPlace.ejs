@@ -104,15 +104,13 @@
     </div>
   </div>
   <div class="form-group">
-    <label for="place" class="col-sm-2 control-label">折扣</label>
+    <label for="place" class="col-sm-2 control-label">模式</label>
     <div class="col-sm-10">
-      <input type="text" name="discount" class="form-control" placeholder="0-100, 0代表免费，90代表9折" value=<%= discount|| 100%>>
-    </div>
-  </div>
-  <div class="form-group">
-    <label for="place" class="col-sm-2 control-label">优惠</label>
-    <div class="col-sm-10">
-      <input type="text" class="form-control" name="remission" placeholder="正数代表优惠，负数代表加价,如 1代表便宜1元" value=<%= remission||0 %>>
+      <select name="mode" class="form-control">
+        <% for(var i=0,len=types.length;i<len;i++){ %>
+        <option value=<%=types[i]._id%>><%=types[i].name%></option>
+        <% } %>
+      </select>
     </div>
   </div>
   <div class="form-group">

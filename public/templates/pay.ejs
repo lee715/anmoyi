@@ -89,11 +89,10 @@
         <label>商品:</label><span><%=it.name%></span>
       </div>
       <div>
-        <label>金额:</label>
-        <select id="typeSelect">
-          <option selected value="a">5块钱10分钟</option>
-          <option value="b">10块钱20分钟</option>
-          <option value="c">200块钱包月</option>
+        <select id="ptSelect">
+          <% for(var i = 0,l = it.price.length;i<l;i++) { %>
+            <option value=<%=it.price[i] + ':' + it.time[i]%>><%=it.price[i]%>块钱<%=it.time[i]%>分钟</option>
+          <% } %>
         </select>
       </div>
     </div>
@@ -103,7 +102,7 @@
       <p style="margin:0;padding:0;">支付完成后，请点击“完成”以启动按摩椅</p>
     </div>
     <% }else { %>
-    <div id="error" class="notice fail">设备异常,请使用其他设备或联系客服。客服电话：4009986682。</div>
+    <div id="error" class="notice fail">设备异常,请使用其他设备或联系客服。客服电话：021-57494593。</div>
     <% } %>
   </div>
 <script type="text/javascript" src="/bower/jquery/dist/jquery.js"></script>
@@ -117,7 +116,7 @@
       method: 'get',
       data: {
         openId: openId,
-        type: $('#typeSelect').val()
+        pt: $('#ptSelect').val()
       }
     })
     .done(function (arg) {
@@ -126,7 +125,7 @@
         function(res){
           if(res.err_msg == "get_brand_wcpay_request:ok" ) {
             run();
-            $('#main').html('<div class="notice success">设备启动中。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：4009986682</div>');
+            $('#main').html('<div class="notice success">设备启动中。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：021-57494593</div>');
           }
         }
       );
@@ -152,18 +151,16 @@
   }
 
   function checkOrderStatus(){
-    send('checkOrderStatus')
     $.ajax({
       url: "/wx/order/status",
       method: 'get',
       data: {
-        order: order,
-        expect: "SUCCESS"
+        expect: "SUCCESS",
+        openId: openId
       }
     }).done(function(res, status){
-      send({res:res,status: status})
       if(res === 'SUCCESS'){
-        $('#main').html('<div class="notice success">订单处理成功，设备将自动启动。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：4009986682</div>');
+        $('#main').html('<div class="notice success">订单处理成功，设备将自动启动。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：021-57494593</div>');
         clearInterval(timer);
         start();
       }
@@ -175,13 +172,12 @@
       url: "/wx/order/run",
       method: 'get',
       data: {
-        _orderId: order,
         uid: uid,
         openId: openId
       }
     }).done(function(res, status){
       if(res === 'ok'){
-        $('#main').html('<div class="notice success">设备启动成功，请关闭该页面，祝您使用愉快<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：4009986682</div>')
+        $('#main').html('<div class="notice success">设备启动成功，请关闭该页面，祝您使用愉快<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：021-57494593</div>')
       }else{
         $('#main').html('<div class="notice fail">设备启动失败，请关闭该页面，进入公众号点击“启动”按钮手动启动按摩椅</div>')
       }
@@ -193,7 +189,6 @@
       url: "/api/command",
       method: 'get',
       data: {
-        _orderId: order,
         uid: uid,
         action: "start",
         openId: openId

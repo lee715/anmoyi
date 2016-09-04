@@ -7,3 +7,4 @@ module.exports = (Schema) ->
   Status: require('./status')(Schema)
   Alien: require('./alien')(Schema)
   Place: require('./place')(Schema)
+  Type: require('./type')(Schema)

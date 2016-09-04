@@ -37,6 +37,7 @@ class API
   """
   handleMessage: (req, callback) ->
     { _message } = req
+    console.log('start handle ' + _message)
     async.waterfall [
       (next) ->
         WX_API.checkSingle _message, next
@@ -47,6 +48,7 @@ class API
   @::handleMessage.route = ['post', '/wx/message']
   @::handleMessage.before = [
     (req, res, next) ->
+      console.log('response to ', req.path)
       message = req.body.xml
       msg = {}
       for key, val of message
@@ -96,29 +98,30 @@ class API
       req.res.send('system error, please try later')
   @::payTestView.route = ['get', '/view/test/h5pay']
 
+  # ajax 获取预订单
   getPrepayOrder: (req, callback) ->
     openId = req.query.openId
-    type = req.query.type
-    map =
-      a:
-        time: 10
-        cost: 5
-      b:
-        time: 20
-        cost: 10
-      c:
-        time: 30 * 24 * 60
-        cost: 200
-    choosed = map[type]
-    unless choosed
-      return callback(new Error('invalid type'))
-    WX_API.getPayInfoAsync(openId)
+    [price, time] = req.query.pt.split(':')
+    # map =
+    #   a:
+    #     time: 10
+    #     cost: 5
+    #   b:
+    #     time: 20
+    #     cost: 10
+    #   c:
+    #     time: 30 * 24 * 60
+    #     cost: 200
+    # choosed = map[type]
+    # unless choosed
+    #   return callback(new Error('invalid type'))
+    redis.getAsync('payinfo.by.openid.' + openId)
     .then (info) ->
-      info.openId = openId
+      info = JSON.parse(info)
       if info.status in ['idle', 'work']
         db.order.createAsync
-          money: choosed.cost
-          time: choosed.time
+          money: price
+          time: time
           openId: openId
           deviceStatus: info.status
           uid: info.uid
@@ -126,12 +129,14 @@ class API
           _placeId: info._placeId
           mode: "WX"
         .then (order) ->
-          WX_API.getBrandWCPayRequestParamsAsync openId, "#{order._id}", info.cost * 100  # 微信金额单位为分
+          WX_API.getBrandWCPayRequestParamsAsync openId, "#{order._id}", price * 100  # 微信金额单位为分
           .then (args) ->
+            redis.setex('payinfo.order.' + openId, 60 * 10, order._id)
             callback(null, args)
       else
         callback(new Error('prepay failed'))
-    .catch ->
+    .catch (e) ->
+      console.log(e.stack)
       callback(new Error('system error, please try later'))
   @::getPrepayOrder.route = ['get', '/api/prepay/cost']
 
@@ -139,15 +144,11 @@ class API
     openId = req.query.openId
     WX_API.getPayInfoAsync(openId)
     .then (info) ->
-      db.place.findOneAsync
-        _id: info._placeId
-      .then (place) ->
-        info.placeName = place.name
-        info
-    .then (info) ->
       info.openId = openId
+      redis.setex('payinfo.by.openid.' + openId, 60 * 10, JSON.stringify(info))
       req.res.render('pay', info)
-    .catch ->
+    .catch (e) ->
+      console.log(e.stack)
       req.res.send('system error, please try later')
   @::payView.route = ['get', '/pay/v1/h5pay']
 
@@ -228,12 +229,16 @@ class API
   @::wxExcharge.route = ['get', '/wx/excharge']
 
   confirmAndStart: (req, callback) ->
-    {_orderId, uid, openId} = req.query
-    unless uid and _orderId
+    {uid, openId} = req.query
+    unless uid
       return callback(new Error('paramErr'))
     order = null
-    db.order.findOneAsync
-      _id: _orderId
+    _orderId = null
+    redis.getAsync 'payinfo.order.' + openId
+    .then (orderId) ->
+      _orderId = orderId
+      db.order.findOneAsync
+        _id: _orderId
     .then (_order) ->
       order = _order
       if order.status isnt 'SUCCESS'
@@ -267,16 +272,16 @@ class API
     .then ->
       redis.del "ORDER.COMMAND.LOCK.#{_orderId}"
     .catch (e) ->
+      console.log(e.stack)
       callback(e)
   @::confirmAndStart.route = ['get', '/wx/order/run']
 
   orderStatus: (req, callback) ->
-    order = req.query.order
     expect = req.query.expect
-    unless order
-      return callback(new Error('order is required'))
-    db.order.findOneAsync
-      _id: order
+    redis.getAsync 'payinfo.order.' + req.query.openId
+    .then (_orderId) ->
+      db.order.findOneAsync
+        _id: _orderId
     .then (order) ->
       if expect and order.status isnt expect
         WX_API.queryOrderAsync out_trade_no: "#{order._id}"

@@ -17,6 +17,8 @@ define [
       company: ''
       mailAddress: ''
       qq: ''
+      price: ''
+      time: ''
       bankName: ''
       bankAccount: ''
       _salesmanId: ''

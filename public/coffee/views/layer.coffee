@@ -10,10 +10,11 @@ define [
   'views/createDevice'
   'views/createUser'
   'views/createPlace'
+  'views/createType'
   'views/reconciliation'
   'views/login'
   'views/orders'
-], ($, B, Data, layerTemp, devicesView, usersView, placesView, placesDetailView, createDeviceView, createUserView, createPlaceView, reconciliationView, loginView, ordersView) ->
+], ($, B, Data, layerTemp, devicesView, usersView, placesView, placesDetailView, createDeviceView, createUserView, createPlaceView, createTypeView, reconciliationView, loginView, ordersView) ->
 
   formatDate = (time) ->
     now = new Date(time)
@@ -107,6 +108,9 @@ define [
           #   @$main.html @_views.createDevice.el
           # else
           @_views.createDevice = new createDeviceView
+            el: @$main[0]
+        when 'typesCreate'
+          @_views.createType = new createTypeView
             el: @$main[0]
         when 'usersCreate'
           # if @_views.createUser

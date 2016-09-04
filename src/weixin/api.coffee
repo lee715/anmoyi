@@ -232,7 +232,12 @@ module.exports = WX_API =
       db.device.findOneAsync uid: uid
     .then (device) ->
       info = device.getPayInfo()
-      callback(null, info)
+      db.place.findOneAsync _id: device._placeId
+      .then (place) ->
+        info.price = place.price.split(',')
+        info.time = place.time.split(',')
+        info.placeName = place.name
+        callback(null, info)
     .catch callback
 
   useWXCallback: wxpay.useWXCallback

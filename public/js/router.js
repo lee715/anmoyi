@@ -63,6 +63,9 @@
         'usersEdit': function() {
           return goto('usersEdit');
         },
+        'typesCreate': function() {
+          return goto('typesCreate');
+        },
         'usersCreate': function() {
           return goto('usersCreate');
         },

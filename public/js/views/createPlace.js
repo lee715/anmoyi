@@ -37,17 +37,20 @@
         self = this;
         this.fetchUsers((function(_this) {
           return function(users) {
-            var data;
-            self.users = users;
-            data = {};
-            if (_this.type === 'edit' && _this.model) {
-              data = _this.model.toJSON();
-            }
-            data.users = users;
-            data = _.extend({}, defaultVals, data);
-            data.type = _this.type;
-            self.$el.html(ejs.render(temp, data));
-            return self.$el.find('#distpicker').distpicker();
+            return _this.fetchTypes(function(types) {
+              var data;
+              self.users = users;
+              data = {};
+              if (_this.type === 'edit' && _this.model) {
+                data = _this.model.toJSON();
+              }
+              data.users = users;
+              data.types = types;
+              data = _.extend({}, defaultVals, data);
+              data.type = _this.type;
+              self.$el.html(ejs.render(temp, data));
+              return self.$el.find('#distpicker').distpicker();
+            });
           };
         })(this));
         return this;
@@ -86,6 +89,18 @@
         data = {};
         return $.ajax({
           url: '/api/agents',
+          method: 'get',
+          json: true
+        }).done(function(res, state) {
+          if (state === 'success') {
+            return cb(res);
+          }
+        });
+      };
+
+      View.prototype.fetchTypes = function(cb) {
+        return $.ajax({
+          url: '/api/types',
           method: 'get',
           json: true
         }).done(function(res, state) {
