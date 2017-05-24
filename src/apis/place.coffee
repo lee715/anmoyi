@@ -20,8 +20,8 @@ class API
 
   create: (req, callback) ->
     {email} = req.body
-    mode = req.body.mode or 'airport'
-    unless email
+    mode = req.body.mode
+    unless email and mode
       return req.res.status(302).send('paramErr')
     db.place.findOneAsync
       email: email
@@ -29,11 +29,18 @@ class API
       if place
         return req.res.status(302).send('emailUsed')
       else
-        req.body.price = modes[mode].price
-        req.body.time = modes[mode].time
-        db.place.createAsync req.body
-        .then (place) ->
-          callback(null, place.toJSON())
+        db.type.findOneAsync
+          _id: mode
+        .then (type) ->
+          unless type
+            return callback(new Error('type not found'))
+          req.body.price = type.price
+          req.body.time = type.time
+          req.body.mode = type.name
+          db.place.createAsync req.body
+          .then (place) ->
+            callback(null, place.toJSON())
+    .catch callback
   @::create.route = ['post', '/places']
   @::create.before = [
     userSrv.isRoot
@@ -51,16 +58,23 @@ class API
     { email } = req.body
     delete req.body._id
     delete req.body.email
-    mode = req.body.mode or 'airport'
-    req.body.price = modes[mode].price
-    req.body.time = modes[mode].time
-    db.place.findOneAndUpdate
-      email: email
-    , req.body
-    ,
-      upsert: false
-      new: false
-    , callback
+    mode = req.body.mode
+    db.type.findOneAsync
+      _id: mode
+    .then (type) ->
+      unless type
+        return callback(new Error('type not found'))
+      req.body.price = type.price
+      req.body.time = type.time
+      req.body.mode = type.name
+      db.place.findOneAndUpdate
+        email: email
+      , req.body
+      ,
+        upsert: false
+        new: false
+      , callback
+    .catch callback
   @::update.route = ['put', '/places']
   @::update.before = [
     userSrv.isRoot

@@ -37,7 +37,6 @@ class API
   """
   handleMessage: (req, callback) ->
     { _message } = req
-    console.log('start handle ' + _message)
     async.waterfall [
       (next) ->
         WX_API.checkSingle _message, next
@@ -48,7 +47,6 @@ class API
   @::handleMessage.route = ['post', '/wx/message']
   @::handleMessage.before = [
     (req, res, next) ->
-      console.log('response to ', req.path)
       message = req.body.xml
       msg = {}
       for key, val of message

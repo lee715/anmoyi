@@ -73,7 +73,6 @@ module.exports = (message) ->
   event = message.event
   eventkey = message.eventkey
   fromusername = message.fromusername
-  console.log('wxreply', message)
   weixinAPI.getUserInfo fromusername, (err, user) ->
     if not err
       db.alien.findOneAsync

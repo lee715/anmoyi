@@ -101,6 +101,7 @@ SOCKS =
     sock = @get(uid)
     if sock
       @handleCB(uid, callback)
+      console.log(uid, time, new Date)
       sock.write("~#{uid}#startup##{time}\r")
 
   handleCB: (uid, callback) ->

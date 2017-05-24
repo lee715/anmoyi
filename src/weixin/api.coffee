@@ -93,7 +93,6 @@ module.exports = WX_API =
         console.log(err) if err
 
   sendTemplateMessage: (content) ->
-    console.log('sendTemplateMessage', content)
     mpAPI.getMPToken (err, access_token) ->
       return if err
       request.post
