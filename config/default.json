@@ -62,9 +62,9 @@
     }
   },
   "MP_WEIXIN": {
-    "appid": "wx2dcf36d849b4a364",
-    "secret": "9348d4997f552a747168d8111d8fa86f",
-    "token": "onip",
+    "appid": "wxd4dc638fd58af4ed",
+    "secret": "4a3c9bc84f8bc1abde943d7f03ef690b",
+    "token": "ananbei",
     "grant_type": "client_credential",
     "tokenKey": "MP::WEIXIN::ACCESS_TOKEN",
     "ticketKey": "MP::WEIXIN::TICKET",

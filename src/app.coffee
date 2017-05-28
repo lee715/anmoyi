@@ -54,7 +54,7 @@ require('./weixin/api').createMenu()
 
 app.get '/wx/message', (req, res, next) ->
   {timestamp, nonce, signature, echostr} = req.query
-  token = 'anmoyi'
+  token = config.MP_WEIXIN.token
   arr = [timestamp, nonce, token]
   arr.sort()
   tmpStr = U.sha1(arr.join(''))
