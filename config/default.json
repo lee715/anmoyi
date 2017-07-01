@@ -1,8 +1,8 @@
 {
   "PORT": 80,
   "name": "anmoyi",
-  "host": "http://www.onip-js.cn",
-  "ip": "139.196.8.138",
+  "host": "http://112.74.44.177/",
+  "ip": "112.74.44.177/",
   "REDIS_CONFIG": {
     "port": 6379,
     "server": "127.0.0.1"
@@ -62,9 +62,9 @@
     }
   },
   "MP_WEIXIN": {
-    "appid": "wxd4dc638fd58af4ed",
-    "secret": "4a3c9bc84f8bc1abde943d7f03ef690b",
-    "token": "ananbei",
+    "appid": "wxfd3132419fe77bb0",
+    "secret": "b4e6e2ad67797658ede20d52198806b0",
+    "token": "weixin",
     "grant_type": "client_credential",
     "tokenKey": "MP::WEIXIN::ACCESS_TOKEN",
     "ticketKey": "MP::WEIXIN::TICKET",

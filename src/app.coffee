@@ -1,6 +1,7 @@
 config     = require('config')
 express    = require('express')
 bodyParser = require('body-parser')
+fs = require('fs')
 errSrv     = require('./services/err')
 Promise = require('bluebird')
 # redis = require('./services/redis')
@@ -62,6 +63,11 @@ app.get '/wx/message', (req, res, next) ->
     res.send(echostr)
   else
     res.send(echostr)
+
+indexHtml = fs.readFileSync('public/tmp/static/index.html')
+app.get '/', (req, res, next) ->
+  res.header('Content-Type', 'html')
+  res.send(indexHtml)
 
 app.get '*', (req, res, next) ->
   res.render('index')

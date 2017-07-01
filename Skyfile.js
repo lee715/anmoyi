@@ -73,6 +73,54 @@ sneaky('ananbei', function () {
   this.nochdir = true
 })
 
+sneaky('ssb', function () {
+  this.description = 'Deploy to dev environment'
+  this.user = 'root'
+  this.host = '112.74.44.177'
+  this.path = '~/server/'
+  this.filter = `
++ config
++ config/default.json
++ lib**
++ pm2**
++ public
++ public/templates**
++ public/tmp**
++ public/bower
++ public/bower/jquery**
++ package.json
++ app.js
+- *
+`
+  this.before('rm -rf lib && coffee -o lib -c src')
+  this.overwrite = true
+  this.nochdir = true
+})
+
+sneaky('xrg', function () {
+  this.description = 'Deploy to dev environment'
+  this.user = 'root'
+  this.host = '139.224.130.230'
+  this.path = '~/server/'
+  this.filter = `
++ config
++ config/default.json
++ lib**
++ pm2**
++ public
++ public/templates**
++ public/tmp**
++ public/bower
++ public/bower/jquery**
++ package.json
++ app.js
+- *
+`
+  this.before('rm -rf lib && coffee -o lib -c src')
+  this.overwrite = true
+  this.nochdir = true
+})
+
 sneaky('dev', function () {
   this.description = 'Deploy to dev environment'
   this.user = 'root'

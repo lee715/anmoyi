@@ -12,9 +12,9 @@ _ = require('lodash')
 subscribe = (message, words) ->
 
   weixinAPI.sendMessage(message.fromusername, words or """
-    感谢使用"澳尼浦健身器材"。
+    感谢使用。
 
-    在使用过程中遇到任何疑问请在公众号内留言或致电021-57494593.
+    在使用过程中遇到任何疑问请在公众号内留言或致电{phone}.
     我们会竭诚为您服务。
 
     祝您生活愉快~
@@ -29,21 +29,22 @@ sendPayTmp = (uid, fromusername) ->
     else
       redis.setex "PAYINFO.#{fromusername}", 60*60, device.uid, ->
       info = device.getPayInfo()
-      weixinAPI.sendTemplateMessage(
-        touser: fromusername
-        template_id: config.MP_WEIXIN.templateIDs.pay
-        url: "#{config.host}#{config.h5.pay}?openId=#{fromusername}"
-        topcolor: "#ff0000"
-        data:
-          first:
-            value: "请点击这里进入微信安全支付"
-          keyword1:
-            value: "#{device.name || '1号'}"
-          keyword2:
-            value: "#{info.cost} 元" or "5元"
-          remark:
-            value: "支付完成后请点击下方的“启动”按钮"
-      )
+      weixinAPI.sendMessage(fromusername, "点击链接支付：#{config.host}#{config.h5.pay}?openId=#{fromusername}")
+      # weixinAPI.sendTemplateMessage(
+      #   touser: fromusername
+      #   template_id: config.MP_WEIXIN.templateIDs.pay
+      #   url: "#{config.host}#{config.h5.pay}?openId=#{fromusername}"
+      #   topcolor: "#ff0000"
+      #   data:
+      #     first:
+      #       value: "请点击这里进入微信安全支付"
+      #     keyword1:
+      #       value: "#{device.name || '1号'}"
+      #     keyword2:
+      #       value: "#{info.cost} 元" or "5元"
+      #     remark:
+      #       value: "支付完成后请点击下方的“启动”按钮"
+      # )
 
 sendPayTmp2 = (_placeId, fromusername) ->
   db.place.findOne
@@ -51,6 +52,7 @@ sendPayTmp2 = (_placeId, fromusername) ->
   , (err, place) ->
     if err or not place
       return subscribe("场地未找到，请联系管理员")
+
 
     weixinAPI.sendTemplateMessage(
       touser: fromusername
@@ -119,7 +121,7 @@ module.exports = (message) ->
           二维码仅对所在的那台设备有效，如您更换了座位，请重新扫描。
           如需续费，请重新扫描并支付即可。
 
-          任何疑问请致电021-57494593，谢谢！
+          任何疑问请致电{phone}，谢谢！
         """
         )
       else if eventkey is 'notice'
@@ -149,7 +151,7 @@ module.exports = (message) ->
         """)
       else if eventkey is 'more_info'
         subscribe(message, """
-          您好，如有任何疑问或者建议，请致电021-57494593，或留言，我们会及时回复您的信息，谢谢！
+          您好，如有任何疑问或者建议，请致电{phone}，或留言，我们会及时回复您的信息，谢谢！
         """)
       else if eventkey is 'start'
         today = moment().startOf('day').toDate()
@@ -212,7 +214,7 @@ module.exports = (message) ->
             msg = """
             找到 #{total.unstarted} 条已付款未启动的设备，正在为您自动启动
             找到 #{total.unpayed} 条未确认状态的订单，已成功标记订单状态，并自动启动设备
-            如仍有问题，请致电021-57494593，谢谢！
+            如仍有问题，请致电{phone}，谢谢！
             """
             subscribe(message, msg)
           else
@@ -222,14 +224,14 @@ module.exports = (message) ->
                 msg = """
                 您好！请点击上面的链接，成功支付后，点击“完成”，按摩椅会自行启动。
                 如果按摩椅没有自行启动，请点击“启动”按钮。
-                其他问题，请致电021-57494593，谢谢！
+                其他问题，请致电{phone}，谢谢！
                 """
               else
                 msg = """
                 您好！
                 请扫描您所乘坐的按摩椅上的二维码，成功支付后，点击“完成”，按摩椅会自行启动。
                 如果按摩椅没有自行启动，请点击“启动”按钮。
-                其他问题，请致电021-57494593，谢谢！
+                其他问题，请致电{phone}，谢谢！
                 """
               subscribe(message, msg)
         .catch (e) ->
