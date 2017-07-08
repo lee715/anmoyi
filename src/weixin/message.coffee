@@ -29,22 +29,22 @@ sendPayTmp = (uid, fromusername) ->
     else
       redis.setex "PAYINFO.#{fromusername}", 60*60, device.uid, ->
       info = device.getPayInfo()
-      weixinAPI.sendMessage(fromusername, "点击链接支付：#{config.host}#{config.h5.pay}?openId=#{fromusername}")
-      # weixinAPI.sendTemplateMessage(
-      #   touser: fromusername
-      #   template_id: config.MP_WEIXIN.templateIDs.pay
-      #   url: "#{config.host}#{config.h5.pay}?openId=#{fromusername}"
-      #   topcolor: "#ff0000"
-      #   data:
-      #     first:
-      #       value: "请点击这里进入微信安全支付"
-      #     keyword1:
-      #       value: "#{device.name || '1号'}"
-      #     keyword2:
-      #       value: "#{info.cost} 元" or "5元"
-      #     remark:
-      #       value: "支付完成后请点击下方的“启动”按钮"
-      # )
+      # weixinAPI.sendMessage(fromusername, "点击链接支付：#{config.host}#{config.h5.pay}?openId=#{fromusername}")
+      weixinAPI.sendTemplateMessage(
+        touser: fromusername
+        template_id: config.MP_WEIXIN.templateIDs.pay
+        url: "#{config.host}#{config.h5.pay}?openId=#{fromusername}"
+        topcolor: "#ff0000"
+        data:
+          first:
+            value: "请点击这里进入微信安全支付"
+          keyword1:
+            value: "#{device.name || '1号'}"
+          keyword2:
+            value: moment().format('YYYY-MM-DD')
+          remark:
+            value: "支付完成后请点击下方的“启动”按钮"
+      )
 
 sendPayTmp2 = (_placeId, fromusername) ->
   db.place.findOne

@@ -1,8 +1,8 @@
 {
   "PORT": 80,
   "name": "anmoyi",
-  "host": "http://112.74.44.177/",
-  "ip": "112.74.44.177/",
+  "host": "http://www.songsongbei.com/",
+  "ip": "112.74.44.177",
   "REDIS_CONFIG": {
     "port": 6379,
     "server": "127.0.0.1"
@@ -12,16 +12,16 @@
     "secret": "3cfe7357-ceb9-4cd6-ae8c-3414ab9cfebe"
   },
   "h5": {
-    "pay": "/pay/v1/h5pay",
-    "page": "/pay/v1/h5page"
+    "pay": "pay/v1/h5pay",
+    "page": "pay/v1/h5page"
   },
   "sessionConfig": {
     "secret": "qingsongyike",
     "key": "QSYK_SESSIONID"
   },
   "wxConfig": {
-    "mch_id": "1337896501",
-    "appid": "gh_11762f3b43dd",
+    "mch_id": "1482819142",
+    "appid": "wx407c4882d6f0a85b",
     "key": "2c464448b6ab452f97ad000d02b64dd0",
     "total_fee": 5,
     "body": "按摩椅"
@@ -62,8 +62,8 @@
     }
   },
   "MP_WEIXIN": {
-    "appid": "wxfd3132419fe77bb0",
-    "secret": "b4e6e2ad67797658ede20d52198806b0",
+    "appid": "wx407c4882d6f0a85b",
+    "secret": "c5d008c26cc8a51cd40e5fe4f24ae88f",
     "token": "weixin",
     "grant_type": "client_credential",
     "tokenKey": "MP::WEIXIN::ACCESS_TOKEN",
@@ -83,7 +83,7 @@
     "JSSDK_URL": "http://yinan.project.cn/",
     "templateURL": "https://api.weixin.qq.com/cgi-bin/message/template/send",
     "templateIDs": {
-      "pay": "80jcs1-PWGe9Lh4haBWP8mL9yIB32Osx1PWRkQn6iyg"
+      "pay": "HbEKzd1EwfHKHq8Adu-lsWk3vwi893eRcsxR5h0xCrM"
     }
   },
   "LONG_TICKET": {

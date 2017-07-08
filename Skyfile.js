@@ -90,9 +90,11 @@ sneaky('ssb', function () {
 + public/bower/jquery**
 + package.json
 + app.js
++ MP_verify_wMjdq63CWlDk3nXy.txt
 - *
 `
   this.before('rm -rf lib && coffee -o lib -c src')
+  this.after('pm2 restart app')
   this.overwrite = true
   this.nochdir = true
 })
