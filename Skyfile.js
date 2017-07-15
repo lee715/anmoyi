@@ -91,6 +91,7 @@ sneaky('ssb', function () {
 + package.json
 + app.js
 + MP_verify_wMjdq63CWlDk3nXy.txt
++ apiclient_cert.p12
 - *
 `
   this.before('rm -rf lib && coffee -o lib -c src')

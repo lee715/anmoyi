@@ -4,11 +4,12 @@ define [
   'collections/orders'
   'utils'
   'views/container'
+  'views/confirm'
   'views/timepicker'
   'text!templates/orders.ejs'
   'data'
   'table'
-], ($, B, ordersCollection, U, ContainerView, TimeView, ordersTemp, Data) ->
+], ($, B, ordersCollection, U, ContainerView, ConfirmView, TimeView, ordersTemp, Data) ->
 
   columns = [
     field: '_id'
@@ -43,6 +44,9 @@ define [
   ,
     field: 'created'
     title: '日期'
+  ,
+    field: 'refund'
+    title: '退款'
   ]
 
   class View extends B.View
@@ -69,10 +73,25 @@ define [
         pagination: true
         pageSize: 50
         search: true
-        onClickCell: (field, val, obj) ->
+        onClickCell: (field, val, obj) =>
           # Data.app.navigate('/devicesEdit?id='+obj._id,
           #   trigger: true
           # )
+          if field is 'refund'
+            view = new ConfirmView(
+              title: '退款确认'
+              content: "是否确认退还该订单款项（人民币#{obj.money}元）？"
+              btns:
+                confirm: '确认'
+                cancel: '取消'
+              onConfirm: =>
+                @refund(obj)
+                view.close()
+              onCancel: ->
+                view.close()
+            )
+            $('body').append(view.$el)
+
       timeView.on('submit', (data) =>
         @fetch(data)
       )
@@ -81,6 +100,31 @@ define [
     renderOrders: (orders) ->
       orders or= @collection.toJSON()
       @$table.bootstrapTable('load', orders)
+
+    refund: (order) ->
+      self = @
+      $.ajax({
+        url: "/api/wx/refund?_orderId=#{order._id}"
+        json: true
+      })
+      .done((res) =>
+        if res.code or res.msg
+          Essage.show
+            message: '退款失败: ' + res.msg
+            status: 'error'
+          , 2000
+        else
+          Essage.show
+            message: '退款成功'
+            status: 'success'
+          , 2000
+      )
+      .fail((err)->
+        Essage.show
+          message: '退款失败'
+          status: 'error'
+        , 2000
+      )
 
     # renderQuerys: ->
     #   if @containerView

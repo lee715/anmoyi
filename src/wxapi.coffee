@@ -129,6 +129,7 @@ class API
         .then (order) ->
           WX_API.getBrandWCPayRequestParamsAsync openId, "#{order._id}", price * 100  # 微信金额单位为分
           .then (args) ->
+            console.log('预订单', args)
             redis.setex('payinfo.order.' + openId, 60 * 10, order._id)
             callback(null, args)
       else

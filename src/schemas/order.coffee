@@ -16,6 +16,8 @@ module.exports = (Schema) ->
     uid: String
     _userId: Schema.Types.ObjectId
     _placeId: Schema.Types.ObjectId
+    # 微信交易单号
+    wxno: String
     deviceStatus: String
     serviceStatus:
       type: String

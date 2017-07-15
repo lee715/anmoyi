@@ -1,5 +1,6 @@
 { mch_id, appid, body, detail, total_fee, key } = require('config').wxConfig
 { ip, host } = require('config')
+fs = require('fs')
 u = require('./services/util')
 request = require('request')
 WXPay = require('weixin-pay')
@@ -8,6 +9,8 @@ wxpay = WXPay
   appid: appid
   mch_id: mch_id
   partner_key: key
+  pfx: fs.readFileSync('apiclient_cert.p12')
+
 
 wx_date = (date) ->
   if date
@@ -35,6 +38,18 @@ module.exports =
     #   nonce_str: u.v4()
     # data.sign = generateWxSign(data)
     # return "#{url}?#{u.qsParseSortByAscii(data)}"
+
+  # 退款
+  refund: (order, money, callback) ->
+    param =
+      appid: appid
+      mch_id: mch_id
+      op_user_id: mch_id
+      out_refund_no: u.v4()
+      total_fee: money
+      refund_fee: money
+      out_trade_no: order
+    wxpay.refund param, callback
 
   # 统一下单api
   unifiedorder: (product_id, open_id, callback) ->

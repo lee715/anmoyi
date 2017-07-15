@@ -36,20 +36,6 @@ logError = (stream) ->
   return stream unless catchError
   return stream.on('error', console.log.bind(console))
 
-cdnPrefix = 'https://dn-st.teambition.net/account'
-CDNs = [
-  {
-    host: 'v0.ftp.upyun.com'
-    user: 'teambition/dn-st'
-    password: process.env.CDN_UPYUN_PWD
-  }
-  {
-    host: 'ftp.keycdn.com'
-    user: 'teambition'
-    password: process.env.CDN_UPYUN_PWD
-  }
-]
-
 paths =
   coffee: [
     "public/coffee/**/*.coffee"]
@@ -87,6 +73,11 @@ gulp.task 'coffee', ->
     .pipe sourcemaps.write()
     .pipe gulp.dest('public/tmp/static/js')
     .pipe livereload()
+
+gulp.task 'images', ->
+  gulp.src('public/images/**')
+    .pipe(imagemin())
+    .pipe(gulp.dest('tmp/static/images'))
 
 gulp.task 'views', ->
   gulp.src paths.views
@@ -176,7 +167,7 @@ gulp.task 'move-dev', ->
 # For development
 gulp.task 'dev', sequence(
   'clean'
-  ['bower', 'coffee', 'views', 'css']
+  ['bower', 'coffee', 'views', 'css', 'images']
 )
 
 # For production

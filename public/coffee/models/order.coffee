@@ -17,7 +17,8 @@ define [
       deviceStatus: 'idle'
       serviceStatus: ''
       created: ''
-      edit: '<a href="javascript:;">Edit</a>'
+      edit: '<a href="javascript:;">编辑</a>'
+      refund: '<a href="javascript:;">退款</a>'
 
     initialize: ->
 

@@ -8,6 +8,7 @@ async = require('async')
 wxReply = require('./weixin/message')
 sockSrv = require('./services/socket')
 redis = require('./services/redis')
+wxPay = require('./_wxapi')
 
 pluck = (keys) ->
   (arr) ->
@@ -30,6 +31,33 @@ class API
       callback(err, rt)
     )
   @::unifiedorder.route = ['get', '/wx/unifiedorder']
+
+  refund: (req, callback) ->
+    {_orderId} = req.query
+    db.order.findByIdAsync(_orderId)
+    .then (order) ->
+      unless order
+        callback(new Error('订单不存在'))
+      if order.serviceStatus isnt 'STARTED' and order.status is 'SUCCESS'
+        wxPay.refund(String(order._id), order.money * 100, (err, data) ->
+          console.log('refund end', err, data)
+          if err then callback(err)
+          if data.return_code is 'SUCCESS'
+            db.order.updateAsync
+              _id: _orderId
+            ,
+              serviceStatus: 'STARTED'
+            callback(null, data)
+          else
+            callback(new Error(data.return_msg))
+        )
+      else
+        callback(new Error('该订单不可退款'))
+    .catch (e) ->
+      console.log(e)
+      callback(e)
+
+  @::refund.route = ['get', '/wx/refund']
 
   getUserInfoCode: (req, callback) ->
     {body, query} = req

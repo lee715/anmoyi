@@ -64,7 +64,7 @@ app.get '/wx/message', (req, res, next) ->
   else
     res.send(echostr)
 
-indexHtml = fs.readFileSync('public/tmp/static/index.html')
+indexHtml = fs.readFileSync('public/tmp/static/templates/index.html')
 app.get '/', (req, res, next) ->
   res.header('Content-Type', 'text/html; charset=utf-8')
   res.send(indexHtml)
