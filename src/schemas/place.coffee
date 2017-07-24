@@ -13,8 +13,18 @@ module.exports = (Schema) ->
     bankAccount: String
     # 客服人员id
     _salesmanId: Schema.Types.ObjectId
+    # 客服人员分成模式
+    salesmanMode:
+      type: String
+      default: 'percent'
+    # 客服人员分成数额
+    salesmanCount: Number
     # 代理商id
     _agentId: Schema.Types.ObjectId
+    agentMode:
+      type: String
+      default: 'percent'
+    agentCount: Number
     contacts:
       type: Schema.Types.Mixed
       default: []

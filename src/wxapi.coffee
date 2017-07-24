@@ -116,7 +116,7 @@ class API
     redis.getAsync('payinfo.by.openid.' + openId)
     .then (info) ->
       info = JSON.parse(info)
-      if info.status in ['idle', 'work']
+      if info.status is 'idle' and not info.disabled
         db.order.createAsync
           money: price
           time: time
@@ -132,8 +132,12 @@ class API
             console.log('预订单', args)
             redis.setex('payinfo.order.' + openId, 60 * 10, order._id)
             callback(null, args)
+      else if info.status is 'work'
+        callback(new Error('设备运行中，请稍后再试。'))
+      else if info.disabled
+        callback(new Error('设备被禁用，请联系管理员。'))
       else
-        callback(new Error('prepay failed'))
+        callback(new Error('设备故障，请联系管理员。'))
     .catch (e) ->
       console.log(e.stack)
       callback(new Error('system error, please try later'))
@@ -256,7 +260,6 @@ class API
     .then ->
       sockSrv.startAsync(uid, order.time)
       .then (state) ->
-        throw new Error('start failed') unless state
         order.serviceStatus = 'STARTED'
         order.saveAsync()
       .then ->

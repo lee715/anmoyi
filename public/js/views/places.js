@@ -19,6 +19,26 @@
         title: '设备状态(正常/总数)',
         sortable: true
       }, {
+        field: 'today',
+        title: '今日流水',
+        sortable: true
+      }, {
+        field: 'yestoday',
+        title: '昨日流水',
+        sortable: true
+      }, {
+        field: 'thisWeek',
+        title: '本周流水',
+        sortable: true
+      }, {
+        field: 'lastWeek',
+        title: '上周流水',
+        sortable: true
+      }, {
+        field: 'deviceStatus',
+        title: '设备状态(正常/总数)',
+        sortable: true
+      }, {
         field: 'reconciliation',
         title: '对账'
       }
@@ -109,7 +129,7 @@
         var self;
         self = this;
         return $.ajax({
-          url: '/api/places',
+          url: '/api/places/statistic',
           json: true
         }).done((function(_this) {
           return function(places) {

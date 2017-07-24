@@ -63,8 +63,6 @@
         data.yestoday = data.moneys[1].toFixed(2);
         data.thisWeek = data.moneys[2].toFixed(2);
         data.lastWeek = data.moneys[3].toFixed(2);
-        data.thisMonth = data.moneys[4].toFixed(2);
-        data.lastMonth = data.moneys[5].toFixed(2);
         return data;
       };
 

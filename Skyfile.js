@@ -20,7 +20,7 @@ sneaky('release', function () {
 + app.js
 - *
 `
-  this.before('rm -rf lib && coffee -o lib -c src')
+  this.before('rm -rf lib && coffee -o lib -c src && cp src/services/socket.js lib/services/socket.js')
   this.overwrite = true
   this.nochdir = true
 })
@@ -94,7 +94,7 @@ sneaky('ssb', function () {
 + apiclient_cert.p12
 - *
 `
-  this.before('rm -rf lib && coffee -o lib -c src')
+  this.before('rm -rf lib && coffee -o lib -c src && cp src/services/socket.js lib/services/socket.js')
   this.after('pm2 restart app')
   this.overwrite = true
   this.nochdir = true

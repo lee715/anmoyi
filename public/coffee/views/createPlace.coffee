@@ -32,17 +32,19 @@ define [
     render: ->
       self = @
       @fetchUsers (users) =>
-        @fetchTypes (types) =>
-          self.users = users
-          data = {}
-          if @type is 'edit' and @model
-            data = @model.toJSON()
-          data.users = users
-          data.types = types
-          data = _.extend({}, defaultVals, data)
-          data.type = @type
-          self.$el.html ejs.render(temp, data)
-          self.$el.find('#distpicker').distpicker()
+        @fetchSales (sales) =>
+          @fetchTypes (types) =>
+            self.users = users
+            data = {}
+            if @type is 'edit' and @model
+              data = @model.toJSON()
+            data.users = users
+            data.sales = sales
+            data.types = types
+            data = _.extend({}, defaultVals, data)
+            data.type = @type
+            self.$el.html ejs.render(temp, data)
+            self.$el.find('#distpicker').distpicker()
       @
 
     showAlert: (state, err) ->
@@ -70,6 +72,16 @@ define [
       data = {}
       $.ajax
         url: '/api/agents'
+        method: 'get'
+        json: true
+      .done (res, state) ->
+        if state is 'success'
+          cb(res)
+
+    fetchSales: (cb) ->
+      data = {}
+      $.ajax
+        url: '/api/salesman'
         method: 'get'
         json: true
       .done (res, state) ->

@@ -77,7 +77,7 @@ gulp.task 'coffee', ->
 gulp.task 'images', ->
   gulp.src('public/images/**')
     .pipe(imagemin())
-    .pipe(gulp.dest('tmp/static/images'))
+    .pipe(gulp.dest('public/tmp/static/images'))
 
 gulp.task 'views', ->
   gulp.src paths.views

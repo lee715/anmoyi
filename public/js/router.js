@@ -125,14 +125,23 @@
           url: "/api/ticket?" + query,
           method: 'get'
         }).done(function(res, state) {
-          var $qr;
-          $qr = $('<div id="qrcode" style="width:256px;height:256px"></div>');
+          var $qr, c, ctx, img;
+          $qr = $('<div id="qrcode" style="width:256px;height:256px;position:relative;"></div>');
           $('body').html($qr);
-          return $qr.qrcode({
+          $qr.qrcode({
             width: 256,
             height: 256,
             text: res
           });
+          $qr.append('<span>设备编号： ' + obj.uid + '<span>');
+          c = $('canvas')[0];
+          ctx = c.getContext("2d");
+          img = new Image();
+          img.src = "/tmp/static/images/WechatIMG23.jpeg";
+          img.width = 40;
+          img.height = 40;
+          img.border = "solid white 5px";
+          return ctx.drawImage(img, 88, 88, 70, 70);
         });
       };
 

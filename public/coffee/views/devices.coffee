@@ -57,6 +57,9 @@ define [
     field: 'edit'
     title: '编辑'
   ,
+    field: 'disableStr'
+    title: '禁/启用'
+  ,
     field: 'delete'
     title: '删除'
   ]
@@ -92,7 +95,7 @@ define [
         pagination: true
         pageSize: 50
         search: true
-        onClickCell: (field, val, obj) ->
+        onClickCell: (field, val, obj) =>
           if field is 'edit'
             Data.app.navigate('/devicesEdit?uid='+obj.uid,
               trigger: true
@@ -117,6 +120,42 @@ define [
               onConfirm: ->
                 time = $('#' + id).val()
                 Data.order('start', obj.uid, time)
+                view.close()
+              onCancel: ->
+                view.close()
+            )
+            $('body').append(view.$el)
+          else if field is 'disableStr'
+            view = new confirmView(
+              title: '禁启用确认'
+              content: if obj.disabled then '确认启用当前设备？' else '确认禁用当前设备？'
+              onConfirm: =>
+                $.ajax
+                  url: '/api/devices:disable'
+                  method: 'put'
+                  data:
+                    _id: obj._id
+                    disable: unless obj.disabled then 1 else 0
+                  json: true
+                .done (rt, status) =>
+                  if rt.message
+                    Essage.show
+                      message: rt.message
+                      status: 'error'
+                    , 2000
+                  else
+                    Essage.show
+                      message: '操作成功！'
+                      status: 'success'
+                    , 2000
+                    @render()
+                    @fetch()
+                .error (e) ->
+                  console.log(e)
+                  Essage.show
+                    message: '操作失败，未知错误'
+                    status: 'error'
+                  , 2000
                 view.close()
               onCancel: ->
                 view.close()

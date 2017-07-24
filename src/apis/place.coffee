@@ -131,7 +131,7 @@ class API
         lastWeek = moment().add(-1, 'week').startOf('isoWeek').toDate()
         thisMonth = moment().startOf('month').toDate()
         lastMonth = moment().add(-1, 'month').startOf('month').toDate()
-        [[now, today], [today, yestoday], [now, thisWeek], [thisWeek, lastWeek], [now, thisMonth], [thisMonth, lastMonth]]
+        [[now, today], [today, yestoday], [now, thisWeek], [thisWeek, lastWeek]]
       .map ([to, from]) ->
         db.order.findAsync
           created:

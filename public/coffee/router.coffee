@@ -89,11 +89,21 @@ define [
         url: "/api/ticket?#{query}"
         method: 'get'
       ).done (res, state) ->
-        $qr = $('<div id="qrcode" style="width:256px;height:256px"></div>')
-        $('body').html($qr)
+        $qr = $('<div id="qrcode" style="width:256px;height:256px;position:relative;"></div>')
+        $('body').append($qr)
         $qr.qrcode
           width: 256
           height: 256
           text: res
+        # $qr.append('<img src="/tmp/static/images/WechatIMG123.png" style="width:70px;height:70px;position:absolute;top:50%;left:50%;margin-top:-40px;margin-left:-40px;border: solid white 5px;"></img>')
+        $qr.append('<span>设备编号： ' + obj.uid + '<span>')
+        c = $('canvas')[0]
+        ctx = c.getContext("2d")
+        img = new Image()
+        img.src = "/tmp/static/images/WechatIMG23.jpeg"
+        img.width = 40
+        img.height = 40
+        img.border = "solid white 5px"
+        ctx.drawImage(img, 88, 88, 70, 70);
 
 

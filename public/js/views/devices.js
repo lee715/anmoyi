@@ -53,6 +53,9 @@
         field: 'edit',
         title: '编辑'
       }, {
+        field: 'disableStr',
+        title: '禁/启用'
+      }, {
         field: 'delete',
         title: '删除'
       }
@@ -117,44 +120,87 @@
           pagination: true,
           pageSize: 50,
           search: true,
-          onClickCell: function(field, val, obj) {
-            var id, view;
-            if (field === 'edit') {
-              return Data.app.navigate('/devicesEdit?uid=' + obj.uid, {
-                trigger: true
-              });
-            } else if (field === 'delete') {
-              view = new confirmView({
-                title: '删除确认',
-                content: '是否确认删除该设备?',
-                onConfirm: function() {
-                  Data.del('device', obj._id);
-                  return view.close();
-                },
-                onCancel: function() {
-                  return view.close();
-                }
-              });
-              return $('body').append(view.$el);
-            } else if (field === 'start') {
-              id = '' + Date.now();
-              console.log(id, "开机<input id=\"" + id + "\" type=\"text\" value=\"10\" />分钟?");
-              view = new confirmView({
-                title: '开机确认',
-                content: "开机<input style=\"margin:0 10px 0 10px;width:60px\" id=\"" + id + "\" type=\"text\" value=\"10\" />分钟?",
-                onConfirm: function() {
-                  var time;
-                  time = $('#' + id).val();
-                  Data.order('start', obj.uid, time);
-                  return view.close();
-                },
-                onCancel: function() {
-                  return view.close();
-                }
-              });
-              return $('body').append(view.$el);
-            }
-          }
+          onClickCell: (function(_this) {
+            return function(field, val, obj) {
+              var id, view;
+              if (field === 'edit') {
+                return Data.app.navigate('/devicesEdit?uid=' + obj.uid, {
+                  trigger: true
+                });
+              } else if (field === 'delete') {
+                view = new confirmView({
+                  title: '删除确认',
+                  content: '是否确认删除该设备?',
+                  onConfirm: function() {
+                    Data.del('device', obj._id);
+                    return view.close();
+                  },
+                  onCancel: function() {
+                    return view.close();
+                  }
+                });
+                return $('body').append(view.$el);
+              } else if (field === 'start') {
+                id = '' + Date.now();
+                console.log(id, "开机<input id=\"" + id + "\" type=\"text\" value=\"10\" />分钟?");
+                view = new confirmView({
+                  title: '开机确认',
+                  content: "开机<input style=\"margin:0 10px 0 10px;width:60px\" id=\"" + id + "\" type=\"text\" value=\"10\" />分钟?",
+                  onConfirm: function() {
+                    var time;
+                    time = $('#' + id).val();
+                    Data.order('start', obj.uid, time);
+                    return view.close();
+                  },
+                  onCancel: function() {
+                    return view.close();
+                  }
+                });
+                return $('body').append(view.$el);
+              } else if (field === 'disableStr') {
+                view = new confirmView({
+                  title: '禁启用确认',
+                  content: obj.disabled ? '确认启用当前设备？' : '确认禁用当前设备？',
+                  onConfirm: function() {
+                    $.ajax({
+                      url: '/api/devices:disable',
+                      method: 'put',
+                      data: {
+                        _id: obj._id,
+                        disable: !obj.disabled ? 1 : 0
+                      },
+                      json: true
+                    }).done(function(rt, status) {
+                      if (rt.message) {
+                        return Essage.show({
+                          message: rt.message,
+                          status: 'error'
+                        }, 2000);
+                      } else {
+                        Essage.show({
+                          message: '操作成功！',
+                          status: 'success'
+                        }, 2000);
+                        _this.render();
+                        return _this.fetch();
+                      }
+                    }).error(function(e) {
+                      console.log(e);
+                      return Essage.show({
+                        message: '操作失败，未知错误',
+                        status: 'error'
+                      }, 2000);
+                    });
+                    return view.close();
+                  },
+                  onCancel: function() {
+                    return view.close();
+                  }
+                });
+                return $('body').append(view.$el);
+              }
+            };
+          })(this)
         });
         return this;
       };

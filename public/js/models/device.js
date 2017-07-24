@@ -21,8 +21,10 @@
         locs: null,
         _userId: null,
         _placeId: null,
+        disabled: false,
         section: 0,
         type: 'normal',
+        disableStr: '<a href="javascript:;">启/禁用</a>',
         edit: '<a href="javascript:;">编辑</a>',
         start: '<a href="javascript:;">开机</a>',
         "delete": '<a href="javascript:;">删除</a>'
@@ -34,10 +36,17 @@
         var ref;
         data._id = "" + data._id;
         data._userId = "" + data._userId;
-        if (data.status === 'fault') {
-          data.colorStatus = '<span style="color:#ff3c00;">' + data.status + '</span>';
+        if (data.disabled) {
+          data.disableStr = '<a href="javascript:;">启用</a>';
         } else {
-          data.colorStatus = data.status;
+          data.disableStr = '<a href="javascript:;">禁用</a>';
+        }
+        if (data.status === 'fault') {
+          data.colorStatus = '<span style="color:#ff3c00;">关闭</span>';
+        } else if (data.status === 'work') {
+          data.colorStatus = '工作';
+        } else if (data.status === 'idle') {
+          data.colorStatus = '<span style="color:#00ff00;">空闲</span>';
         }
         data.locs = ((ref = data.location) != null ? ref.split('-') : void 0) || null;
         if (data.total) {

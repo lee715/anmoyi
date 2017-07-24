@@ -22,7 +22,7 @@
         field: 'email',
         title: '邮箱'
       }, {
-        field: 'role',
+        field: 'roleName',
         title: '权限'
       }, {
         field: 'edit',

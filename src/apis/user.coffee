@@ -81,6 +81,16 @@ class API
     userSrv.isRoot
   ]
 
+  fetchSales: (req, callback) ->
+    db.user.findAsync
+      role: 'salesman'
+    .then (users) ->
+      callback(null, _.map(users, (user) -> return user.format()))
+  @::fetchAgents.route = ['get', '/salesman']
+  @::fetchAgents.before = [
+    userSrv.isRoot
+  ]
+
   getById: (req, callback) ->
     _id = req.params._id
     db.user.findOneAsync

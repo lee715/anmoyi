@@ -18,14 +18,23 @@ define [
       qq: ''
       bankName: ''
       bankAccount: ''
-      role: 'salesman'
-      edit: '<a href="javascript:;">Edit</a>'
+      role: '业务员'
+      edit: '<a href="javascript:;">编辑</a>'
       password: ''
 
     initialize: ->
 
     parse: (data) ->
       data._id = "#{data._id}"
+      switch data.role
+        when 'place'
+          data.roleName = '场地方'
+        when 'root'
+          data.roleName = '管理员'
+        when 'salesman'
+          data.roleName = '业务员'
+        when 'agent'
+          data.roleName = '代理商'
       data
 
     idAttribute: '_id'

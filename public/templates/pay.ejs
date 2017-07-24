@@ -130,8 +130,8 @@
         }
       );
     })
-    .error(function () {
-      $('#main').html('<div class="notice fail">支付失败，请重新扫码。</div>')
+    .error(function (err) {
+      $('#main').html('<div class="notice fail">'+ err.message || '支付失败，请重新扫码。' +'</div>')
     })
   }
 

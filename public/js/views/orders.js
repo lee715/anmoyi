@@ -3,7 +3,7 @@
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  define(['jquery', 'backbone', 'collections/orders', 'utils', 'views/container', 'views/timepicker', 'text!templates/orders.ejs', 'data', 'table'], function($, B, ordersCollection, U, ContainerView, TimeView, ordersTemp, Data) {
+  define(['jquery', 'backbone', 'collections/orders', 'utils', 'views/container', 'views/confirm', 'views/timepicker', 'text!templates/orders.ejs', 'data', 'table'], function($, B, ordersCollection, U, ContainerView, ConfirmView, TimeView, ordersTemp, Data) {
     var View, columns;
     columns = [
       {
@@ -39,6 +39,9 @@
       }, {
         field: 'created',
         title: '日期'
+      }, {
+        field: 'refund',
+        title: '退款'
       }
     ];
     return View = (function(superClass) {
@@ -73,7 +76,29 @@
           pagination: true,
           pageSize: 50,
           search: true,
-          onClickCell: function(field, val, obj) {}
+          onClickCell: (function(_this) {
+            return function(field, val, obj) {
+              var view;
+              if (field === 'refund') {
+                view = new ConfirmView({
+                  title: '退款确认',
+                  content: "是否确认退还该订单款项（人民币" + obj.money + "元）？",
+                  btns: {
+                    confirm: '确认',
+                    cancel: '取消'
+                  },
+                  onConfirm: function() {
+                    _this.refund(obj);
+                    return view.close();
+                  },
+                  onCancel: function() {
+                    return view.close();
+                  }
+                });
+                return $('body').append(view.$el);
+              }
+            };
+          })(this)
         });
         timeView.on('submit', (function(_this) {
           return function(data) {
@@ -86,6 +111,34 @@
       View.prototype.renderOrders = function(orders) {
         orders || (orders = this.collection.toJSON());
         return this.$table.bootstrapTable('load', orders);
+      };
+
+      View.prototype.refund = function(order) {
+        var self;
+        self = this;
+        return $.ajax({
+          url: "/api/wx/refund?_orderId=" + order._id,
+          json: true
+        }).done((function(_this) {
+          return function(res) {
+            if (res.code || res.msg) {
+              return Essage.show({
+                message: '退款失败: ' + res.msg,
+                status: 'error'
+              }, 2000);
+            } else {
+              return Essage.show({
+                message: '退款成功',
+                status: 'success'
+              }, 2000);
+            }
+          };
+        })(this)).fail(function(err) {
+          return Essage.show({
+            message: '退款失败',
+            status: 'error'
+          }, 2000);
+        });
       };
 
       View.prototype.fetch = function(opts) {

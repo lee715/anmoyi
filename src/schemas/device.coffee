@@ -15,6 +15,9 @@ module.exports = (Schema) ->
     status:
       type: String
       default: 'init'
+    disabled:
+      type: Boolean
+      default: false
     # 价格
     price:
       type: Number
@@ -77,6 +80,7 @@ module.exports = (Schema) ->
       status: @realStatus
       time: @time
       uid: @uid
+      disabled: @disabled
       _userId: @_userId
       _placeId: @_placeId
     return info

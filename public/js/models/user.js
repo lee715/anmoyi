@@ -24,8 +24,8 @@
         qq: '',
         bankName: '',
         bankAccount: '',
-        role: 'salesman',
-        edit: '<a href="javascript:;">Edit</a>',
+        role: '客服',
+        edit: '<a href="javascript:;">编辑</a>',
         password: ''
       };
 
@@ -33,6 +33,19 @@
 
       Model.prototype.parse = function(data) {
         data._id = "" + data._id;
+        switch (data.role) {
+          case 'place':
+            data.roleName = '场地方';
+            break;
+          case 'root':
+            data.roleName = '管理员';
+            break;
+          case 'server':
+            data.roleName = '客服';
+            break;
+          case 'agent':
+            data.roleName = '代理商';
+        }
         return data;
       };
 

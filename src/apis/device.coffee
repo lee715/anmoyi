@@ -77,6 +77,18 @@ class API
     db.device.remove _id: _id, callback
   @::delDevice.route = ['delete', '/devices']
 
+  disableDevice: (req, callback) ->
+    { _id, disable } = req.body
+    db.device.findOneAndUpdateAsync
+      _id: _id
+    ,
+      disabled: !!+disable
+    ,
+      {}
+    ,
+      callback
+  @::disableDevice.route = ['put', '/devices:disable']
+
   order: (req, callback) ->
     { uid, order, time } = req.query
     sockSrv.start(uid, time or 10, (err) ->

@@ -29,10 +29,10 @@ module.exports = (Schema) ->
       default: Date.now
 
   User.methods.hasOrder = ->
-    @role in ['root', 'agent', 'server']
+    @role in ['root', 'agent', 'salesman']
 
   User.methods.format = ->
-    if @role is 'agent'
+    if @role in ['agent', 'salesman']
       data = @toJSON()
     else
       data = _.pick @, ['_id', 'name', 'phone', 'email', 'role', 'password']
