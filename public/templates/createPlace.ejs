@@ -52,15 +52,15 @@
     <label for="salesmanMode" class="col-sm-2 control-label">分成模式</label>
     <div class="col-sm-10">
       <select class="form-control" name="salesmanMode">
-        <option value="percent" <%if(saleMode == 'percent'){%>selected<%}%>>百分比</option>
-        <option value="amount" <%if(saleMode == 'amount'){%>selected<%}%>>固定数额</option>
+        <option value="percent" <%if(salesmanMode == 'percent'){%>selected<%}%>>百分比</option>
+        <option value="amount" <%if(salesmanMode == 'amount'){%>selected<%}%>>固定数额</option>
       </select>
     </div>
   </div>
   <div class="form-group">
     <label for="salesmanCount" class="col-sm-2 control-label">分成比例</label>
     <div class="col-sm-10">
-      <input type="text" name="salesmanCount" class="form-control" placeholder="分成比例。百分比模式1-100，固定数额模式填实际金额" value=<%= saleCount||0 %>>
+      <input type="text" name="salesmanCount" class="form-control" placeholder="分成比例。百分比模式1-100，固定数额模式填实际金额" value=<%= salesmanCount||0 %>>
     </div>
   </div>
   <div class="form-group">
@@ -150,7 +150,7 @@
     <div class="col-sm-10">
       <select name="mode" class="form-control">
         <% for(var i=0,len=types.length;i<len;i++){ %>
-        <option value=<%=types[i]._id%>><%=types[i].name%></option>
+        <option value=<%=types[i]._id%> <%if(types[i].name == mode) {%>selected<%}%>><%=types[i].name%></option>
         <% } %>
       </select>
     </div>

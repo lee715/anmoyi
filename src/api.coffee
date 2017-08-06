@@ -46,7 +46,7 @@ class API
             db.order.updateAsync
               _id: _orderId
             ,
-              serviceStatus: 'STARTED'
+              serviceStatus: 'RETURNED'
             callback(null, data)
           else
             callback(new Error(data.return_msg))

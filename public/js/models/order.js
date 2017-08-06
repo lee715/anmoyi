@@ -45,6 +45,23 @@
           default:
             data.mode_zh = '投币支付';
         }
+        switch (data.serviceStatus) {
+          case 'PAIED':
+            data.serviceStatusStr = '支付成功';
+            break;
+          case 'STARTED':
+            data.serviceStatusStr = '启动成功';
+            break;
+          case 'RETURNED':
+            data.serviceStatusStr = '已退款';
+        }
+        switch (data.status) {
+          case 'PREPAY':
+            data.statusStr = '支付发起';
+            break;
+          case 'SUCCESS':
+            data.statusStr = '支付成功';
+        }
         data.created = (new Date(data.created)).toLocaleString();
         return data;
       };

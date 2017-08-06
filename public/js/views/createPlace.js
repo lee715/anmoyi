@@ -37,19 +37,22 @@
         self = this;
         this.fetchUsers((function(_this) {
           return function(users) {
-            return _this.fetchTypes(function(types) {
-              var data;
-              self.users = users;
-              data = {};
-              if (_this.type === 'edit' && _this.model) {
-                data = _this.model.toJSON();
-              }
-              data.users = users;
-              data.types = types;
-              data = _.extend({}, defaultVals, data);
-              data.type = _this.type;
-              self.$el.html(ejs.render(temp, data));
-              return self.$el.find('#distpicker').distpicker();
+            return _this.fetchSales(function(sales) {
+              return _this.fetchTypes(function(types) {
+                var data;
+                self.users = users;
+                data = {};
+                if (_this.type === 'edit' && _this.model) {
+                  data = _this.model.toJSON();
+                }
+                data.users = users;
+                data.sales = sales;
+                data.types = types;
+                data = _.extend({}, defaultVals, data);
+                data.type = _this.type;
+                self.$el.html(ejs.render(temp, data));
+                return self.$el.find('#distpicker').distpicker();
+              });
             });
           };
         })(this));
@@ -89,6 +92,20 @@
         data = {};
         return $.ajax({
           url: '/api/agents',
+          method: 'get',
+          json: true
+        }).done(function(res, state) {
+          if (state === 'success') {
+            return cb(res);
+          }
+        });
+      };
+
+      View.prototype.fetchSales = function(cb) {
+        var data;
+        data = {};
+        return $.ajax({
+          url: '/api/salesman',
           method: 'get',
           json: true
         }).done(function(res, state) {

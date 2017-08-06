@@ -125,23 +125,32 @@
           url: "/api/ticket?" + query,
           method: 'get'
         }).done(function(res, state) {
-          var $qr, c, ctx, img;
-          $qr = $('<div id="qrcode" style="width:256px;height:256px;position:relative;"></div>');
-          $('body').html($qr);
-          $qr.qrcode({
-            width: 256,
-            height: 256,
-            text: res
-          });
-          $qr.append('<span>设备编号： ' + obj.uid + '<span>');
-          c = $('canvas')[0];
+          var $qr, c, ctx, done, img, img2, once;
+          $qr = $('<canvas id="qrcode" width="532" height="582" style="border:1px solid #666;width:266px;height:291px;"></canvas>');
+          $('body').append($qr);
+          c = $qr[0];
           ctx = c.getContext("2d");
           img = new Image();
-          img.src = "/tmp/static/images/WechatIMG23.jpeg";
-          img.width = 40;
-          img.height = 40;
-          img.border = "solid white 5px";
-          return ctx.drawImage(img, 88, 88, 70, 70);
+          img.src = "/api/devices:qrcode?uid=" + res;
+          img.onload = function() {
+            return done();
+          };
+          img2 = new Image();
+          img2.src = "/tmp/static/images/WechatIMG23.png";
+          img2.onload = function() {
+            return done();
+          };
+          ctx.font = '40px Georgia';
+          ctx.fillText("设备编号：" + obj.uid, 50, 562);
+          once = true;
+          return done = function() {
+            if (once) {
+              once = false;
+              return;
+            }
+            ctx.drawImage(img, 10, 10, 512, 512);
+            return ctx.drawImage(img2, 196, 196, 120, 120);
+          };
         });
       };
 

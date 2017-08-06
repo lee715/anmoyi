@@ -18,13 +18,13 @@ define [
     title: '总金额'
   ,
     field: 'wxFee'
-    title: '微信手续费'
+    title: '微信手续费（0.6%）'
   ,
-    field: 'placeFee'
-    title: '分成金额'
+    field: 'agentFeeStr'
+    title: '场地分成金额（元）'
   ,
-    field: 'salesFee'
-    title: '业务员分成'
+    field: 'salesFeeStr'
+    title: '业务员分成（元）'
   ,
     field: 'count'
     title: '实际所得'
@@ -50,28 +50,36 @@ define [
           "#{year1}年#{map[(month+11)%12]}月"
           "#{year2}年#{map[(month+10)%12]}月"
         ]
+        data.totals[3] = +data.totals[0] + +data.totals[1] + +data.totals[2]
         tableData = []
         data.totals.forEach((one, i) =>
           rt = {}
-          rt.month = data.months[i]
+          rt.month = data.months[i] || '总计'
           rt.total = one
-          rt.wxFee = (one * 0.06).toFixed(2)
+          rt.wxFee = (one * 0.006).toFixed(2)
           if data.place.agentMode is 'percent'
-            rt.agentFee = (rt.wxFee * data.place.agentCount / 100).toFixed(2)
+            rt.agentFee = (one * 0.994 * data.place.agentCount / 100).toFixed(2)
+            rt.agentFeeStr = "#{rt.agentFee}(#{data.place.agentCount}%)"
           else
             rt.agentFee = data.place.agentCount
+            rt.agentFeeStr = data.place.agentCount + "(固定分成)"
+          rt.adminFee = (one * 0.994 - rt.agentFee).toFixed(2)
           if data.place.salesmanMode is 'percent'
-            rt.salesFee = (rt.agentFee * data.place.salesmanCount / 100).toFixed(2)
+            rt.salesFee = (rt.adminFee * data.place.salesmanCount / 100).toFixed(2)
+            rt.salesFeeStr = "#{rt.salesFee}(#{data.place.salesmanCount}%)"
           else
             rt.salesFee = data.place.salesmanCount
-          rt.count = rt.agentFee - rt.salesFee
+            rt.salesFeeStr = data.place.salesmanCount + "(固定分成)"
+          if Data.isRoot()
+            rt.count = (rt.adminFee - rt.salesFee).toFixed()
+          else if Data.isAgent()
+            rt.count = rt.agentFee
+          else
+            rt.count = rt.salesFee
           tableData.push(rt)
         )
-        tableData.push(_.reduce(tableData, (a, b) ->
-          return a + b
-        ))
         self.$el.html ejs.render(temp, data)
-        @$table = @$el.find('#recTable')
+        @$table = $('#recTable')
         @$table.bootstrapTable
           columns: columns
           striped: true
@@ -107,7 +115,7 @@ define [
               place: user
               totals: totals
             callback(null, data)
-      else if user.role is 'root'
+      else if user.role in ['root', 'salesman']
         @fetchPlace (err, place) =>
           @fetchAgent place._agentId, (err, agent) =>
             @fetchTotals (err, totals) ->
@@ -116,6 +124,7 @@ define [
                 place: place
                 totals: totals
               callback(null, data)
+
 
     fetchAgent: (_agentId, callback) ->
       $.ajax

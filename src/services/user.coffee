@@ -37,7 +37,7 @@ module.exports =
 
   isServer: (req, res, next) ->
     user = req._data.user
-    if user and user.role in ['agent', 'root', 'server']
+    if user and user.role in ['agent', 'root', 'salesman']
       next()
     else
       res.status(403).send('Forbidden')

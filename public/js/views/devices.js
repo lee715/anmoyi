@@ -43,13 +43,13 @@
       }, {
         field: 'discount',
         title: '费率'
-      }, {
-        field: 'start',
-        title: '开机'
       }
     ];
     root_columns = [
       {
+        field: 'start',
+        title: '开机'
+      }, {
         field: 'edit',
         title: '编辑'
       }, {

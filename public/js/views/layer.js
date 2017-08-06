@@ -48,7 +48,7 @@
           isLogin: !!Data.user,
           isRoot: ((ref = Data.user) != null ? ref.get('role') : void 0) === 'root',
           isAgent: ((ref1 = Data.user) != null ? ref1.get('role') : void 0) === 'agent',
-          isServer: ((ref2 = Data.user) != null ? ref2.get('role') : void 0) === 'server',
+          isServer: ((ref2 = Data.user) != null ? ref2.get('role') : void 0) === 'salesman',
           isPlace: ((ref3 = Data.user) != null ? ref3.get('role') : void 0) === 'place'
         }));
         this.$main = this.$el.find('#mainSection');

@@ -3,8 +3,29 @@
   var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     hasProp = {}.hasOwnProperty;
 
-  define(['backbone', 'underscore', 'text!templates/reconciliation.ejs', 'models/user', 'models/place', 'utils', 'data', 'ejs'], function(B, _, temp, userModel, placeModel, utils, Data) {
-    var View;
+  define(['backbone', 'underscore', 'text!templates/reconciliation.ejs', 'models/user', 'models/place', 'utils', 'data', 'ejs', 'table'], function(B, _, temp, userModel, placeModel, utils, Data) {
+    var View, columns;
+    columns = [
+      {
+        field: 'month',
+        title: '月份'
+      }, {
+        field: 'total',
+        title: '总金额'
+      }, {
+        field: 'wxFee',
+        title: '微信手续费（0.6%）'
+      }, {
+        field: 'agentFeeStr',
+        title: '场地分成金额（元）'
+      }, {
+        field: 'salesFeeStr',
+        title: '业务员分成（元）'
+      }, {
+        field: 'count',
+        title: '实际所得'
+      }
+    ];
     return View = (function(superClass) {
       extend(View, superClass);
 
@@ -19,8 +40,8 @@
       View.prototype.render = function() {
         var self;
         self = this;
-        return this.fetch(function(err, data) {
-          var map, month, year, year1, year2;
+        this.fetch(function(err, data) {
+          var map, month, tableData, year, year1, year2;
           month = (new Date).getMonth() + 1;
           year = year1 = year2 = (new Date).getFullYear();
           map = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
@@ -31,8 +52,51 @@
             year2 = year - 1;
           }
           data.months = [year + "年" + month + "月", year1 + "年" + map[(month + 11) % 12] + "月", year2 + "年" + map[(month + 10) % 12] + "月"];
-          return self.$el.html(ejs.render(temp, data));
+          data.totals[3] = +data.totals[0] + +data.totals[1] + +data.totals[2];
+          tableData = [];
+          data.totals.forEach((function(_this) {
+            return function(one, i) {
+              var rt;
+              rt = {};
+              rt.month = data.months[i] || '总计';
+              rt.total = one;
+              rt.wxFee = (one * 0.006).toFixed(2);
+              if (data.place.agentMode === 'percent') {
+                rt.agentFee = (one * 0.994 * data.place.agentCount / 100).toFixed(2);
+                rt.agentFeeStr = rt.agentFee + "(" + data.place.agentCount + "%)";
+              } else {
+                rt.agentFee = data.place.agentCount;
+                rt.agentFeeStr = data.place.agentCount + "(固定分成)";
+              }
+              rt.adminFee = (one * 0.994 - rt.agentFee).toFixed(2);
+              if (data.place.salesmanMode === 'percent') {
+                rt.salesFee = (rt.adminFee * data.place.salesmanCount / 100).toFixed(2);
+                rt.salesFeeStr = rt.salesFee + "(" + data.place.salesmanCount + "%)";
+              } else {
+                rt.salesFee = data.place.salesmanCount;
+                rt.salesFeeStr = data.place.salesmanCount + "(固定分成)";
+              }
+              if (Data.isRoot()) {
+                rt.count = (rt.adminFee - rt.salesFee).toFixed();
+              } else if (Data.isAgent()) {
+                rt.count = rt.agentFee;
+              } else {
+                rt.count = rt.salesFee;
+              }
+              return tableData.push(rt);
+            };
+          })(this));
+          self.$el.html(ejs.render(temp, data));
+          this.$table = $('#recTable');
+          this.$table.bootstrapTable({
+            columns: columns,
+            striped: true,
+            pagination: true,
+            pageSize: 50
+          });
+          return this.$table.bootstrapTable('load', tableData);
         });
+        return this;
       };
 
       View.prototype.showAlert = function(state, err) {
@@ -49,7 +113,7 @@
       };
 
       View.prototype.fetch = function(callback) {
-        var user;
+        var ref, user;
         user = Data.user.toJSON();
         if (user.role === 'agent') {
           return this.fetchPlace((function(_this) {
@@ -79,7 +143,7 @@
               });
             };
           })(this));
-        } else if (user.role === 'root') {
+        } else if ((ref = user.role) === 'root' || ref === 'salesman') {
           return this.fetchPlace((function(_this) {
             return function(err, place) {
               return _this.fetchAgent(place._agentId, function(err, agent) {

@@ -5,6 +5,7 @@ userSrv = require('../services/user')
 sockSrv = require('../services/socket')
 moment = require('moment')
 Promise = require('bluebird')
+qrcode = require('qr-image')
 
 pluck = (keys) ->
   (arr) ->
@@ -88,6 +89,13 @@ class API
     ,
       callback
   @::disableDevice.route = ['put', '/devices:disable']
+
+  qrcode: (req, callback) ->
+    { uid } = req.query
+    qrcode.image(uid,
+      margin: 0
+    ).pipe(req.res)
+  @::qrcode.route = ['get', '/devices:qrcode']
 
   order: (req, callback) ->
     { uid, order, time } = req.query
@@ -181,7 +189,7 @@ class API
 
   @::fetchDevices.route = ['get', '/devices']
   @::fetchDevices.before = [
-    userSrv.isAgent
+    userSrv.isLogined
   ]
 
 module.exports = new API

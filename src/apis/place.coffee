@@ -84,8 +84,10 @@ class API
     user = req._data.user
     if user.role is 'root'
       cons = {}
-    else
+    else if user.role is 'agent'
       cons = _agentId: user._id
+    else
+      cons = _salesmanId: user._id
     db.place.findAsync cons
     .map (place) ->
       place = place.format()
@@ -103,15 +105,17 @@ class API
       callback(null, places)
   @::get.route = ['get', '/places']
   @::get.before = [
-    userSrv.isAgent
+    userSrv.isLogined
   ]
 
   getPlacesWithStatistic: (req, callback) ->
     user = req._data.user
     if user.role is 'root'
       cons = {}
-    else
+    else if user.role is 'agent'
       cons = _agentId: user._id
+    else
+      cons = _salesmanId: user._id
     db.place.findAsync cons
     .map (place) ->
       place = place.format()
@@ -152,7 +156,7 @@ class API
       callback(e)
   @::getPlacesWithStatistic.route = ['get', '/places/statistic']
   @::getPlacesWithStatistic.before = [
-    userSrv.isAgent
+    userSrv.isLogined
   ]
 
   getById: (req, callback) ->
@@ -169,14 +173,14 @@ class API
   reconciliation: (req, callback) ->
     user = req._data.user
     {_placeId} = req.params
-    unless user.role in ['agent', 'place', 'root'] and _placeId
+    unless user.role in ['agent', 'place', 'root', 'salesman'] and _placeId
       return res.status(403).send('Forbidden')
     p = null
     db.place.findOneAsync
       _id: _placeId
     .then (place) ->
       p = place.p
-      if (user.role is 'agent' and "#{place._agentId}" is "#{user._id}") or (user.role in ['place', 'root'])
+      if (user.role is 'agent' and "#{place._agentId}" is "#{user._id}") or (user.role in ['place', 'root', 'salesman'])
         months = [
           [moment().startOf('month'), moment().startOf('day')]
           [moment().startOf('month').add(-1, 'month'), moment().startOf('month')]

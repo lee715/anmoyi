@@ -24,7 +24,7 @@
         qq: '',
         bankName: '',
         bankAccount: '',
-        role: '客服',
+        role: '业务员',
         edit: '<a href="javascript:;">编辑</a>',
         password: ''
       };
@@ -40,8 +40,8 @@
           case 'root':
             data.roleName = '管理员';
             break;
-          case 'server':
-            data.roleName = '客服';
+          case 'salesman':
+            data.roleName = '业务员';
             break;
           case 'agent':
             data.roleName = '代理商';

@@ -89,21 +89,35 @@ define [
         url: "/api/ticket?#{query}"
         method: 'get'
       ).done (res, state) ->
-        $qr = $('<div id="qrcode" style="width:256px;height:256px;position:relative;"></div>')
-        $('body').append($qr)
-        $qr.qrcode
-          width: 256
-          height: 256
-          text: res
+        $qr = $('<canvas id="qrcode" width="532" height="582" style="border:1px solid #666;width:266px;height:291px;"></canvas>')
+        # $qr.qrcode
+        #   width: 256
+        #   height: 256
+        #   text: res
+        #   image: "http://www.songsongbei.com/tmp/static/images/WechatIMG23.jpeg"
         # $qr.append('<img src="/tmp/static/images/WechatIMG123.png" style="width:70px;height:70px;position:absolute;top:50%;left:50%;margin-top:-40px;margin-left:-40px;border: solid white 5px;"></img>')
-        $qr.append('<span>设备编号： ' + obj.uid + '<span>')
-        c = $('canvas')[0]
+        # $qr.append('<span>设备编号： ' + obj.uid + '<span>')
+        $('body').append($qr)
+        c = $qr[0]
         ctx = c.getContext("2d")
         img = new Image()
-        img.src = "/tmp/static/images/WechatIMG23.jpeg"
-        img.width = 40
-        img.height = 40
-        img.border = "solid white 5px"
-        ctx.drawImage(img, 88, 88, 70, 70);
+        img.src = "/api/devices:qrcode?uid=#{res}"
+        img.onload = ->
+          done()
+        img2 = new Image()
+        img2.src = "/tmp/static/images/WechatIMG23.png"
+        img2.onload = ->
+          done()
+        ctx.font = '40px Georgia'
+        ctx.fillText("设备编号：#{obj.uid}", 40, 562)
+        once = true
+        done = ->
+          if once
+            once = false
+            return
+          ctx.drawImage(img, 10, 10, 512, 512);
+          ctx.drawImage(img2, 196, 196, 120, 120)
+
+
 
 

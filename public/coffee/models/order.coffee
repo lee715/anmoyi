@@ -34,6 +34,18 @@ define [
           data.mode_zh = '余额扣费'
         else
           data.mode_zh = '投币支付'
+      switch data.serviceStatus
+        when 'PAIED'
+          data.serviceStatusStr = '支付成功'
+        when 'STARTED'
+          data.serviceStatusStr = '启动成功'
+        when 'RETURNED'
+          data.serviceStatusStr = '已退款'
+      switch data.status
+        when 'PREPAY'
+          data.statusStr = '支付发起'
+        when 'SUCCESS'
+          data.statusStr = '支付成功'
       data.created = (new Date(data.created)).toLocaleString()
       data
 

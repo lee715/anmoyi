@@ -10,10 +10,10 @@
         field: '_id',
         title: '订单号'
       }, {
-        field: 'status',
+        field: 'statusStr',
         title: '订单状态'
       }, {
-        field: 'serviceStatus',
+        field: 'serviceStatusStr',
         title: '服务状态'
       }, {
         field: 'money',

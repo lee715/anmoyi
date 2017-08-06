@@ -18,13 +18,6 @@ module.exports = (Schema) ->
     disabled:
       type: Boolean
       default: false
-    # 价格
-    price:
-      type: Number
-      default: 5
-    time:
-      type: Number
-      default: 10
     # 折扣
     discount:
       type: Number
@@ -33,16 +26,9 @@ module.exports = (Schema) ->
     remission:
       type: Number
       default: 0
-    # 累计收入
-    income:
-      type: Number
-      default: 0
     type:
       type: String
       default: 'normal'
-    wxTime:
-      type: Number
-      default: 0
     # 投入使用日期
     created:
       type: Date

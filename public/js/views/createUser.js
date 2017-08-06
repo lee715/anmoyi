@@ -17,7 +17,8 @@
       bankAccount: '',
       contacts: [{}, {}],
       license: '',
-      roles: ['代理商', '客服'],
+      roles: ['agent', 'salesman'],
+      rolenames: ['代理商', '业务员'],
       password: ''
     };
     return View = (function(superClass) {

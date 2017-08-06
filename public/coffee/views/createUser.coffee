@@ -51,6 +51,7 @@ define [
         data = @model.toJSON()
       data = _.extend({}, defaultVals, data)
       data.type = @type
+      data.isRoot = Data.isRoot()
       self.$el.html ejs.render(temp, data)
       @$addition = @$el.find('#createUserAddition')
       @

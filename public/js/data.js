@@ -32,7 +32,7 @@
           }
           if (role === 'place') {
             url = '/reconciliation';
-          } else if (role === 'server') {
+          } else if (role === 'salesman') {
             url = '/orders';
           } else {
             url = '/places';
@@ -71,6 +71,9 @@
       },
       isRoot: function() {
         return this.user.get('role') === 'root';
+      },
+      isAgent: function() {
+        return this.user.get('role') === 'agent';
       },
       refresh: function() {
         return location.reload();

@@ -20,7 +20,7 @@ define ['utils', 'models/user'], (utils, userModel) ->
         @_placeId = @user.id if role is 'place'
         if role is 'place'
           url = '/reconciliation'
-        else if role is 'server'
+        else if role is 'salesman'
           url = '/orders'
         else
           url = '/places'
@@ -48,6 +48,8 @@ define ['utils', 'models/user'], (utils, userModel) ->
       @user = new userModel(user)
     isRoot: ->
       return @user.get('role') is 'root'
+    isAgent: ->
+      return @user.get('role') is 'agent'
     refresh: ->
       location.reload()
     order: (order, uid, time) ->
