@@ -28,4 +28,12 @@ class API
     db.type.find {}, callback
   @::getTypes.route = ['get', '/types']
 
+  delType: (req, callback) ->
+    _id = req.params._id
+    db.type.remove {_id: _id}, callback
+  @::delType.route = ['delete', '/types/:_id']
+  @::delType.before = [
+    userSrv.isRoot
+  ]
+
 module.exports = new API

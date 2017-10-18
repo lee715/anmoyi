@@ -61,6 +61,8 @@ define ['utils', 'models/user'], (utils, userModel) ->
           time: time
         json: true
       .done((res, state) ->
+        if res.code and res.code >= 400
+          state = 'error'
         Essage.show
           message: if state is 'success' then '开机成功' else '开机失败'
           status: state
@@ -78,6 +80,8 @@ define ['utils', 'models/user'], (utils, userModel) ->
         method: 'delete'
         json: true
       .done((res, state) ->
+        if res.code and res.code >= 400
+          state = 'error'
         Essage.show
           message: if state is 'success' then '删除成功' else '删除失败'
           status: state

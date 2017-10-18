@@ -74,7 +74,7 @@ define [
       'submit #timeForm': 'querySection'
 
     render: ->
-      @$el.html ejs.render(temp)
+      @$el.html ejs.render(temp, {isDetail: true})
       @$table = @$el.find('#placesTable')
       @$container = @$el.find('#seletorContainer')
       @$table.bootstrapTable

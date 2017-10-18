@@ -124,7 +124,7 @@ class API
     else
       cons = _userId: user._id
     if _placeId
-      cons._placeId = _placeId
+      cons = _placeId: _placeId
     db.device.findAsync cons
     .then (devices) ->
       map = {}

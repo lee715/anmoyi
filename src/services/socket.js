@@ -14,7 +14,10 @@ const sockCol = module.exports = {
   },
 
   ensureAgent: (uid, sock) => {
-    if (sockMap[uid]) return sockMap[uid]
+    if (sockMap[uid]) {
+      sockMap[uid].sock = sock
+      return sockMap[uid]
+    }
     sockMap[uid] = new SockAgent(uid, sock)
     sock.uid = uid
     return sockMap[uid]
@@ -70,11 +73,18 @@ class SockAgent {
 
   sendStart (time, callback) {
     let self = this
+    // 如果有指令正在执行，报错
+    if (this._timer) return callback(new Error('command is running'))
     let timer = setInterval(function () {
       self._start(time)
     }, 3000)
     this._start(time)
-    this.cache(callback, timer)
+    let timeoutTimer = setTimeout(() => {
+      console.log('start timeout', this.uid, time)
+      this.doCache(new Error('start timeout'))
+      this.sock.end()
+    }, 1000 * 60 * 3)
+    this.cache(callback, timer, timeoutTimer)
   }
 
   _start (time) {
@@ -86,15 +96,17 @@ class SockAgent {
     this.sock.write(`~${this.uid}#OK\r`)
   }
 
-  cache (fn, timer) {
+  cache (fn, timer, timeoutTimer) {
     this._cache = fn
     this._timer = timer
+    this._timeoutTimer = timeoutTimer
   }
 
   doCache (err, data) {
     console.log('doCache', err, data)
     this._cache && this._cache(err, data)
     this._timer && clearInterval(this._timer)
+    this._timeoutTimer && clearTimeout(this._timeoutTimer)
     this._timer = null
     this._cache = null
   }
@@ -102,6 +114,7 @@ class SockAgent {
   clearCache () {
     this._cache = null
     this._timer && clearInterval(this._timer)
+    this._timeoutTimer && clearTimeout(this._timeoutTimer)
     this._timer = null
   }
 
@@ -121,6 +134,7 @@ class SockAgent {
 
 net.createServer( function (sock) {
   console.log `CONNECTED: ${sock.remoteAddress}:${sock.remotePort}`
+
   sock.on('data', function (data) {
     let msg = Buffer.from(data).toString('utf8')
     let _msg = formatMsg(msg)
@@ -135,6 +149,19 @@ net.createServer( function (sock) {
     console.log `CLOSED: ${sock.remoteAddress}:${sock.remotePort}`
     sockCol.closeSock(sock)
   })
+
+  sock.on('end', function () {
+    console.log('sock end')
+    sockCol.closeSock(sock)
+    sock.end()
+  })
+
+  sock.on('error', function (err) {
+    console.log('sock error', err)
+    sockCol.closeSock(sock)
+    sock.end()
+  })
+
 }).listen(config.sockport || 7000, function () {
   console.log('tcp server listening on:'+ (config.sockport || 7000))
 })

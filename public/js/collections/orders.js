@@ -36,7 +36,7 @@
               return m.parse(item);
             });
             if (state === 'success') {
-              _this.add(data);
+              _this.reset(data);
               return opts.success && opts.success(_this, data);
             } else {
               return opts.error && opts.error(data, state);

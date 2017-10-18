@@ -59,6 +59,7 @@
         }
         data = _.extend({}, defaultVals, data);
         data.type = this.type;
+        data.isRoot = Data.isRoot();
         self.$el.html(ejs.render(temp, data));
         this.$addition = this.$el.find('#createUserAddition');
         return this;

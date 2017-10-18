@@ -141,7 +141,7 @@
             return done();
           };
           ctx.font = '40px Georgia';
-          ctx.fillText("设备编号：" + obj.uid, 50, 562);
+          ctx.fillText("设备编号：" + obj.uid, 40, 562);
           once = true;
           return done = function() {
             if (once) {

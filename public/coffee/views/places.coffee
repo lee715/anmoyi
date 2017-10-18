@@ -71,7 +71,7 @@ define [
       'click .selector': 'onSelect'
 
     render: ->
-      @$el.html ejs.render(temp)
+      @$el.html ejs.render(temp, {isDetail: false})
       @$table = @$el.find('#placesTable')
       @$container = @$el.find('#seletorContainer')
       @$table.bootstrapTable

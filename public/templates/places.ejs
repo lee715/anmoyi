@@ -1,5 +1,5 @@
 
-
+<%if (isDetail) {%>
 <form class="form-inline" id="timeForm" onsubmit="return false">
   <div class="form-group">
     <label>时间区间:</label>
@@ -9,6 +9,7 @@
   </div>
   <input class="btn btn-primary" type="submit" value="区间查询">
 </form>
+<%}%>
 <div id="seletorContainer"></div>
 <table id="placesTable"></table>
 

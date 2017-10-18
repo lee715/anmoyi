@@ -147,45 +147,40 @@ class API
     { uid, _orderId, action, openId } = req.query
     unless uid and openId and _orderId
       return callback(new Error('paramErr'))
-    redis.getAsync "ORDER.COMMAND.LOCK.#{_orderId}"
-    .then (lock) ->
-      throw new Error('order is handling') if lock
-      redis.setexAsync "ORDER.COMMAND.LOCK.#{_orderId}", 60*10, 1
-    .then ->
-      db.order.findOneAsync
-        _id: _orderId
-        openId: openId
-        uid: uid
-      .then (order) ->
-        unless order
-          throw new Error('orderNotFound')
-        if order.status is 'SUCCESS'
-          if action is "start"
-            sockSrv.startAsync(uid, order.time)
-            .then (state) ->
-              throw new Error('start failed') unless state
-              order.serviceStatus = 'STARTED'
-              order.saveAsync()
-            .then ->
-              db.device.updateAsync
-                uid: uid
-              , status: 'work'
-              ,
-                upsert: false
-                new: false
-            .then ->
-              callback(null, 'ok')
-          else if action in ['1F', '20', '1E', '21', '22', '24']
-            sockSrv.setAsync(uid, action)
-            .then ->
-              callback(null, 'ok')
-          else
-            throw new Error('unknownAction')
+    db.order.findOneAsync
+      _id: _orderId
+      openId: openId
+      uid: uid
+    .then (order) ->
+      unless order
+        throw new Error('orderNotFound')
+      if order.status is 'SUCCESS'
+        if action is "start"
+          sockSrv.startAsync(uid, order.time)
+          .then (state) ->
+            throw new Error('start failed') unless state
+            order.serviceStatus = 'STARTED'
+            order.saveAsync()
+          .then ->
+            db.device.updateAsync
+              uid: uid
+            , status: 'work'
+            ,
+              upsert: false
+              new: false
+          .then ->
+            callback(null, 'ok')
+        else if action in ['1F', '20', '1E', '21', '22', '24']
+          sockSrv.setAsync(uid, action)
+          .then ->
+            callback(null, 'ok')
         else
-          throw new Error('unvalidOrder')
-    .then ->
-      redis.del "ORDER.COMMAND.LOCK.#{_orderId}"
+          throw new Error('unknownAction')
+      else
+        throw new Error('unvalidOrder')
     .catch (e) ->
+      console.log('orderDevice')
+      console.log(e.stack)
       callback(e)
   @::orderDevice.route = ['get', '/command']
 

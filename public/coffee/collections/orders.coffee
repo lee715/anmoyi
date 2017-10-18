@@ -29,7 +29,7 @@ define [
           return m.parse(item)
         )
         if state is 'success'
-          @add(data)
+          @reset(data)
           opts.success and opts.success(@, data)
         else
           opts.error and opts.error(data, state)

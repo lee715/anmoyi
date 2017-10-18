@@ -3,6 +3,7 @@ db = require('limbo').use('anmoyi')
 u = require('../services/util')
 userSrv = require('../services/user')
 moment = require('moment')
+Promise = require('bluebird')
 
 class API
 
@@ -13,15 +14,24 @@ class API
     endDate = req.query.endDate
     if not startDate or not endDate or not u.isDate(startDate) or not u.isDate(endDate)
       return callback(new Error('invalid date'))
-    if user.role is 'agent'
-      cons = _userId: user._id
-    else
+    Promise
+    .resolve()
+    .then ->
       cons = {}
-    if startDate or endDate
-      cons.created = {}
-      cons.created.$gt = moment(startDate).toDate() if startDate
-      cons.created.$lt = moment(endDate).toDate() if endDate
-    db.order.findAsync(cons)
+      if user.role is 'agent'
+        cons._userId = user._id
+      else if user.role is 'salesman'
+        db.place.findAsync
+          _salesmanId: user._id
+        .then (places) ->
+          cons._placeId = $in: _.map(places, '_id')
+      if startDate or endDate
+        cons.created = {}
+        cons.created.$gt = moment(startDate).toDate() if startDate
+        cons.created.$lt = moment(endDate).toDate() if endDate
+      return cons
+    .then (cons) ->
+      db.order.findAsync(cons)
     .then (orders) ->
       orders = _.sortByOrder(orders, ['created'], ['desc'])
       orders = orders.slice(0, 3000)

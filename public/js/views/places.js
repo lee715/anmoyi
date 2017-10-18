@@ -76,7 +76,9 @@
       };
 
       View.prototype.render = function() {
-        this.$el.html(ejs.render(temp));
+        this.$el.html(ejs.render(temp, {
+          isDetail: false
+        }));
         this.$table = this.$el.find('#placesTable');
         this.$container = this.$el.find('#seletorContainer');
         this.$table.bootstrapTable({

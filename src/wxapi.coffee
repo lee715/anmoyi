@@ -253,11 +253,6 @@ class API
       order.serviceStatus = 'PAIED'
       order.saveAsync()
     .then ->
-      redis.getAsync "ORDER.COMMAND.LOCK.#{_orderId}"
-    .then (lock) ->
-      throw new Error('order is handling') if lock
-      redis.setexAsync "ORDER.COMMAND.LOCK.#{_orderId}", 60*10, 1
-    .then ->
       sockSrv.startAsync(uid, order.time)
       .then (state) ->
         order.serviceStatus = 'STARTED'
@@ -271,8 +266,6 @@ class API
           new: false
       .then ->
         callback(null, 'ok')
-    .then ->
-      redis.del "ORDER.COMMAND.LOCK.#{_orderId}"
     .catch (e) ->
       console.log(e.stack)
       callback(e)
