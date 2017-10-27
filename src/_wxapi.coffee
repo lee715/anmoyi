@@ -9,7 +9,6 @@ wxpay = WXPay
   appid: appid
   mch_id: mch_id
   partner_key: key
-  pfx: fs.readFileSync('apiclient_cert.p12')
 
 
 wx_date = (date) ->

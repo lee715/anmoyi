@@ -69,11 +69,6 @@ app.get '/', (req, res, next) ->
   res.header('Content-Type', 'text/html; charset=utf-8')
   res.send(indexHtml)
 
-txt = fs.readFileSync('MP_verify_wMjdq63CWlDk3nXy.txt')
-app.get '/MP_verify_wMjdq63CWlDk3nXy.txt', (req, res, next) ->
-  res.header('Content-Type', 'text/html; charset=utf-8')
-  res.send(txt)
-
 app.get '*', (req, res, next) ->
   res.render('index')
 

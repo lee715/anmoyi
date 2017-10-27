@@ -44,7 +44,7 @@ sneaky('onip', function () {
 + app.js
 - *
 `
-  this.before('rm -rf lib && coffee -o lib -c src')
+  this.before('rm -rf lib && coffee -o lib -c src && cp src/services/socket.js lib/services/socket.js')
   this.overwrite = true
   this.nochdir = true
 })
