@@ -72,6 +72,17 @@
     background-color: #fcf8e3;
     border-color: #faebcc;
   }
+  #price > div {
+    border: 1px solid #ccc;
+    text-align: center;
+    padding: 5px;
+    border-radius: 5px;
+    margin: 10px;
+  }
+  #price .selected {
+    background: #69aa35;
+    color: white;
+  }
   </style>
 </head>
 <body>
@@ -88,12 +99,10 @@
       <div>
         <label>商品:</label><span><%=it.name%></span>
       </div>
-      <div>
-        <select id="ptSelect">
-          <% for(var i = 0,l = it.price.length;i<l;i++) { %>
-            <option value=<%=it.price[i] + ':' + it.time[i]%>><%=it.price[i]%>块钱<%=it.time[i]%>分钟</option>
-          <% } %>
-        </select>
+      <div id="price">
+        <% for(var i = 0,l = it.price.length;i<l;i++) { %>
+          <div <%if(i == 0){%>class="selected"<%}%> data-val=<%=it.price[i] + ':' + it.time[i]%>><%=it.price[i]%>块钱<%=it.time[i]%>分钟</div>
+        <% } %>
       </div>
     </div>
     <a href="javascript:;" id="pay">确认支付</a>
@@ -110,13 +119,17 @@
   var openId = "<%=it.openId%>";
   var uid = "<%=it.uid%>";
   var timer;
+  $("#price > div").click(function (e) {
+    $('.selected').removeClass('selected')
+    $(e.target).addClass('selected')
+  })
   function pay(){
     $.ajax({
       url: "/api/prepay/cost",
       method: 'get',
       data: {
         openId: openId,
-        pt: $('#ptSelect').val()
+        pt: $('#price .selected').data('val')
       }
     })
     .done(function (arg) {
