@@ -40,7 +40,7 @@ class API
       _id: _placeId
     .then (place) ->
       params._userId = place._agentId
-      db.device.createAsync params
+      db.device.findOneAndUpdateAsync uid: params.uid, params, {new: true, upsert: true}
     .then (device)->
       callback(null, device)
     .catch (e) ->
