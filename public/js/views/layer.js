@@ -111,7 +111,13 @@
             });
           case 'typesCreate':
             return this._views.createType = new createTypeView({
-              el: this.$main[0]
+              el: this.$main[0],
+              type: 'create'
+            });
+          case 'typesEdit':
+            return this._views.EditType = new createTypeView({
+              el: this.$main[0],
+              type: 'edit'
             });
           case 'usersCreate':
             return this._views.createUser = new createUserView({

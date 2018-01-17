@@ -112,6 +112,11 @@ define [
         when 'typesCreate'
           @_views.createType = new createTypeView
             el: @$main[0]
+            type: 'create'
+        when 'typesEdit'
+          @_views.EditType = new createTypeView
+            el: @$main[0]
+            type: 'edit'
         when 'usersCreate'
           # if @_views.createUser
           #   @$main.html @_views.createUser.el

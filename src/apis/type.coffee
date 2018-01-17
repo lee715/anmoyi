@@ -29,8 +29,9 @@ class API
   @::getTypes.route = ['get', '/types']
 
   delType: (req, callback) ->
-    name = this.query.name
+    name = req.query.name
+    console.log(name)
     db.type.remove name: name, callback
-  @::getTypes.route = ['delete', '/types']
+  @::delType.route = ['delete', '/types']
 
 module.exports = new API

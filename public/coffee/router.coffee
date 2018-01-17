@@ -40,6 +40,7 @@ define [
       'placesEdit': -> goto('placesCreate')
       'usersEdit': -> goto('usersEdit')
       'typesCreate': -> goto('typesCreate')
+      'typesEdit': -> goto('typesEdit')
       # 'devices/:action/:_id': 'deviceEdit'
       'usersCreate': -> goto('usersCreate')
       'urlqrcode': 'qrcode'

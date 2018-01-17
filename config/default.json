@@ -1,5 +1,5 @@
 {
-  "PORT": 8000,
+  "PORT": 80,
   "name": "anmoyi",
   "host": "http://www.songsongbei.com/",
   "ip": "112.74.44.177",

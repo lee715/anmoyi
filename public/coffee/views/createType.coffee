@@ -13,20 +13,33 @@ define [
   class View extends B.View
 
     initialize: (opts) ->
+      @type = opts.type or 'create'
       @render()
 
     events:
       'submit form': 'onSubmit'
+      'click a.del': 'onDelete'
 
-    render: ->
-      @$el.html ejs.render(temp, {})
-      @
+    render: () ->
+      if @type is 'edit'
+        $.ajax
+          url: '/api/types'
+          json: true
+        .done (res, state) =>
+          if state is 'success'
+            @$el.html ejs.render(temp, {types: res})
+            @
+          else 
+            @$el.html ejs.render(temp, {})
+            @
+      else
+        @$el.html ejs.render(temp, {types: null})
 
     showAlert: (state, err) ->
       if state is 'success'
-        msg = '创建成功，你可以继续创建'
+        msg = '操作成功'
       else
-        msg = '创建失败，请检查表单'
+        msg = '操作失败'
       Essage.show
         message: msg
         status: state
@@ -47,3 +60,18 @@ define [
         self.showAlert(state)
 
       return false
+      
+    onDelete: (e) ->
+      e.preventDefault()
+      self = @
+      val = @$el.find('select').val()
+      $.ajax
+        url: "/api/types?name=#{val}"
+        data: 
+          name: val
+        json: true
+        method: 'delete'
+      .done (res, state) ->
+        if state is 'success'
+          self.render()
+        self.showAlert(state)
