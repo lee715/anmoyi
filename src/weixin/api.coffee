@@ -208,7 +208,7 @@ module.exports = WX_API =
       body: body
       detail: detail or ''
       out_trade_no: order
-      total_fee: cost
+      total_fee: Math.round(cost)
       spbill_create_ip: ip
       notify_url: "#{host}/wx/notify"
       openid: open_id

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, width=device-width, minimal-ui">
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <style type="text/css">
+  body{
+    color: #666;
+    margin:0;
+    padding: 0;
+    font-size: 18px;
+  }
+  header{
+    display: block;
+    height: 200px;
+    background: url('./beijing.png');
+    background-size: 100% 100%;
+    padding: 0px;
+    color: white;
+  }
+  header .title{
+    padding: 50px 50px;
+    font-size: 28px;
+    text-align: center;
+  }
+  header .content {
+    font-size: 0.9em;
+  }
+  header .content .label {
+    opacity: 0.75;
+    display: inline-block;
+    text-align: center;
+    padding: 15px 0px;
+  }
+  header .content div {
+    background: white;
+    color: #fa703a;
+    height: 80px;
+    float: left
+  }
+  #main{
+    background-image:url('./beijing1.png');
+    background-position: bottom;
+    background-size: 100%;
+    height: 100%;
+  }
+  #main>.title{
+    border-top: 1px solid #f4641c;
+    margin: 30px 20px;
+  }
+  #main>.title span {
+    position: absolute;
+    left: 50%;
+    margin-left: -73px;
+    margin-top: -18px;
+    background: white;
+    padding: 5px 10px;
+    color:#666;
+  }
+  #main .item{
+    position: relative;
+    border:1px solid #f4641c;
+    color: #f4641c;
+    background: white;
+    text-align: center;
+    margin: 20px;
+    padding: 10px;
+  }
+  #main .item .good {
+    display: none;
+    background: url('./muzhi.png');
+    background-size: 100% 100%;
+    width: 20px;
+    height:20px;
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    margin-top: -10px;
+  }
+  #main .item.selected > .good{
+    display: block;
+  }
+  #main .submit {
+    background: #f4641c;
+    color:white;
+    text-align: center;
+    margin: 20px;
+    padding: 10px;
+  }
+  #main .coupon {
+    background: white;
+    color:#f4641c;
+    text-align: center;
+    margin: 20px;
+    padding: 10px;
+  }
+  #main .coupon-box {
+    background: white;
+    text-align: center;
+    margin: 20px;
+    display: none;
+    border: 1px solid #f4641c;
+    color: #f4641c;
+  }
+  #main .coupon-box input{
+    padding: 6px 0 6px 10px;
+    font-size: 20px;
+  }
+  #main .coupon-box a {
+    padding: 6px 12px;
+    background: #f4641c;
+    color: white;
+    display: block;
+    float: right;
+    font-size: 20px;
+    text-decoration: none;
+  }
+  #main .notice{
+    text-align: center;
+    margin: 20px;
+    padding: 20px 20px 30px 20px;
+    box-shadow: 1px 1px 15px;
+  }
+  #main .notice .title{
+    color:#f4641c;
+    font-size: 1.2em;
+    padding-bottom: 15px;
+  }
+  #main .notice .msg{
+    font-size: 0.9em;
+  }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="title">按摩椅服务在线支付</div>
+    <div class="content">
+      <div class="label" style="width:49.5%">场地：CLUE酒吧</div>
+      <div style="width:1%;background:white;"></div>
+      <div class="label" style="width:49.5%">商品：SONG888</div>
+    </div>
+  </header>
+  <div id="main">
+    <div class="title"><span>请选择按摩时间</span></div>
+    <div class="item selected">5块钱5分钟<div class="good"></div></div>
+    <div class="item">10块钱10分钟<div class="good"></div></div>
+    <div class="item">30块钱30分钟<div class="good"></div></div>
+    <div class="submit">确认支付</div>
+    <div id="useCoupon" class="coupon">使用优惠券</div>
+    <div class="coupon-box">
+      <input type="text">
+      <a href="javascript:;">提交</a>
+    </div>
+    <div class="notice">
+      <div class="title">温馨提示</div>
+      <div class="msg">支付完成后，请点击“完成”以启动按摩椅。</div>
+    </div>
+  </div>
+  <script type="text/javascript" src="../bower/jquery/dist/jquery.js"></script>
+  <script>
+  $('#useCoupon').click(function (e) {
+    $('.coupon-box').css('display', 'block')
+    $('.coupon-box input').focus()
+  })
+  </script>
+</body>
+</html>

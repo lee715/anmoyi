@@ -9,12 +9,13 @@ define [
   'views/placesWithStatistic'
   'views/createDevice'
   'views/createUser'
+  'views/coupons'
   'views/createPlace'
   'views/createType'
   'views/reconciliation'
   'views/login'
   'views/orders'
-], ($, B, Data, layerTemp, devicesView, usersView, placesView, placesDetailView, createDeviceView, createUserView, createPlaceView, createTypeView, reconciliationView, loginView, ordersView) ->
+], ($, B, Data, layerTemp, devicesView, usersView, placesView, placesDetailView, createDeviceView, createUserView, couponsView, createPlaceView, createTypeView, reconciliationView, loginView, ordersView) ->
 
   formatDate = (time) ->
     now = new Date(time)
@@ -73,6 +74,9 @@ define [
 
     renderSubView: ->
       switch @_route
+        when 'coupons'
+          @_views.coupons = new couponsView
+            el: @$main[0]
         when 'devices'
           # if @_views.devices
           #   @$main.html @_views.devices.el

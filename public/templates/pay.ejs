@@ -13,41 +13,102 @@
     font-size: 18px;
   }
   header{
-    background: #69aa35;
-    padding: 15px;
-    text-align: center;
-    color: white;
-  }
-  label {
-    font-weight: bold;
-  }
-  span {
-    margin-left: 10px;
-  }
-  #info {
-    width: 200px;
-    margin: auto;
-  }
-  #pay {
     display: block;
-    width: 200px;
-    text-align: center;
+    height: 200px;
+    background: url('./beijing.png');
+    background-size: 100% 100%;
+    padding: 0px;
     color: white;
-    border-radius: 12px;
+  }
+  header .title{
+    padding: 50px 50px;
+    font-size: 28px;
+    text-align: center;
+  }
+  header .content {
+    font-size: 0.9em;
+  }
+  header .content .label {
+    opacity: 0.75;
+    display: inline-block;
+    text-align: center;
+    padding: 15px 0px;
+  }
+  header .content div {
+    background: white;
+    color: #fa703a;
+    height: 80px;
+    float: left
+  }
+  #main{
+    background-image:url('./beijing1.png');
+    background-position: bottom;
+    background-size: 100%;
+    height: 100%;
+  }
+  #main>.title{
+    border-top: 1px solid #f4641c;
+    margin: 30px 20px;
+  }
+  #main>.title span {
+    position: absolute;
+    left: 50%;
+    margin-left: -73px;
+    margin-top: -18px;
+    background: white;
+    padding: 5px 10px;
+    color:#666;
+  }
+  #main .item{
+    position: relative;
+    border:1px solid #f4641c;
+    color: #f4641c;
+    background: white;
+    text-align: center;
+    margin: 20px;
     padding: 10px;
-    font-size: 24px;
-    margin: auto;
-    background: #69aa35;
-    text-decoration: none;
-    margin-top: 15px;
   }
-  #info > div {
-    margin-top: 10px
+  #main .item .good {
+    display: none;
+    background: url('./muzhi.png');
+    background-size: 100% 100%;
+    width: 20px;
+    height:20px;
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    margin-top: -10px;
   }
-  .footer {
-    width:80%;
-    border-top:1px solid #ddd;
-    margin: 30px auto 0 auto;
+  #main .item.selected > .good{
+    display: block;
+  }
+  #main .submit {
+    background: #f4641c;
+    color:white;
+    text-align: center;
+    margin: 20px;
+    padding: 10px;
+  }
+  #main .coupon {
+    background: white;
+    color:#f4641c;
+    text-align: center;
+    margin: 20px;
+    padding: 10px;
+  }
+  #main .notice{
+    text-align: center;
+    margin: 20px;
+    padding: 20px 20px 30px 20px;
+    box-shadow: 1px 1px 15px;
+  }
+  #main .notice .title{
+    color:#f4641c;
+    font-size: 1.2em;
+    padding-bottom: 15px;
+  }
+  #main .notice .msg{
+    font-size: 0.9em;
   }
   .notice {
     padding: 15px;
@@ -72,54 +133,46 @@
     background-color: #fcf8e3;
     border-color: #faebcc;
   }
-  #price > div {
-    border: 1px solid #ccc;
-    text-align: center;
-    padding: 5px;
-    border-radius: 5px;
-    margin: 10px;
-  }
-  #price .selected {
-    background: #69aa35;
-    color: white;
-  }
   </style>
 </head>
 <body>
-  <div id="main">
     <% if(it.status === 'idle' || it.status === 'work'){ %>
-    <header>按摩椅服务在线支付</header>
-      <% if(it.status === 'work'){ %>
-      <div id="notice" class="notice warn">系统检测到该设备正在运行中，请确认后购买，本次购买将视为续费!</div>
+    <header>
+      <div class="title">按摩椅服务在线支付</div>
+      <div class="content">
+        <div class="label" style="width:49.5%">场地：<%=it.placeName%></div>
+        <div style="width:1%;background:white;"></div>
+        <div class="label" style="width:49.5%">商品：<%=it.name%></div>
+      </div>
+    </header>
+    <div id="main">
+      <div class="title"><span>请选择按摩时间</span></div>
+      <% for(var i = 0,l = it.price.length;i<l;i++) { %>
+        <div class="item <%if(i == 0){%>selected<%}%>" data-val=<%=it.price[i] + ':' + it.time[i]%> >
+          <%=it.price[i]%>块钱<%=it.time[i]%>分钟
+          <div class="good"></div>
+        </div>
       <% } %>
-    <div id="info">
-      <div>
-        <label>场地:</label><span><%=it.placeName%></span>
+      <div id="pay" class="submit">确认支付</div>
+      <div id="useCoupon" class="coupon">使用优惠券</div>
+      <div class="coupon-box">
+          <input type="text">
+          <a href="javascript:;" id="submitCoupon">提交</a>
+        </div>
+      <div class="notice">
+        <div class="title">温馨提示</div>
+        <div class="msg">支付完成后，请点击“完成”以启动按摩椅。</div>
       </div>
-      <div>
-        <label>商品:</label><span><%=it.name%></span>
-      </div>
-      <div id="price">
-        <% for(var i = 0,l = it.price.length;i<l;i++) { %>
-          <div <%if(i == 0){%>class="selected"<%}%> data-val=<%=it.price[i] + ':' + it.time[i]%>><%=it.price[i]%>块钱<%=it.time[i]%>分钟</div>
-        <% } %>
-      </div>
-    </div>
-    <a href="javascript:;" id="pay">确认支付</a>
-    <div class="footer notice warn">
-      <p style="text-align:center;font-weight:bold;text-indent:0;margin:10px;">温馨提示</p>
-      <p style="margin:0;padding:0;">支付完成后，请点击“完成”以启动按摩椅</p>
     </div>
     <% }else { %>
-    <div id="error" class="notice fail">设备异常,请使用其他设备或联系客服。客服电话：021-57494593。</div>
+    <div id="error" class="notice fail">设备异常,请使用其他设备或联系客服。客服电话：15361586480。</div>
     <% } %>
-  </div>
 <script type="text/javascript" src="/bower/jquery/dist/jquery.js"></script>
 <script type="text/javascript">
   var openId = "<%=it.openId%>";
   var uid = "<%=it.uid%>";
   var timer;
-  $("#price > div").click(function (e) {
+  $("#main > .item").click(function (e) {
     $('.selected').removeClass('selected')
     $(e.target).addClass('selected')
   })
@@ -129,7 +182,7 @@
       method: 'get',
       data: {
         openId: openId,
-        pt: $('#price .selected').data('val')
+        pt: $('#main .selected').data('val')
       }
     })
     .done(function (arg) {
@@ -138,7 +191,7 @@
         function(res){
           if(res.err_msg == "get_brand_wcpay_request:ok" ) {
             run();
-            $('#main').html('<div class="notice success">设备启动中。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：021-57494593</div>');
+            $('body').html('<div class="notice success">设备启动中。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：15361586480</div>');
           }
         }
       );
@@ -173,7 +226,7 @@
       }
     }).done(function(res, status){
       if(res === 'SUCCESS'){
-        $('#main').html('<div class="notice success">订单处理成功，设备将自动启动。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：021-57494593</div>');
+        $('#main').html('<div class="notice success">订单处理成功，设备将自动启动。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：15361586480</div>');
         clearInterval(timer);
         start();
       }
@@ -190,7 +243,7 @@
       }
     }).done(function(res, status){
       if(res === 'ok'){
-        $('#main').html('<div class="notice success">设备启动成功，请关闭该页面，祝您使用愉快<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：021-57494593</div>')
+        $('#main').html('<div class="notice success">设备启动成功，请关闭该页面，祝您使用愉快<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：15361586480</div>')
       }else{
         $('#main').html('<div class="notice fail">设备启动失败，请关闭该页面，进入公众号点击“启动”按钮手动启动按摩椅</div>')
       }
@@ -212,6 +265,29 @@
       }
     })
   }
+
+  $('#useCoupon').click(function (e) {
+    $('.coupon-box').css('display', 'block')
+    $('.coupon-box input').focus()
+  })
+
+  $('#submitCoupon').click(function (e) {
+    var val = $('.coupon-box input').val()
+    if (!val) return $('.coupon-box input').focus()
+    $.ajax({
+      url: "/api/coupons:start",
+      method: 'post',
+      data: {
+        uid: uid,
+        coupon: val
+      }
+    }).done(function(res, status){
+      if(res === 'ok'){
+        $('#main').html('<div class="notice success">设备启动成功，请关闭该页面，进入公众号进一步操作</div>')
+      }
+    })
+
+  })
 
   if (typeof WeixinJSBridge == "undefined"){
      if( document.addEventListener ){
