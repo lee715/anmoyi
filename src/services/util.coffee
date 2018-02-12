@@ -41,14 +41,13 @@ U =
   randomString: (len) ->
     chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_'
     ret = ''
-    while (len > 0) {
+    while (len > 0)
       rand = Math.floor(Math.random() * 0x100000000)
-      for (i = 26; i > 0 && len > 0; i -= 6, len--) {
+      i = 26
+      while (i > 0 && len > 0)
+        i -= 6
+        len--
         ret += chars[0x3F & rand >>> i]
-      }
-    }
     return ret
-}
-
 
 module.exports = U

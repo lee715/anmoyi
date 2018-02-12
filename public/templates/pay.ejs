@@ -303,7 +303,7 @@
         coupon: val
       }
     }).done(function(res, status){
-      if(res === 'ok'){
+      if(res){
         $('#main').html('<div class="notice success">设备启动成功，请关闭该页面，进入公众号进一步操作</div>')
       }
     })

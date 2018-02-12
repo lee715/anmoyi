@@ -4,7 +4,7 @@
   "private": true,
   "main": "app.coffee",
   "scripts": {
-    "app": "coffee -o public/js -c public/coffee && coffee -o lib -c src && coffee src/app.coffee"
+    "app": "coffee -o public/js -c public/coffee && coffee -o lib -c src && node lib/app.js"
   },
   "dependencies": {
     "async": "^1.5.0",
