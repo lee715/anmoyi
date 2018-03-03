@@ -53,12 +53,14 @@ class API
     {coupon, uid} = req.body
     redis.getAsync("coupon:#{coupon}")
       .then (time) ->
+        console.log('coupone time: ' + time)
         return callback(new Error('coupon expired')) if (!time)
-        sockSrv.startAsync(uid, time, (err) ->
+        redis.del("coupon:#{coupon}")
+        sockSrv.startAsync(uid, time)
+        .then (err) ->
           return callback(err) if (err)
-          redis.del("coupon:#{coupon}")
-          callback(null, time)
-        )
+          console.log('coupon success')
+          callback(null, 'ok')
   @::payByCoupon.route = ['post', '/coupons:start']
 
 module.exports = new API

@@ -218,7 +218,7 @@
       );
     })
     .error(function (err) {
-      $('#main').html('<div class="notice fail">'+ err.message || '支付失败，请重新扫码。' +'</div>')
+      $('body').html('<div class="notice fail">'+ err.message || '支付失败，请重新扫码。' +'</div>')
     })
   }
 
@@ -247,7 +247,7 @@
       }
     }).done(function(res, status){
       if(res === 'SUCCESS'){
-        $('#main').html('<div class="notice success">订单处理成功，设备将自动启动。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：15361586480</div>');
+        $('body').html('<div class="notice success">订单处理成功，设备将自动启动。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：15361586480</div>');
         clearInterval(timer);
         start();
       }
@@ -264,9 +264,9 @@
       }
     }).done(function(res, status){
       if(res === 'ok'){
-        $('#main').html('<div class="notice success">设备启动成功，请关闭该页面，祝您使用愉快<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：15361586480</div>')
+        $('body').html('<div class="notice success">设备启动成功，请关闭该页面，祝您使用愉快<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：15361586480</div>')
       }else{
-        $('#main').html('<div class="notice fail">设备启动失败，请关闭该页面，进入公众号点击“启动”按钮手动启动按摩椅</div>')
+        $('body').html('<div class="notice fail">设备启动失败，请关闭该页面，进入公众号点击“启动”按钮手动启动按摩椅</div>')
       }
     })
   }
@@ -282,7 +282,7 @@
       }
     }).done(function(res, status){
       if(res === 'ok'){
-        $('#main').html('<div class="notice success">设备启动成功，请关闭该页面，进入公众号进一步操作</div>')
+        $('body').html('<div class="notice success">设备启动成功，请关闭该页面，进入公众号进一步操作</div>')
       }
     })
   }
@@ -303,8 +303,10 @@
         coupon: val
       }
     }).done(function(res, status){
-      if(res){
-        $('#main').html('<div class="notice success">设备启动成功，请关闭该页面，进入公众号进一步操作</div>')
+      if(res === 'ok'){
+        $('body').html('<div class="notice success">设备启动成功，请关闭该页面，进入公众号进一步操作</div>')
+      } else {
+        alert('优惠券核销失败，请联系管理员！')
       }
     })
 
