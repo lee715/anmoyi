@@ -20,7 +20,7 @@ define [
     field: 'wxFee'
     title: '微信手续费'
   ,
-    field: 'placeFee'
+    field: 'agentFee'
     title: '分成金额'
   ,
     field: 'salesFee'
@@ -37,7 +37,7 @@ define [
 
     render: ->
       self = @
-      @fetch (err, data) ->
+      @fetch (err, data) =>
         month = (new Date).getMonth() + 1
         year = year1 = year2 = (new Date).getFullYear()
         map = [12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
@@ -55,21 +55,36 @@ define [
           rt = {}
           rt.month = data.months[i]
           rt.total = one
-          rt.wxFee = (one * 0.06).toFixed(2)
+          rt.wxFee = (one * 0.006).toFixed(2)
+          restFee = rt.total - rt.wxFee
           if data.place.agentMode is 'percent'
-            rt.agentFee = (rt.wxFee * data.place.agentCount / 100).toFixed(2)
+            rt.agentFee = (restFee * data.place.agentCount / 100).toFixed(2)
           else
             rt.agentFee = data.place.agentCount
           if data.place.salesmanMode is 'percent'
-            rt.salesFee = (rt.agentFee * data.place.salesmanCount / 100).toFixed(2)
+            rt.salesFee = (restFee * data.place.salesmanCount / 100).toFixed(2)
           else
             rt.salesFee = data.place.salesmanCount
-          rt.count = rt.agentFee - rt.salesFee
+          role = Data.user.get('role')
+          if role is 'root'
+            rt.count = (restFee - rt.agentFee - rt.salesFee).toFixed(2)
+          else if role is 'agent'
+            rt.count = rt.agentFee.toFixed(2)
+          else
+            rt.count = rt.salesFee.toFixed(2)
           tableData.push(rt)
         )
-        tableData.push(_.reduce(tableData, (a, b) ->
-          return a + b
-        ))
+        sum = _.reduce(tableData, (a, b) ->
+          rt =
+            month: '总计'
+            total: (+a.total + +b.total).toFixed(2)
+            wxFee: (+a.wxFee + +b.wxFee).toFixed(2)
+            agentFee: (+a.agentFee + +b.agentFee).toFixed(2)
+            salesFee: (+a.salesFee + +b.salesFee).toFixed(2)
+            count: (+a.count + +b.count).toFixed(2)
+          return rt
+        )
+        tableData.push(sum)
         self.$el.html ejs.render(temp, data)
         @$table = @$el.find('#recTable')
         @$table.bootstrapTable

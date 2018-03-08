@@ -16,6 +16,7 @@ define [
       email: ''
       company: ''
       mailAddress: ''
+      mode: ''
       qq: ''
       price: ''
       time: ''
@@ -23,6 +24,10 @@ define [
       bankAccount: ''
       _salesmanId: ''
       _agentId: ''
+      agentMode: 'percent'
+      agentCount: 0
+      salesmanMode: 'percent'
+      salesmanCount: 0
       section: 0
       discount: 100
       remission: 0

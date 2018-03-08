@@ -86,8 +86,8 @@ class API
       role: 'salesman'
     .then (users) ->
       callback(null, _.map(users, (user) -> return user.format()))
-  @::fetchAgents.route = ['get', '/salesman']
-  @::fetchAgents.before = [
+  @::fetchSales.route = ['get', '/salesman']
+  @::fetchSales.before = [
     userSrv.isRoot
   ]
 
