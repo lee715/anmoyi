@@ -58,20 +58,20 @@ define [
           rt.wxFee = (one * 0.006).toFixed(2)
           restFee = rt.total - rt.wxFee
           if data.place.agentMode is 'percent'
-            rt.agentFee = (restFee * data.place.agentCount / 100).toFixed(2)
+            rt.agentFee = +(restFee * data.place.agentCount / 100).toFixed(2)
           else
             rt.agentFee = data.place.agentCount
           if data.place.salesmanMode is 'percent'
-            rt.salesFee = (restFee * data.place.salesmanCount / 100).toFixed(2)
+            rt.salesFee = +(restFee * data.place.salesmanCount / 100).toFixed(2)
           else
             rt.salesFee = data.place.salesmanCount
           role = Data.user.get('role')
           if role is 'root'
-            rt.count = (restFee - rt.agentFee - rt.salesFee).toFixed(2)
+            rt.count = +(restFee - rt.agentFee - rt.salesFee).toFixed(2)
           else if role is 'agent'
-            rt.count = rt.agentFee.toFixed(2)
+            rt.count = +rt.agentFee.toFixed(2)
           else
-            rt.count = rt.salesFee.toFixed(2)
+            rt.count = +rt.salesFee.toFixed(2)
           tableData.push(rt)
         )
         sum = _.reduce(tableData, (a, b) ->

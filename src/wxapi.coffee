@@ -144,8 +144,15 @@ class API
   @::getPrepayOrder.route = ['get', '/api/prepay/cost']
 
   payView: (req, callback) ->
+    console.log(req.query)
     openId = req.query.openId
-    WX_API.getPayInfoAsync(openId)
+    uid = req.query.uid
+    Promise.resolve()
+    .then () ->
+      if uid
+        WX_API.getPayInfoByDeviceIdAsync(uid)
+      else
+        WX_API.getPayInfoAsync(openId)
     .then (info) ->
       info.openId = openId
       redis.setex('payinfo.by.openid.' + openId, 60 * 10, JSON.stringify(info))

@@ -46,6 +46,8 @@ define ['utils', 'models/user'], (utils, userModel) ->
       )
     storeUser: (user) ->
       @user = new userModel(user)
+      if user.role is 'place'
+        @_placeId = user._id
     isRoot: ->
       return @user.get('role') is 'root'
     refresh: ->

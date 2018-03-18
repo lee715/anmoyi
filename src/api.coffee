@@ -1,5 +1,7 @@
 config = require('config')
 _ = require('lodash')
+qs = require('qs')
+request = require('request')
 db = require('limbo').use('anmoyi')
 u = require('./services/util')
 WX_API = require('./weixin/api')
@@ -83,10 +85,34 @@ class API
 
   getTicketUrl: (req, callback) ->
     { uid, _placeId } = req.query
-    MP_API.getQrcodeTicket(uid or _placeId, (err, ticket) ->
-      callback(err, ticket.url)
-    )
+    # MP_API.getQrcodeTicket(uid or _placeId, (err, ticket) ->
+    #   callback(err, ticket.url)
+    # )
+    data =
+      appid: config.MP_WEIXIN.appid
+      response_type: 'code'
+      scope: 'snsapi_base',
+      state: 'snsapi_base',
+      redirect_uri: "#{config.host}api/oauthcode?uid=#{uid}"
+    callback(null, "#{config.MP_WEIXIN.authURL}?#{qs.stringify(data)}")
   @::getTicketUrl.route = ['get', '/ticket']
+
+  getCode: (req, callback) ->
+    code = req.query.code
+    data =
+      appid: config.MP_WEIXIN.appid,
+      secret: config.MP_WEIXIN.secret,
+      code: code,
+      grant_type: 'authorization_code'
+    request.get
+      url: "#{config.WX_OPEN_PLATFORM.tokenURL}?#{qs.stringify(data)}"
+      json: true
+    , (err, res, body) ->
+      console.log('getCode', err, body)
+      if body.openid
+        req.redirect = "#{config.host}#{config.h5.pay}?uid=#{req.query.uid}&openId=#{body.openid}"
+      callback(err, body)
+  @::getCode.route = ['get', '/oauthcode']
 
   payAjax: (req, callback) ->
     {openId, _deviceId, count} = req.query
