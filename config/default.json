@@ -1,8 +1,8 @@
 {
   "PORT": 80,
   "name": "anmoyi",
-  "host": "http://www.songsongbei.com/",
-  "ip": "112.74.44.177",
+  "host": "http://www.iheimayi.cn/",
+  "ip": "47.106.70.32",
   "REDIS_CONFIG": {
     "port": 6379,
     "server": "127.0.0.1"
@@ -16,12 +16,12 @@
     "page": "pay/v1/h5page"
   },
   "sessionConfig": {
-    "secret": "qingsongyike",
-    "key": "QSYK_SESSIONID"
+    "secret": "heima",
+    "key": "HM_SESSIONID"
   },
   "wxConfig": {
-    "mch_id": "1482819142",
-    "appid": "wx407c4882d6f0a85b",
+    "mch_id": "1497068872",
+    "appid": "wxeda7ea419cb00cb5",
     "key": "2c464448b6ab452f97ad000d02b64dd0",
     "total_fee": 5,
     "body": "按摩椅"
@@ -30,7 +30,7 @@
   "DB_URL": "mongodb://127.0.0.1:27017/anmoyi",
   "MONGO_AUTH_DB": "admin",
   "WX_OPEN_PLATFORM": {
-    "appid": "wx2dcf36d849b4a364",
+    "appid": "wxeda7ea419cb00cb5",
     "secret": "9348d4997f552a747168d8111d8fa86f",
     "response_type": "code",
     "scope": "snsapi_login",
@@ -62,9 +62,9 @@
     }
   },
   "MP_WEIXIN": {
-    "appid": "wx407c4882d6f0a85b",
+    "appid": "wxeda7ea419cb00cb5",
     "secret": "c5d008c26cc8a51cd40e5fe4f24ae88f",
-    "token": "weixin",
+    "token": "HeiMaTokens",
     "grant_type": "client_credential",
     "tokenKey": "MP::WEIXIN::ACCESS_TOKEN",
     "ticketKey": "MP::WEIXIN::TICKET",
