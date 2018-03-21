@@ -30,7 +30,7 @@
   "DB_URL": "mongodb://127.0.0.1:27017/anmoyi",
   "MONGO_AUTH_DB": "admin",
   "WX_OPEN_PLATFORM": {
-    "appid": "wxeda7ea419cb00cb5",
+    "appid": "wx2dcf36d849b4a364",
     "secret": "9348d4997f552a747168d8111d8fa86f",
     "response_type": "code",
     "scope": "snsapi_login",
@@ -63,7 +63,7 @@
   },
   "MP_WEIXIN": {
     "appid": "wxeda7ea419cb00cb5",
-    "secret": "c5d008c26cc8a51cd40e5fe4f24ae88f",
+    "secret": "fc96678eb35c90f5571b197793e9b1ee",
     "token": "HeiMaTokens",
     "grant_type": "client_credential",
     "tokenKey": "MP::WEIXIN::ACCESS_TOKEN",
