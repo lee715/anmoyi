@@ -110,7 +110,6 @@ class SockAgent {
       uid: msg.uid
     }, {
       status: msg.status,
-      wxTime: msg.wxTime,
       statusUpdated: Date.now()
     }, {upsert: true}, function (err) {
       if (err) console.log(err)
@@ -148,19 +147,27 @@ function formatMsg (msg) {
     uid: arr[0].slice(-12)
   }
   if (arr[3]) arr[3] = arr[3].toLowerCase()
-  if (arr.length === 4) {
-    if (arr[3] === 'ok') {
+  if (arr[2]) arr[2] = arr[2].toLowerCase()
+  if (arr.length === 3) {
+    if (arr[2] === 'ok') {
       formated.isOk = true
       formated.type = 'OP_RES'
     } else {
-      if (['free', 'idle'].includes(arr[3])) {
-        arr[3] = 'idle'
-      } else if (arr[3] !== 'work') {
-        arr[3] = 'fault'
+      return null
+    }
+  } else if (arr.length === 4) {
+    if (arr[3] === 'ok' || arr[2] === 'ok') {
+      formated.isOk = true
+      formated.type = 'OP_RES'
+    } else {
+      if (['free', 'idle'].includes(arr[2])) {
+        arr[2] = 'idle'
+      } else if (arr[2] !== 'work') {
+        arr[2] = 'fault'
       }
-      arr[2] = +arr[2].slice(1)
-      formated.wxTime = arr[2]
-      formated.status = arr[3]
+      arr[3] = +arr[3].slice(1)
+      formated.wxTime = arr[3]
+      formated.status = arr[2]
       formated.val = arr[4]
       formated.type = 'STATUS'
     }
