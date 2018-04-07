@@ -20,8 +20,8 @@
     "key": "QSYK_SESSIONID"
   },
   "wxConfig": {
-    "mch_id": "1482819142",
-    "appid": "wx407c4882d6f0a85b",
+    "mch_id": "1500182902",
+    "appid": "wxd973afaaef0ef9a2",
     "key": "2c464448b6ab452f97ad000d02b64dd0",
     "total_fee": 5,
     "body": "按摩椅"
@@ -62,8 +62,8 @@
     }
   },
   "MP_WEIXIN": {
-    "appid": "wx407c4882d6f0a85b",
-    "secret": "c5d008c26cc8a51cd40e5fe4f24ae88f",
+    "appid": "wxd973afaaef0ef9a2",
+    "secret": "9793f9056a55c5309f74350ad10be415",
     "token": "weixin",
     "grant_type": "client_credential",
     "tokenKey": "MP::WEIXIN::ACCESS_TOKEN",
