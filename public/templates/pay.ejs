@@ -186,7 +186,7 @@
       </div>
     </div>
     <% }else { %>
-    <div id="error" class="notice fail">设备异常,请使用其他设备或联系客服。客服电话：4008301332。</div>
+    <div id="error" class="notice fail">设备异常,请使用其他设备或联系客服。客服电话：0574-88037837。</div>
     <% } %>
 <script type="text/javascript" src="/bower/jquery/dist/jquery.js"></script>
 <script type="text/javascript">
@@ -212,7 +212,7 @@
         function(res){
           if(res.err_msg == "get_brand_wcpay_request:ok" ) {
             run();
-            $('body').html('<div class="notice success">设备启动中。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：4008301332</div>');
+            $('body').html('<div class="notice success">设备启动中。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：0574-88037837</div>');
           }
         }
       );
@@ -247,7 +247,7 @@
       }
     }).done(function(res, status){
       if(res === 'SUCCESS'){
-        $('body').html('<div class="notice success">订单处理成功，设备将自动启动。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：4008301332</div>');
+        $('body').html('<div class="notice success">订单处理成功，设备将自动启动。<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：0574-88037837</div>');
         clearInterval(timer);
         start();
       }
@@ -264,7 +264,7 @@
       }
     }).done(function(res, status){
       if(res === 'ok'){
-        $('body').html('<div class="notice success">设备启动成功，请关闭该页面，祝您使用愉快<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：4008301332</div>')
+        $('body').html('<div class="notice success">设备启动成功，请关闭该页面，祝您使用愉快<br><br>如遇设备启动延迟，请在公众号内点击"启动"按钮。<br>客服热线：0574-88037837</div>')
       }else{
         $('body').html('<div class="notice fail">设备启动失败，请关闭该页面，进入公众号点击“启动”按钮手动启动按摩椅</div>')
       }

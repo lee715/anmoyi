@@ -1,10 +1,10 @@
 'use strict'
 /*global sneaky*/
 
-sneaky('ssb', function () {
+sneaky('lxy', function () {
   this.description = 'Deploy to dev environment'
   this.user = 'root'
-  this.host = '112.74.44.177'
+  this.host = '47.100.45.39'
   this.path = '~/server/'
   this.filter = `
 + config
@@ -22,7 +22,7 @@ sneaky('ssb', function () {
 + apiclient_cert.p12
 - *
 `
-  this.before('rm -rf lib && coffee -o lib -c src && cp src/services/socket.js lib/services/socket.js')
+  // this.before('rm -rf lib && coffee -o lib -c src && cp src/services/socket.js lib/services/socket.js')
   this.after('pm2 restart app')
   this.overwrite = true
   this.nochdir = true
