@@ -64,10 +64,8 @@ app.get '/wx/message', (req, res, next) ->
   else
     res.send(echostr)
 
-indexHtml = fs.readFileSync('public/tmp/static/templates/index.html')
 app.get '/', (req, res, next) ->
-  res.header('Content-Type', 'text/html; charset=utf-8')
-  res.send(indexHtml)
+  res.redirect('/login')
 
 txt = fs.readFileSync('MP_verify_wMjdq63CWlDk3nXy.txt')
 app.get '/MP_verify_wMjdq63CWlDk3nXy.txt', (req, res, next) ->
