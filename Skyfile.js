@@ -28,10 +28,10 @@ sneaky('ssb', function () {
   this.nochdir = true
 })
 
-sneaky('hm', function () {
+sneaky('ay', function () {
   this.description = 'Deploy to dev environment'
   this.user = 'root'
-  this.host = '47.106.70.32'
+  this.host = '47.74.252.32'
   this.path = '~/server/'
   this.filter = `
 + config

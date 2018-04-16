@@ -1,8 +1,8 @@
 {
   "PORT": 80,
   "name": "anmoyi",
-  "host": "http://www.songsongbei.com/",
-  "ip": "112.74.44.177",
+  "host": "http://www.ups-aiyan.com/",
+  "ip": "47.74.252.32",
   "REDIS_CONFIG": {
     "port": 6379,
     "server": "127.0.0.1"
@@ -20,9 +20,9 @@
     "key": "QSYK_SESSIONID"
   },
   "wxConfig": {
-    "mch_id": "1482819142",
-    "appid": "wx407c4882d6f0a85b",
-    "key": "2c464448b6ab452f97ad000d02b64dd0",
+    "mch_id": "1500195282",
+    "appid": "wxf52adc6b55f21cd5",
+    "key": "bc49dcee7e7ac85df1d2ef6f758560ae",
     "total_fee": 5,
     "body": "按摩椅"
   },
@@ -62,8 +62,8 @@
     }
   },
   "MP_WEIXIN": {
-    "appid": "wx407c4882d6f0a85b",
-    "secret": "c5d008c26cc8a51cd40e5fe4f24ae88f",
+    "appid": "wxf52adc6b55f21cd5",
+    "secret": "bc49dcee7e7ac85df1d2ef6f758560ae",
     "token": "weixin",
     "grant_type": "client_credential",
     "tokenKey": "MP::WEIXIN::ACCESS_TOKEN",
