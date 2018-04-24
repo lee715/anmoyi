@@ -1,7 +1,7 @@
 {
   "PORT": 80,
   "name": "anmoyi",
-  "host": "http://www.songsongbei.com/",
+  "host": "http://cnlexiaoyao.com/",
   "ip": "112.74.44.177",
   "REDIS_CONFIG": {
     "port": 6379,
