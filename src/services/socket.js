@@ -73,6 +73,9 @@ class SockAgent {
     let timer = setInterval(function () {
       self._start(time)
     }, 3000)
+    setTimeout(function () {
+      clearTimeout(timer)
+    }, 1000 * 60 * 5)
     this._start(time)
     this.cache(callback, timer)
   }
@@ -115,7 +118,6 @@ class SockAgent {
       if (err) console.log(err)
     })
   }
-
 }
 
 net.createServer( function (sock) {
