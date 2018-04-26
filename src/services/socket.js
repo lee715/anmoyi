@@ -46,6 +46,18 @@ const sockCol = module.exports = {
         resolve(null, 'started')
       })
     })
+  },
+
+  checkSockAsync: (uid) => {
+    console.log('check sock', uid)
+    return new Promise((resolve, reject) => {
+      let sock = sockCol.get(uid)
+      if (!sock) reject(new Error('sock not found'))
+      sock.checkStart(uid, (err) => {
+        if (err) reject(err)
+        resolve(null, 'checked')
+      })
+    })
   }
 }
 
@@ -59,6 +71,9 @@ class SockAgent {
   handleMsg (msg) {
     switch (msg.type) {
       case 'OP_RES':
+        this.doCache(null, 'ok')
+        break
+      case 'CHECK_RES':
         this.doCache(null, 'ok')
         break
       case 'STATUS':
@@ -80,9 +95,22 @@ class SockAgent {
     this.cache(callback, timer)
   }
 
+  checkStart (uid, callback) {
+    let timer = setTimeout(function () {
+      callback(new Error('device unreachable'))
+    }, 1000 * 10)
+    this._check(uid)
+    this.cache(callback, timer)
+  }
+
   _start (time) {
     console.log('_start', this.uid, time, `~${this.uid}#startup#${time}\r`)
     this.sock.write(`~${this.uid}#startup#${time}\r`)
+  }
+
+  _check (uid) {
+    console.log('_check', this.uid, `~${this.uid}#check\r`)
+    this.sock.write(`~${this.uid}#check\r`)
   }
 
   _ok () {
@@ -154,6 +182,9 @@ function formatMsg (msg) {
     if (arr[2] === 'ok') {
       formated.isOk = true
       formated.type = 'OP_RES'
+    } else if (arr[1] === 'check') {
+      formated.isOk = true
+      formated.type = 'CHECK_RES'
     } else {
       return null
     }

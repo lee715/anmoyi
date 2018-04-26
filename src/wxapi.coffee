@@ -117,15 +117,17 @@ class API
     .then (info) ->
       info = JSON.parse(info)
       if info.status is 'idle' and not info.disabled
-        db.order.createAsync
-          money: price
-          time: time
-          openId: openId
-          deviceStatus: info.status
-          uid: info.uid
-          _userId: info._userId
-          _placeId: info._placeId
-          mode: "WX"
+        sockSrv.checkSockAsync(info.uid)
+        .then ->
+          db.order.createAsync
+            money: price
+            time: time
+            openId: openId
+            deviceStatus: info.status
+            uid: info.uid
+            _userId: info._userId
+            _placeId: info._placeId
+            mode: "WX"
         .then (order) ->
           WX_API.getBrandWCPayRequestParamsAsync openId, "#{order._id}", price * 100  # 微信金额单位为分
           .then (args) ->
