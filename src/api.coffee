@@ -94,7 +94,8 @@ class API
       scope: 'snsapi_base',
       state: 'snsapi_base',
       redirect_uri: "#{config.host}api/oauthcode?uid=#{uid}"
-    callback(null, "#{config.MP_WEIXIN.authURL}?#{qs.stringify(data)}")
+    req.res.redirect("#{config.MP_WEIXIN.authURL}?#{qs.stringify(data)}")
+    # callback(null, "#{config.MP_WEIXIN.authURL}?#{qs.stringify(data)}")
   @::getTicketUrl.route = ['get', '/ticket']
 
   getCode: (req, callback) ->

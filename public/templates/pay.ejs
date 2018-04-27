@@ -197,7 +197,13 @@
     $('.selected').removeClass('selected')
     $(e.target).addClass('selected')
   })
+  var isChecking = false
   function pay(){
+    if (isChecking) {
+      return
+    }
+    isChecking = true
+    $('#pay').html('正在支付...')
     $.ajax({
       url: "/api/prepay/cost",
       method: 'get',
@@ -207,6 +213,8 @@
       }
     })
     .done(function (arg) {
+      isChecking = false
+      $('#pay').html('确认支付')
       WeixinJSBridge.invoke(
         'getBrandWCPayRequest', arg,
         function(res){
